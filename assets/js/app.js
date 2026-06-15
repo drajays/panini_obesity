@@ -60,11 +60,11 @@
     {
       id: 'winner',
       title: '3-Year Winner Program',
-      subtitle: 'GLP-1 journey tracker with quarterly check-ins',
+      subtitle: 'GLP-1 journey with 19 bi-monthly visit assessments',
       icon: '🏆',
       path: 'pages/winner.html',
       step: 'Step 4 — Ongoing Care',
-      desc: '36-month patient journey integrating GLP-1 therapy, nutrition, exercise, and milestone tracking.',
+      desc: '36-month patient journey with 19 unique bi-monthly clinical visit forms, milestone tracking, and GLP-1 program integration.',
     },
   ];
 

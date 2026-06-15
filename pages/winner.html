@@ -307,14 +307,198 @@
   }
   .footer strong { color: var(--slate); }
 
+  /* ---------- Bi-Monthly Visit Forms ---------- */
+  .visit-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 4px 0 14px;
+    margin-bottom: 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .visit-pill {
+    flex-shrink: 0;
+    border: 1.5px solid var(--line);
+    background: #fff;
+    color: var(--slate);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .visit-pill:hover { border-color: var(--teal); color: var(--teal-dark); }
+  .visit-pill.active { background: var(--teal-dark); border-color: var(--teal-dark); color: #fff; }
+  .visit-pill.phase-1.active { background: #0d9488; border-color: #0d9488; }
+  .visit-pill.phase-2.active { background: #2563eb; border-color: #2563eb; }
+  .visit-pill.phase-3.active { background: #d97706; border-color: #d97706; }
+  .visit-pill.phase-4.active { background: #16a34a; border-color: #16a34a; }
+
+  .visit-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #fff;
+  }
+  .visit-card-header {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #f0fdfa, #ecfdf5);
+    border-bottom: 1px solid var(--line);
+  }
+  .visit-card-header.phase-2 { background: linear-gradient(135deg, #eff6ff, #dbeafe); }
+  .visit-card-header.phase-3 { background: linear-gradient(135deg, #fffbeb, #fef3c7); }
+  .visit-card-header.phase-4 { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
+  .visit-month-badge {
+    background: var(--teal-dark);
+    color: #fff;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  .visit-title { font-size: 17px; color: var(--ink); margin: 0 0 4px; }
+  .visit-focus { font-size: 13px; color: var(--slate); margin: 0 0 8px; line-height: 1.45; }
+  .visit-phase-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--teal-dark);
+    background: rgba(13,148,136,.12);
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .visit-core-vitals, .visit-unique-assessment { padding: 18px 20px; border-bottom: 1px solid var(--line); }
+  .visit-core-vitals h3, .visit-unique-assessment h3 {
+    font-size: 14px;
+    color: var(--teal-dark);
+    margin: 0 0 12px;
+    font-weight: 700;
+  }
+  .visit-vitals-grid, .visit-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 16px;
+  }
+  @media (max-width: 640px) {
+    .visit-vitals-grid, .visit-fields-grid { grid-template-columns: 1fr; }
+  }
+  .visit-field.span2 { grid-column: span 2; }
+  @media (max-width: 640px) { .visit-field.span2 { grid-column: span 1; } }
+
+  .visit-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--slate);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    margin-bottom: 4px;
+  }
+  .visit-field input, .visit-field select, .visit-field textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    background: #f8fafc;
+  }
+  .visit-field input:focus, .visit-field select:focus, .visit-field textarea:focus {
+    outline: none;
+    border-color: var(--teal);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(13,148,136,.12);
+  }
+  .visit-field-check .check-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: none;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .visit-field-check input { width: auto; margin-top: 2px; }
+
+  .scale-row { display: flex; flex-wrap: wrap; gap: 4px; }
+  .scale-opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--slate);
+  }
+  .scale-opt input { width: auto; margin-bottom: 2px; }
+  .scale-opt span {
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #f8fafc;
+    font-weight: 600;
+  }
+  .scale-opt input:checked + span { background: var(--teal); color: #fff; border-color: var(--teal); }
+
+  .visit-section-block { margin-bottom: 18px; }
+  .visit-section-block:last-child { margin-bottom: 0; }
+  .visit-section-block h3 {
+    font-size: 13px;
+    color: var(--ink);
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--line);
+  }
+
+  .visit-insight {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 18px 20px;
+    background: #f8fafc;
+  }
+  @media (max-width: 680px) { .visit-insight { grid-template-columns: 1fr; } }
+  .insight-block {
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .insight-block strong {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 6px;
+  }
+  .patient-insight { background: var(--teal-light); border-left: 4px solid var(--teal); }
+  .patient-insight strong { color: var(--teal-dark); }
+  .clinician-insight { background: var(--amber-light); border-left: 4px solid var(--amber); }
+  .clinician-insight strong { color: #b45309; }
+
   /* ---------- Print ---------- */
   @media print {
     body { background: #fff; }
+    body.print-active-visit .section:not(#journeyVisitsSection),
+    body.print-active-visit .hero { display: none !important; }
+    body.print-active-visit #journeyVisitsSection .visit-nav { display: none !important; }
+    body.print-active-visit .visit-form-wrap { display: none !important; }
+    body.print-active-visit .visit-form-wrap.visit-print-target { display: block !important; }
     .toolbar { display: none; }
     .page { box-shadow: none; margin: 0; border-radius: 0; max-width: 100%; }
-    .section, .phase-body { break-inside: avoid; }
+    .section, .phase-body, .visit-card { break-inside: avoid; }
     .milestone input[type="checkbox"] { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-    thead th, .phase-head, .pillar, .checkin-scroll td:first-child {
+    thead th, .phase-head, .pillar, .visit-card-header {
       print-color-adjust: exact; -webkit-print-color-adjust: exact;
     }
     input, textarea { border: 1px solid #999 !important; }
@@ -511,26 +695,12 @@
     </div>
   </div>
 
-  <!-- ============ SECTION 4: QUARTERLY CHECK-IN ============ -->
-  <div class="section">
-    <h2 class="section-title"><span class="icon">📊</span> Quarterly Check-In Tracker</h2>
-    <p class="focus-note">Use this table during clinical visits every 3 months to log progress. Adherence &amp; consistency scored 1–10.</p>
-    <div class="checkin-scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Check-In</th>
-            <th>Date</th>
-            <th>Weight</th>
-            <th>GLP-1 Dose</th>
-            <th>Dietary Adherence (1–10)</th>
-            <th>Exercise Consistency (1–10)</th>
-            <th>Notes / Adjustments Made</th>
-          </tr>
-        </thead>
-        <tbody id="checkinBody"></tbody>
-      </table>
-    </div>
+  <!-- ============ SECTION 4: BI-MONTHLY VISIT FORMS ============ -->
+  <div class="section" id="journeyVisitsSection">
+    <h2 class="section-title"><span class="icon">📊</span> Bi-Monthly Clinical Visit Forms</h2>
+    <p class="focus-note">19 unique assessments at every 2nd month (Month 0, 2, 4 … 36). Each visit includes core vitals plus a distinct clinical assessment and insight panel. Select a month below.</p>
+    <nav class="visit-nav" id="visitNav" aria-label="Visit month navigation"></nav>
+    <div id="visitFormContainer"></div>
   </div>
 
   <!-- ============ SECTION 5: 3 PILLARS ============ -->
@@ -598,54 +768,41 @@
 </div>
 </form>
 
+<script src="../assets/js/journey-visits-data.js"></script>
+<script src="../assets/js/journey-visits.js"></script>
 <script>
-  /* ---- Build quarterly check-in rows ---- */
-  (function(){
-    const months = [3,6,9,12,15,18,21,24,27,30,33,36];
-    const tbody = document.getElementById('checkinBody');
-    months.forEach(m => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>Month ${m}</td>
-        <td><input type="date"></td>
-        <td><input type="text" placeholder="e.g. 82 kg"></td>
-        <td><input type="text" placeholder="dose"></td>
-        <td><input type="number" min="1" max="10"></td>
-        <td><input type="number" min="1" max="10"></td>
-        <td><input type="text" placeholder="notes"></td>`;
-      tbody.appendChild(tr);
-    });
-  })();
-
-  /* ---- Auto-save to localStorage ---- */
-  const KEY = 'obesityWinnerForm_v1';
+  /* ---- Auto-save to localStorage (v2 with bi-monthly visits) ---- */
+  const KEY = 'obesityWinnerForm_v2';
+  const KEY_LEGACY = 'obesityWinnerForm_v1';
   let saveTimer = null;
 
   function collectData(){
     const form = document.getElementById('theForm');
-    const data = { fields: {}, checks: [], tableInputs: [], sig: [] };
+    const data = { version: 2, fields: {}, checks: [], tableInputs: [], sig: [], visits: {}, activeVisitMonth: 0 };
 
-    // named fields + dates
     form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"], textarea').forEach(el => {
-      if (el.closest('#checkinBody') || el.dataset.table) return; // handled separately
+      if (el.closest('#visitFormContainer') || el.dataset.table) return;
       const id = el.id || el.name;
       if (id) data.fields[id] = el.value;
     });
 
-    // checkboxes (milestones + agreements)
     form.querySelectorAll('input[type="checkbox"]').forEach(el => {
+      if (el.closest('#visitFormContainer')) return;
       data.checks.push(el.checked);
     });
 
-    // metric table inputs
     form.querySelectorAll('input[data-table="metrics"]').forEach(el => {
       data.tableInputs.push(el.value);
     });
 
-    // signature lines (contenteditable)
     form.querySelectorAll('.sig-line').forEach(el => {
       data.sig.push(el.innerHTML);
     });
+
+    if (window.JourneyVisits) {
+      data.visits = JourneyVisits.collectAllVisits();
+      data.activeVisitMonth = JourneyVisits.getActiveMonth();
+    }
 
     return data;
   }
@@ -672,38 +829,46 @@
   function restore(data){
     const form = document.getElementById('theForm');
 
-    // fields
     Object.keys(data.fields || {}).forEach(id => {
       const el = document.getElementById(id) || form.querySelector(`[name="${id}"]`);
       if (el) el.value = data.fields[id];
     });
 
-    // checkboxes
     const checks = form.querySelectorAll('input[type="checkbox"]');
-    (data.checks || []).forEach((val, i) => { if (checks[i]) checks[i].checked = val; });
+    let checkIdx = 0;
+    checks.forEach(el => {
+      if (el.closest('#visitFormContainer')) return;
+      if (data.checks && data.checks[checkIdx] !== undefined) el.checked = data.checks[checkIdx];
+      checkIdx++;
+    });
 
-    // metric table
     const mInputs = form.querySelectorAll('input[data-table="metrics"]');
     (data.tableInputs || []).forEach((val, i) => { if (mInputs[i]) mInputs[i].value = val; });
 
-    // signatures
     const sigs = form.querySelectorAll('.sig-line');
     (data.sig || []).forEach((val, i) => { if (sigs[i]) sigs[i].innerHTML = val; });
+
+    if (window.JourneyVisits && data.visits) {
+      JourneyVisits.restoreVisits(data.visits);
+      if (typeof data.activeVisitMonth === 'number') {
+        JourneyVisits.showVisit(data.activeVisitMonth);
+      }
+    }
   }
 
   function loadData(){
     try {
-      const raw = localStorage.getItem(KEY);
+      const raw = localStorage.getItem(KEY) || localStorage.getItem(KEY_LEGACY);
       if (!raw) { document.getElementById('saveStatus').textContent = 'No saved data found.'; return; }
       restore(JSON.parse(raw));
       document.getElementById('saveStatus').textContent = '✓ Loaded saved data';
     } catch(e){ alert('Could not load saved data.'); }
   }
 
-  // load on start
   window.addEventListener('DOMContentLoaded', () => {
+    if (window.JourneyVisits) JourneyVisits.init();
     try {
-      const raw = localStorage.getItem(KEY);
+      const raw = localStorage.getItem(KEY) || localStorage.getItem(KEY_LEGACY);
       if (raw) restore(JSON.parse(raw));
     } catch(e){}
   });
