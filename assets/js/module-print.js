@@ -33,6 +33,7 @@
       transform: translateY(-2px);
     }
     .embedded-module .toolbar .btn.solid { display: none !important; }
+    .embedded-module button[onclick="triggerPrintMode()"] { display: none !important; }
     @media print {
       .panini-print-fab { display: none !important; }
     }
@@ -48,9 +49,19 @@
   btn.className = 'panini-print-fab';
   btn.setAttribute('aria-label', 'Print this form');
   btn.innerHTML = '<span aria-hidden="true">🖨️</span><span class="label">Print / PDF</span>';
-  btn.addEventListener('click', () => window.print());
+
+  function doPrint() {
+    if (typeof window.triggerPrintMode === 'function') window.triggerPrintMode();
+    else window.print();
+  }
+
+  btn.addEventListener('click', doPrint);
 
   document.addEventListener('DOMContentLoaded', () => {
+    if (typeof window.triggerPrintMode === 'function') {
+      const label = btn.querySelector('.label');
+      if (label) label.textContent = 'Print 2-Page Report';
+    }
     document.body.appendChild(btn);
   });
 })();

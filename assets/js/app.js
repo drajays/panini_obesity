@@ -22,6 +22,15 @@
       desc: 'Evidence-based checklist for secondary obesity causes and recommended laboratory investigations.',
     },
     {
+      id: 'trajectory',
+      title: 'Weight Trajectory Map',
+      subtitle: 'Lifetime trajectory, yo-yo scorecard & 3-year prognostic map',
+      icon: '📈',
+      path: 'pages/trajectory.html',
+      step: 'Step 1 — Initial Visit',
+      desc: 'ObiTrack Clinical — chart lifetime weight milestones, yo-yo patterns, and interactive 3-year prognostic trajectory with 2-page print report.',
+    },
+    {
       id: 'psych',
       title: 'Psych & Behavioral Readiness',
       subtitle: 'PHQ-9, GAD-7, binge eating & sleep screen',
@@ -200,8 +209,13 @@
     const iframe = document.getElementById('frame-' + state.current);
     if (iframe && iframe.contentWindow) {
       try {
-        iframe.contentWindow.focus();
-        iframe.contentWindow.print();
+        const win = iframe.contentWindow;
+        if (typeof win.triggerPrintMode === 'function') {
+          win.triggerPrintMode();
+        } else {
+          win.focus();
+          win.print();
+        }
       } catch (e) {
         window.print();
       }
