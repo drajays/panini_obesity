@@ -2,7 +2,6 @@
  * Bi-Monthly Journey Visit Renderer — visit-wise data, auto-save, progress outputs
  */
 const JourneyVisits = (function () {
-  const VISIT_KEY = 'paniniJourneyVisits_v1';
   const PHASE_LABELS = { 1: 'Phase 1 · Initiation', 2: 'Phase 2 · Active Loss', 3: 'Phase 3 · Stabilization', 4: 'Phase 4 · Maintenance' };
   let activeMonth = 0;
   let visitDataCache = {};
@@ -136,9 +135,9 @@ const JourneyVisits = (function () {
     return !!(c.date || c.weight || c.waist || c.bp || c.dose || c.providerNotes);
   }
 
-  function getPatientName() {
-    const el = document.getElementById('pname');
-    return el && el.value.trim() ? el.value.trim() : 'Patient';
+  function getDisplayLabel() {
+    const id = window.PatientStore ? PatientStore.getActiveId() : null;
+    return id || 'No ID';
   }
 
   function parseWeight(val) {
@@ -194,13 +193,9 @@ const JourneyVisits = (function () {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
       try {
-        const payload = {
-          patientName: getPatientName(),
-          activeVisitMonth: activeMonth,
-          visits: collectAllVisits(),
-          updatedAt: new Date().toISOString(),
-        };
-        localStorage.setItem(VISIT_KEY, JSON.stringify(payload));
+        if (window.PatientStore && PatientStore.getActiveId()) {
+          PatientStore.persistAll();
+        }
         updateStatusBadge();
         updateNavIndicators();
         renderProgressDashboard();
@@ -209,25 +204,13 @@ const JourneyVisits = (function () {
   }
 
   function loadVisits() {
-    try {
-      let raw = localStorage.getItem(VISIT_KEY);
-      if (!raw) {
-        const legacy = localStorage.getItem('obesityWinnerForm_v2');
-        if (legacy) {
-          const old = JSON.parse(legacy);
-          if (old.visits && Object.keys(old.visits).length) {
-            visitDataCache = old.visits;
-            if (typeof old.activeVisitMonth === 'number') activeMonth = old.activeVisitMonth;
-            persistVisits();
-            return;
-          }
-        }
-        return;
+    if (window.PatientStore) {
+      const record = PatientStore.getRecord();
+      if (record && record.visits) {
+        visitDataCache = record.visits;
+        if (typeof record.activeVisitMonth === 'number') activeMonth = record.activeVisitMonth;
       }
-      const data = JSON.parse(raw);
-      visitDataCache = data.visits || {};
-      if (typeof data.activeVisitMonth === 'number') activeMonth = data.activeVisitMonth;
-    } catch (_) {}
+    }
   }
 
   function updateStatusBadge() {
@@ -337,7 +320,7 @@ const JourneyVisits = (function () {
     const out = $('progressReportOutput');
     if (!out) return;
     const summaries = getVisitSummaries();
-    const name = getPatientName();
+    const label = getDisplayLabel();
     const done = getCompletedCount();
     const base = getBaselineWeight();
     const latest = [...summaries].reverse().find(s => s.weightNum !== null);
@@ -358,7 +341,7 @@ const JourneyVisits = (function () {
       <div class="report-document" id="progressReportDoc">
         <div class="report-header">
           <h3>36-Month Journey — Progress Report</h3>
-          <p><strong>Patient:</strong> ${escapeHtml(name)} &nbsp;|&nbsp; <strong>Generated:</strong> ${new Date().toLocaleDateString()} &nbsp;|&nbsp; <strong>Visits logged:</strong> ${done}/19</p>
+          <p><strong>Patient ID:</strong> ${escapeHtml(label)} &nbsp;|&nbsp; <strong>Generated:</strong> ${new Date().toLocaleDateString()} &nbsp;|&nbsp; <strong>Visits logged:</strong> ${done}/19</p>
           <p><strong>Baseline weight (M0):</strong> ${base ? base + ' kg' : '—'} &nbsp;|&nbsp; <strong>Latest weight:</strong> ${latest ? latest.weight : '—'}${latest && latest.tbwl ? ' (' + latest.tbwl + '% TBWL)' : ''}</p>
         </div>
         ${visitBlocks || '<p>No visit data entered yet. Log data visit-by-visit to generate a full report.</p>'}
@@ -520,8 +503,21 @@ const JourneyVisits = (function () {
     renderAllVisitForms();
     restoreVisits(visitDataCache);
     showVisit(activeMonth);
-    const pname = document.getElementById('pname');
-    if (pname) pname.addEventListener('input', persistVisits);
+    if (window.PatientStore) {
+      PatientStore.onChange((id) => {
+        if (!id) return;
+        const record = PatientStore.getRecord();
+        if (record && record.visits) {
+          visitDataCache = record.visits;
+          if (typeof record.activeVisitMonth === 'number') activeMonth = record.activeVisitMonth;
+          restoreVisits(visitDataCache);
+          showVisit(activeMonth);
+          updateStatusBadge();
+          updateNavIndicators();
+          renderProgressDashboard();
+        }
+      });
+    }
     window.addEventListener('beforeprint', () => {
       if (document.body.classList.contains('print-progress-report')) return;
       document.querySelectorAll('.visit-form-wrap').forEach(w => w.classList.remove('visit-print-target'));

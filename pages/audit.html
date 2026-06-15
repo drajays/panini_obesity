@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Input Audit Simulator — Panini Weight Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: {
+                        clinical: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 900: '#0c4a6e' },
+                        optimized: { 50: '#f0fdf4', 100: '#dcfce7', 600: '#16a34a', 700: '#15803d' },
+                        average: { 50: '#fef8ec', 100: '#fef08a', 600: '#ca8a04', 700: '#a16207' },
+                        relapse: { 50: '#fef2f2', 100: '#fee2e2', 600: '#dc2626', 700: '#b91c1c' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-shadow { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.03); }
+        .gradient-bg { background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #0284c7; cursor: pointer; border: 2px solid #ffffff;
+            box-shadow: 0 0 4px rgba(0,0,0,0.2); transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        body.in-iframe .shell-only { display: none !important; }
+        @media print {
+            body { background-color: white !important; color: black !important; }
+            .no-print { display: none !important; }
+            .print-full-width { width: 100% !important; max-width: 100% !important; grid-column: span 12 / span 12 !important; }
+            .print-border { border: 1px solid #cbd5e1 !important; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased text-slate-800 flex flex-col min-h-screen">
+
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 no-print shell-only">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-14">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-teal-100 text-teal-700 rounded-xl">
+                        <i class="fa-solid fa-clipboard-check text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-lg tracking-tight text-slate-900">Panini <span class="text-teal-600 font-normal">Clinical Audit</span></span>
+                        <span class="block text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Evidence-Based GLP-1 Care</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="../index.html#trajectory" class="text-xs font-semibold text-slate-500 hover:text-teal-700 px-3 py-2 rounded-lg hover:bg-slate-50">Trajectory Map</a>
+                    <button type="button" onclick="window.print()" class="text-xs font-semibold bg-teal-600 hover:bg-teal-700 text-white py-2 px-3 rounded-lg flex items-center gap-1.5">
+                        <i class="fa-solid fa-print"></i> Print Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="gradient-bg text-white py-7 px-4 sm:px-6 lg:px-8 border-b border-teal-800 relative overflow-hidden no-print shell-only">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-teal-100 text-xs font-semibold mb-3 tracking-wider uppercase">
+                <i class="fa-solid fa-calculator text-[10px]"></i> Trajectory Projection Tool
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2 leading-tight">Clinical Input Audit &amp; Simulator</h1>
+            <p class="text-teal-50 text-sm max-w-2xl font-light">
+                Input compliance metrics to generate a literature-modeled 36-month weight loss trajectory and a customized metabolic preservation prescription. Uses Patient ID only — no names stored.
+            </p>
+        </div>
+    </header>
+
+    <div class="hidden print:block max-w-7xl mx-auto w-full px-8 py-6 border-b border-slate-200">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <span class="font-extrabold text-2xl tracking-tight text-slate-900">Panini <span class="text-teal-600 font-normal">Clinical Audit</span></span>
+                <span class="block text-xs font-semibold text-slate-400">Clinical Trajectory Audit Report</span>
+            </div>
+            <div class="text-right text-xs text-slate-500">
+                <p>Date: <span id="printDate"></span></p>
+                <p>Protocol Ref: STEP/SURMOUNT Compliance</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-xs border-y border-slate-100 py-3 mb-4">
+            <div>
+                <p><strong class="text-slate-700">Patient ID:</strong> <span id="printPatientId">___________________________</span></p>
+            </div>
+            <div>
+                <p><strong class="text-slate-700">Ideal Body Weight (IBW):</strong> <span id="printIBW">--</span></p>
+                <p class="mt-1"><strong class="text-slate-700">Calculated Protein Intake:</strong> <span id="printProteinGK">--</span></p>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 custom-shadow no-print flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+                        <h3 class="font-bold text-slate-900 flex items-center gap-2 text-md">
+                            <i class="fa-solid fa-sliders text-clinical-600"></i> Adjust Patient Inputs
+                        </h3>
+                        <button type="button" onclick="resetInputs()" class="text-xs text-slate-500 hover:text-clinical-600 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-left"></i> Reset Defaults
+                        </button>
+                    </div>
+
+                    <div class="mb-6 bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Nutrition &amp; Sarcopenia Index</h4>
+                            <div class="flex items-center space-x-1.5 bg-slate-200 rounded-lg p-0.5 text-[10px] font-bold text-slate-600">
+                                <button type="button" id="unitKg" onclick="setUnit('kg')" class="px-2 py-0.5 rounded bg-white text-slate-800 shadow-sm">kg</button>
+                                <button type="button" id="unitLbs" onclick="setUnit('lbs')" class="px-2 py-0.5 rounded">lbs</button>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                                <span>Ideal Body Weight (IBW)</span>
+                                <span class="font-bold text-slate-800"><span id="valIBW">70</span> <span class="unitText">kg</span></span>
+                            </div>
+                            <input type="range" id="inputIBW" min="40" max="150" value="70" step="1" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <p class="text-[10px] text-slate-400 mt-1">Calculates protein target based on estimated lean requirements.</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                                <span>Daily Protein Intake</span>
+                                <span class="font-bold text-slate-800"><span id="valProtein">60</span> g / day</span>
+                            </div>
+                            <input type="range" id="inputProtein" min="30" max="180" value="60" step="5" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-200/60">
+                                <span class="text-xs font-medium text-slate-500">Calculated Daily Intake:</span>
+                                <div id="proteinGKBadge" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-yellow-50 text-yellow-700 border border-yellow-100 flex items-center gap-1">
+                                    <span id="valProteinGK">0.86</span> g/kg IBW
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-6 bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                        <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Physical Activity Protocols</h4>
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                                <span>Resistance Training Days</span>
+                                <span class="font-bold text-slate-800"><span id="valResistance">1</span> day / week</span>
+                            </div>
+                            <input type="range" id="inputResistance" min="0" max="5" value="1" step="1" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                            <p class="text-[10px] text-slate-400 mt-1">Crucial for mitigating RMR crash and protecting muscle mass.</p>
+                        </div>
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                                <span>Cardio / Aerobic Minutes</span>
+                                <span class="font-bold text-slate-800"><span id="valCardio">60</span> min / week</span>
+                            </div>
+                            <input type="range" id="inputCardio" min="0" max="300" value="60" step="15" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                                <span>NEAT Activity (Daily Steps)</span>
+                                <span class="font-bold text-slate-800"><span id="valSteps">6,500</span> steps</span>
+                            </div>
+                            <input type="range" id="inputSteps" min="2000" max="15000" value="6500" step="500" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                        <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Intervention Adherence</h4>
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                                <span>Medication Compliance</span>
+                                <span class="font-bold text-slate-800"><span id="valMedAdherence">80</span>%</span>
+                            </div>
+                            <input type="range" id="inputMedAdherence" min="20" max="100" value="80" step="5" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+                                <span>Check-in &amp; Clinic Attendance</span>
+                                <span class="font-bold text-slate-800"><span id="valFollowup">70</span>%</span>
+                            </div>
+                            <input type="range" id="inputFollowup" min="10" max="100" value="70" step="5" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 border-t border-slate-100 pt-4 text-xs text-slate-500 flex items-start gap-2">
+                    <i class="fa-solid fa-circle-info text-clinical-500 text-sm mt-0.5"></i>
+                    <p>Adjusting these inputs recalculates the patient&apos;s <strong class="text-slate-700">Overall Compliance Index (OCI)</strong> in real time and models their metabolic risk.</p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 flex flex-col gap-6 print-full-width">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 custom-shadow print-border">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4 mb-6 gap-4">
+                        <div>
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest">Real-time Patient Projection</span>
+                            <h3 class="text-xl font-bold text-slate-900">Audit Dashboard</h3>
+                        </div>
+                        <div id="alignmentBadge" class="px-3.5 py-1.5 rounded-full text-xs font-extrabold border flex items-center gap-1.5 uppercase tracking-wide">Average Responder</div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        <div class="md:col-span-4 flex flex-col items-center justify-center border-r border-slate-100 pr-0 md:pr-6">
+                            <div class="relative w-28 h-28 flex items-center justify-center">
+                                <svg class="w-full h-full transform -rotate-90">
+                                    <circle cx="56" cy="56" r="48" stroke="#f1f5f9" stroke-width="8" fill="transparent" />
+                                    <circle id="scoreRing" cx="56" cy="56" r="48" stroke="#eab308" stroke-width="8" stroke-dasharray="301.6" stroke-dashoffset="150" fill="transparent" class="transition-all duration-300" />
+                                </svg>
+                                <div class="absolute text-center">
+                                    <span id="scoreText" class="text-3xl font-black text-slate-800">50%</span>
+                                    <span class="block text-[8px] font-bold text-slate-400 uppercase tracking-widest">OCI Score</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-8">
+                            <h4 class="font-bold text-slate-900 text-sm mb-1">Overall Compliance Index (OCI) Analysis</h4>
+                            <p id="complianceDescription" class="text-slate-600 text-xs leading-relaxed">The patient is exhibiting average compliance.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 custom-shadow print-border">
+                    <h3 class="font-bold text-slate-900 text-sm mb-1">Projected Weight Loss Trajectory</h3>
+                    <p class="text-slate-500 text-xs mb-4">Dotted line plots the patient&apos;s customized mathematical forecast against evidence benchmarks.</p>
+                    <div class="relative w-full h-[240px] sm:h-[300px]">
+                        <canvas id="auditChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 custom-shadow print-border">
+                    <h3 class="font-bold text-slate-900 text-sm mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-clinical-600"></i> Metabolic Rehabilitation Prescription
+                    </h3>
+                    <div id="prescriptionList" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-100 border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-8 no-print shell-only">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="mb-1"><strong>Panini Chronic Weight Management</strong> — Clinical Input Audit</p>
+            <p>Calculations are clinical estimations based on STEP &amp; SURMOUNT weight loss-lifestyle correlations.</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/patient-store.js"></script>
+    <script src="../assets/js/clinical-audit.js"></script>
+    <script src="../assets/js/module-print.js"></script>
+    <script>window.addEventListener('DOMContentLoaded', () => ClinicalAudit.init());</script>
+</body>
+</html>

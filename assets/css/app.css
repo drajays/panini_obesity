@@ -182,6 +182,34 @@ html, body {
   flex-shrink: 0;
 }
 
+.topbar-patient {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px 4px 10px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.topbar-patient input {
+  width: 118px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+  letter-spacing: .06em;
+  color: var(--ink);
+  outline: none;
+}
+
+.topbar-patient .btn-sm {
+  padding: 5px 10px;
+  font-size: 11px;
+  min-width: 0;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

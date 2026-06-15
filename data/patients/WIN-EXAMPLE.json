@@ -1,0 +1,30 @@
+{
+  "patientId": "WIN-EXAMPLE",
+  "schemaVersion": 1,
+  "updatedAt": "2026-01-15T10:00:00.000Z",
+  "activeVisitMonth": 0,
+  "visits": {
+    "0": {
+      "core": {
+        "date": "2026-01-15",
+        "weight": "98",
+        "waist": "102",
+        "bp": "132/84",
+        "dose": "0.25 mg semaglutide weekly",
+        "dietScore": "7",
+        "exerciseScore": "5"
+      },
+      "fields": {
+        "habitReadiness": "8",
+        "proteinTarget": "95"
+      }
+    }
+  },
+  "program": {
+    "startdate": "2026-01-15",
+    "enddate": "2029-01-15",
+    "med": "Semaglutide",
+    "tableInputs": ["98", "35.4", "", "102", "", ""],
+    "checks": []
+  }
+}

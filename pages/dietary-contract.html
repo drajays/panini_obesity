@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Obesity Dietary Contract — Panini Weight Management</title>
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-soft: #dff7f3;
+      --accent: #f59e0b;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --bg: #f8fafc;
+      --card: #ffffff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #effcf9 0%, #f8fafc 100%);
+      color: var(--text);
+    }
+    .save-bar {
+      position: sticky; top: 0; z-index: 40;
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+      padding: 10px 16px; background: var(--primary); color: #fff; font-size: 11px;
+    }
+    .save-bar .pid-row { display: flex; gap: 4px; align-items: center; }
+    .save-bar input {
+      width: 110px; border: none; border-radius: 6px; padding: 5px 8px;
+      font-size: 11px; font-weight: 700; font-family: ui-monospace, monospace;
+    }
+    .save-bar button {
+      border: 1px solid rgba(255,255,255,.5); background: rgba(255,255,255,.15);
+      color: #fff; border-radius: 6px; padding: 5px 10px; font-size: 10px; font-weight: 600; cursor: pointer;
+    }
+    .container { max-width: 1200px; margin: 16px auto; padding: 16px; }
+    .app-title {
+      background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+      padding: 20px; box-shadow: 0 10px 30px rgba(15, 118, 110, 0.08); margin-bottom: 18px;
+    }
+    .app-title h1 { margin: 0 0 8px; color: var(--primary); font-size: 28px; }
+    .app-title p { margin: 0; color: var(--muted); line-height: 1.5; }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+      padding: 18px; margin-bottom: 18px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    }
+    .card h2 { margin-top: 0; color: var(--primary); font-size: 22px; }
+    .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    label { display: block; font-weight: 700; margin-bottom: 6px; font-size: 14px; }
+    input, textarea, select {
+      width: 100%; border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 12px; font-size: 14px; color: var(--text); background: #fff;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(15,118,110,.12); }
+    textarea { min-height: 92px; resize: vertical; line-height: 1.45; }
+    .full { grid-column: 1 / -1; }
+    .agreement-box {
+      background: var(--primary-soft); border: 1px dashed var(--primary);
+      border-radius: 14px; padding: 16px; line-height: 1.6;
+    }
+    .checklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+    .check-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border: 1px solid var(--border); border-radius: 10px; background: #fff; cursor: pointer;
+    }
+    .check-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; accent-color: var(--primary); }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .actions button { border: none; border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-secondary { background: #e5e7eb; color: #111827; }
+    .btn-accent { background: var(--accent); color: white; }
+    .tracker-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .month-card { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: #fff; }
+    .month-header { background: var(--primary); color: white; padding: 14px 16px; font-size: 20px; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px 10px; text-align: left; vertical-align: middle; font-size: 13px; }
+    th { background: #f9fafb; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; color: #374151; }
+    td.center { text-align: center; }
+    .tickbox { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; }
+    .tick-remark { border: none; border-bottom: 1px solid #e5e7eb; border-radius: 0; padding: 4px 2px; font-size: 12px; background: transparent; }
+    .signature-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px; margin-top: 18px; }
+    .sign-line { border-top: 2px solid #111827; padding-top: 8px; margin-top: 48px; font-size: 14px; font-weight: 700; }
+    .footer-note, .inline-note { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+    @media (max-width: 900px) {
+      .grid, .grid-2, .tracker-wrap, .signature-grid, .checklist { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: white; }
+      .save-bar, .actions { display: none !important; }
+      .card, .app-title, .month-card { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="save-bar no-print">
+  <span id="contractSaveStatus">Auto-save on</span>
+  <div class="pid-row">
+    <input type="text" id="contractPatientId" placeholder="WIN-XXXXXX" spellcheck="false" aria-label="Patient ID">
+    <button type="button" id="contractPatientLoad">Load</button>
+    <button type="button" id="contractPatientGen" title="Generate ID">+</button>
+  </div>
+</div>
+
+<form id="contractForm" autocomplete="on">
+<div class="container">
+  <section class="app-title">
+    <h1>Obesity Dietary Contract</h1>
+    <p>2-month patient–dietician agreement with daily compliance tick tracking. Fill online, auto-saves by Patient ID.</p>
+  </section>
+
+  <section class="card">
+    <h2>1. Patient and Dietician Details</h2>
+    <div class="grid">
+      <div>
+        <label for="patientName">Patient Name</label>
+        <input id="patientName" type="text" data-panini="name" placeholder="Enter patient name" />
+      </div>
+      <div>
+        <label for="patientAge">Age</label>
+        <input id="patientAge" type="number" data-panini="age" placeholder="Enter age" />
+      </div>
+      <div>
+        <label for="patientGender">Gender</label>
+        <input id="patientGender" type="text" data-panini="sex" placeholder="Enter gender" />
+      </div>
+      <div>
+        <label for="patientPhone">Phone / Contact (optional)</label>
+        <input id="patientPhone" type="text" placeholder="Optional — not stored in ID export" />
+      </div>
+      <div>
+        <label for="currentWeight">Current Weight (kg)</label>
+        <input id="currentWeight" type="number" step="0.1" data-panini="weight" placeholder="e.g. 92" />
+      </div>
+      <div>
+        <label for="targetWeight">Target Weight (kg)</label>
+        <input id="targetWeight" type="number" step="0.1" placeholder="e.g. 85" />
+      </div>
+      <div>
+        <label for="dieticianName">Dietician Name</label>
+        <input id="dieticianName" type="text" data-panini="clinician" placeholder="Enter dietician name" />
+      </div>
+      <div>
+        <label for="startDate">Contract Start Date</label>
+        <input id="startDate" type="date" />
+        <div class="inline-note">Two month-wise trackers are generated from this date.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2. Jointly Agreed Obesity Diet Plan</h2>
+    <div class="agreement-box">
+      <strong>Agreement Statement:</strong>
+      The patient and dietician jointly agree to follow the below obesity-management dietary contract for the next two months. The patient agrees to follow the advised meal pattern, hydration, activity, and behavior changes to support healthy weight reduction.
+    </div>
+    <div class="checklist">
+      <label class="check-item"><input type="checkbox" name="goal_portion" checked /> Controlled portion sizes</label>
+      <label class="check-item"><input type="checkbox" name="goal_nosugar" checked /> No sugary drinks / soft drinks</label>
+      <label class="check-item"><input type="checkbox" name="goal_nofried" checked /> Avoid fried and junk foods</label>
+      <label class="check-item"><input type="checkbox" name="goal_fiber" checked /> High-fiber vegetables daily</label>
+      <label class="check-item"><input type="checkbox" name="goal_protein" checked /> Adequate protein in meals</label>
+      <label class="check-item"><input type="checkbox" name="goal_water" checked /> 2-3 liters water daily</label>
+      <label class="check-item"><input type="checkbox" name="goal_activity" checked /> Regular physical activity / walking</label>
+      <label class="check-item"><input type="checkbox" name="goal_routine" checked /> Fixed meal timing and sleep routine</label>
+    </div>
+    <div class="grid-2" style="margin-top: 14px;">
+      <div>
+        <label for="mealAdvice">Diet Advice / Meal Pattern</label>
+        <textarea id="mealAdvice">Breakfast: high-protein, low-sugar meal.
+Lunch: controlled portion with salad, dal/protein, vegetables.
+Dinner: light meal before 8 PM.
+Snacks: fruit, sprouts, buttermilk, nuts in moderation.</textarea>
+      </div>
+      <div>
+        <label for="behaviorGoals">Activity and Behavior Goals</label>
+        <textarea id="behaviorGoals">Walk at least 30-45 minutes daily.
+Avoid late-night eating.
+Monitor weekly weight.
+Reduce outside food.
+Maintain food discipline even on weekends.</textarea>
+      </div>
+    </div>
+    <div style="margin-top: 14px;">
+      <label for="specialNotes">Special Notes / Medical Notes</label>
+      <textarea id="specialNotes" placeholder="Add diabetes, thyroid, hypertension, allergies, medications, or special instructions if required."></textarea>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>3. Generate 2-Month Daily Tick Tracker</h2>
+    <div class="actions">
+      <button type="button" class="btn-primary" onclick="generateTracker()">Generate 2-Month Tracker</button>
+      <button type="button" class="btn-secondary" onclick="window.print()">Print / Save as PDF</button>
+      <button type="button" class="btn-accent" onclick="markAll(false)">Clear All Ticks</button>
+    </div>
+    <div class="footer-note">Each date gets a daily compliance tick box. Data auto-saves as you fill.</div>
+  </section>
+
+  <section class="card">
+    <h2>4. Month-wise Daily Compliance</h2>
+    <div id="tracker" class="tracker-wrap"></div>
+  </section>
+
+  <section class="card">
+    <h2>5. Signatures and Commitment</h2>
+    <p style="line-height: 1.6; margin-top: 0;">
+      We confirm that the above obesity dietary plan has been discussed and mutually agreed upon.
+      The patient understands the importance of daily adherence and will tick the days when the plan has been followed.
+    </p>
+    <div class="grid-2">
+      <div>
+        <label for="patientCommitment">Patient Commitment</label>
+        <textarea id="patientCommitment">I agree to follow the diet plan honestly for the next 2 months and maintain daily compliance by ticking each completed day.</textarea>
+      </div>
+      <div>
+        <label for="dieticianCommitment">Dietician Commitment</label>
+        <textarea id="dieticianCommitment">I agree to guide, review, and support the patient throughout this 2-month dietary contract.</textarea>
+      </div>
+    </div>
+    <div class="signature-grid">
+      <div><div class="sign-line">Patient Signature</div></div>
+      <div><div class="sign-line">Dietician Signature</div></div>
+    </div>
+    <div class="grid-2" style="margin-top: 18px;">
+      <div>
+        <label for="signDate">Date</label>
+        <input id="signDate" type="date" />
+      </div>
+      <div>
+        <label for="reviewDate">Review Date</label>
+        <input id="reviewDate" type="date" />
+      </div>
+    </div>
+  </section>
+</div>
+</form>
+
+<script src="../assets/js/patient-store.js"></script>
+<script src="../assets/js/patient-sync.js"></script>
+<script src="../assets/js/dietary-contract.js"></script>
+<script src="../assets/js/module-print.js"></script>
+<script>window.addEventListener('DOMContentLoaded', () => DietaryContract.init());</script>
+</body>
+</html>

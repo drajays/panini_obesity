@@ -33,11 +33,11 @@
     {
       id: 'psych',
       title: 'Psych & Behavioral Readiness',
-      subtitle: 'PHQ-9, GAD-7, binge eating & sleep screen',
+      subtitle: 'PHQ-9, GAD-7, binge eating & sleep screen — fillable offline',
       icon: '🧠',
       path: 'pages/psych.html',
       step: 'Step 2 — Pre-Treatment',
-      desc: 'Screening for mood, anxiety, binge eating, stress, sleep, and GLP-1 journey readiness.',
+      desc: 'Interactive screening for mood, anxiety, binge eating, stress, sleep, and GLP-1 journey readiness. Auto-saves locally — works online and offline.',
     },
     {
       id: 'dietary',
@@ -49,6 +49,15 @@
       desc: 'Interactive nutrition intake with meal-by-meal recall, FFQ, and behavioral eating factors.',
     },
     {
+      id: 'dietary-contract',
+      title: 'Obesity Dietary Contract',
+      subtitle: '2-month agreement & daily compliance tracker',
+      icon: '📝',
+      path: 'pages/dietary-contract.html',
+      step: 'Step 3 — Multidisciplinary',
+      desc: 'Patient–dietician 2-month dietary contract with agreed goals, meal plan, and month-wise daily tick-mark compliance tracking.',
+    },
+    {
       id: 'exercise',
       title: 'Physical Activity Assessment',
       subtitle: 'EVS, Godin, DASI bedside questionnaire',
@@ -56,6 +65,24 @@
       path: 'pages/exercise.html',
       step: 'Step 3 — Multidisciplinary',
       desc: 'Baseline exercise documentation with EVS, Godin–Shephard, and DASI functional scoring.',
+    },
+    {
+      id: 'yoga',
+      title: 'Yoga & Asana Practice',
+      subtitle: 'PranaDaily — 150 practices, studio player & journey',
+      icon: '🧘',
+      path: 'yoga/index.html',
+      step: 'Step 3 — Multidisciplinary',
+      desc: 'Generate daily yoga routines from 150 authentic practices, run guided practice sessions with timer, and track streaks — works offline.',
+    },
+    {
+      id: 'audit',
+      title: 'Clinical Input Audit',
+      subtitle: 'OCI compliance simulator & 36-month trajectory projection',
+      icon: '📊',
+      path: 'pages/audit.html',
+      step: 'Step 3 — Multidisciplinary',
+      desc: 'Model protein, exercise, medication, and follow-up adherence into an Overall Compliance Index with projected weight trajectory and metabolic prescription.',
     },
     {
       id: 'winner',
@@ -156,7 +183,44 @@
           '*'
         );
       }
+      const id = window.PatientStore ? PatientStore.getActiveId() : null;
+      if (id && iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'panini-set-patient-id', id }, '*');
+      }
     } catch (_) {}
+  }
+
+  function syncGlobalPatientIdInput() {
+    const input = document.getElementById('globalPatientId');
+    if (!input || !window.PatientStore) return;
+    const id = PatientStore.getActiveId();
+    if (id) input.value = id;
+  }
+
+  async function loadGlobalPatientId() {
+    const input = document.getElementById('globalPatientId');
+    if (!input || !window.PatientStore) return;
+    const id = PatientStore.normalizeId(input.value);
+    if (!PatientStore.isValidId(id)) {
+      input.focus();
+      return;
+    }
+    PatientStore.setActiveId(id);
+    input.value = id;
+    if (state.current) {
+      const iframe = document.getElementById('frame-' + state.current);
+      if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'panini-set-patient-id', id }, '*');
+      }
+    }
+  }
+
+  function generateGlobalPatientId() {
+    if (!window.PatientStore) return;
+    const id = PatientStore.generateId();
+    PatientStore.setActiveId(id);
+    const input = document.getElementById('globalPatientId');
+    if (input) input.value = id;
   }
 
   function loadIframe(id) {
@@ -253,6 +317,13 @@
   els.overlay.addEventListener('click', closeSidebar);
 
   window.addEventListener('hashchange', initFromHash);
+  window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'panini-patient-id-changed' && e.data.id) {
+      const input = document.getElementById('globalPatientId');
+      if (input) input.value = e.data.id;
+      if (window.PatientStore) PatientStore.setActiveId(e.data.id, true);
+    }
+  });
   window.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'p' && state.current) {
       e.preventDefault();
@@ -262,5 +333,16 @@
 
   buildNav();
   buildGrid();
+  syncGlobalPatientIdInput();
+  const globalLoad = document.getElementById('globalPatientLoad');
+  const globalGen = document.getElementById('globalPatientGen');
+  const globalInput = document.getElementById('globalPatientId');
+  if (globalLoad) globalLoad.addEventListener('click', loadGlobalPatientId);
+  if (globalGen) globalGen.addEventListener('click', generateGlobalPatientId);
+  if (globalInput) {
+    globalInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') loadGlobalPatientId();
+    });
+  }
   initFromHash();
 })();

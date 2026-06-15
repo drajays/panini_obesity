@@ -486,6 +486,68 @@
   .clinician-insight { background: var(--amber-light); border-left: 4px solid var(--amber); }
   .clinician-insight strong { color: #b45309; }
 
+  .patient-id-bar {
+    margin: 0;
+    padding: 16px 30px;
+    background: linear-gradient(135deg, #1e3a5f, #0f766e);
+    color: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .patient-id-bar .pid-field { flex: 1 1 180px; min-width: 140px; }
+  .patient-id-bar label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    opacity: .85;
+    margin-bottom: 4px;
+  }
+  .patient-id-bar input {
+    width: 100%;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    font-family: ui-monospace, monospace;
+    color: #0f172a;
+  }
+  .patient-id-bar .pid-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .patient-id-bar .pid-btn {
+    padding: 9px 14px;
+    border: 1px solid rgba(255,255,255,.45);
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .patient-id-bar .pid-btn:hover { background: rgba(255,255,255,.25); }
+  .patient-id-bar .pid-btn.solid { background: #fff; color: #0f766e; border-color: #fff; }
+  .patient-id-bar .pid-note {
+    flex: 1 1 100%;
+    font-size: 11px;
+    opacity: .88;
+    margin: 0;
+    line-height: 1.45;
+  }
+  .patient-id-bar .pid-status {
+    font-size: 11px;
+    padding: 6px 10px;
+    background: rgba(255,255,255,.15);
+    border-radius: 6px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+  }
+  .print-only-local { font-size: 10px; color: var(--slate); font-weight: 400; }
+  body.in-iframe .patient-id-bar { display: none; }
   .visit-pill.done { border-color: var(--green); }
   .visit-done-dot {
     display: inline-block;
@@ -619,6 +681,21 @@
 
 <div class="page">
 
+  <!-- ============ ANONYMOUS PATIENT ID ============ -->
+  <div class="patient-id-bar" id="patientIdBar">
+    <div class="pid-field">
+      <label for="patientUniqueId">Patient Unique ID (no name stored)</label>
+      <input type="text" id="patientUniqueId" placeholder="WIN-K4M8P2" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="pid-actions">
+      <button type="button" class="pid-btn" onclick="winnerGenerateId()">Generate ID</button>
+      <button type="button" class="pid-btn solid" onclick="winnerLoadPatient()">Load &amp; Auto-fill</button>
+      <button type="button" class="pid-btn" onclick="PatientStore.exportForGithub()">Export for GitHub</button>
+    </div>
+    <span class="pid-status" id="patientIdStatus">Enter ID to start — data saved by ID only</span>
+    <p class="pid-note">No names or phone numbers are stored. Commit exported JSON files to <code>data/patients/</code> on GitHub — next Load will auto-fill from the repo.</p>
+  </div>
+
   <!-- ============ HERO ============ -->
   <div class="hero">
     <div class="ribbon">🏆</div>
@@ -638,8 +715,8 @@
 
     <div class="grid cols-2">
       <div class="field">
-        <label class="fld" for="pname">Patient Name</label>
-        <input type="text" id="pname" name="pname" placeholder="Full name">
+        <label class="fld" for="pname">Patient Name <span class="print-only-local">(print only — never saved)</span></label>
+        <input type="text" id="pname" name="pname" placeholder="For printed forms only" data-no-store="1">
       </div>
       <div class="field">
         <label class="fld" for="startdate">Start Date</label>
@@ -656,8 +733,8 @@
     </div>
 
     <div class="field" style="margin-top:14px;">
-      <label class="fld" for="why">Primary "Why" (Motivation)</label>
-      <textarea id="why" name="why" rows="2" placeholder="What is your deepest reason for embarking on this journey?"></textarea>
+      <label class="fld" for="why">Primary "Why" (Motivation) <span class="print-only-local">(print only — never saved)</span></label>
+      <textarea id="why" name="why" rows="2" placeholder="For printed forms only — not stored in data files" data-no-store="1"></textarea>
     </div>
   </div>
 
@@ -866,75 +943,105 @@
 </div>
 </form>
 
+<script src="../assets/js/patient-store.js"></script>
 <script src="../assets/js/journey-visits-data.js"></script>
 <script src="../assets/js/journey-visits.js"></script>
 <script>
-  /* ---- Auto-save milestones & profile (visits saved separately by JourneyVisits) ---- */
-  const KEY = 'obesityWinnerForm_v2';
-  let saveTimer = null;
-
-  function collectFormData(){
+  function collectWinnerProgram() {
     const form = document.getElementById('theForm');
-    const data = { version: 2, fields: {}, checks: [], tableInputs: [], sig: [] };
+    const program = { fields: {}, checks: [], tableInputs: [] };
 
     form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"], textarea').forEach(el => {
-      if (el.closest('#visitFormContainer') || el.closest('#journeyProgressPanel') || el.dataset.table) return;
+      if (el.closest('#visitFormContainer') || el.closest('#journeyProgressPanel') || el.closest('#patientIdBar')) return;
+      if (el.dataset.noStore || el.dataset.table) return;
       const id = el.id || el.name;
-      if (id) data.fields[id] = el.value;
+      if (id && ['startdate', 'enddate', 'med'].includes(id)) program.fields[id] = el.value;
     });
 
     form.querySelectorAll('input[type="checkbox"]').forEach(el => {
       if (el.closest('#visitFormContainer')) return;
-      data.checks.push(el.checked);
+      program.checks.push(el.checked);
     });
 
     form.querySelectorAll('input[data-table="metrics"]').forEach(el => {
-      data.tableInputs.push(el.value);
+      program.tableInputs.push(el.value);
     });
 
-    form.querySelectorAll('.sig-line').forEach(el => {
-      data.sig.push(el.innerHTML);
-    });
-
-    return data;
+    program.startdate = program.fields.startdate || document.getElementById('startdate')?.value || '';
+    program.enddate = program.fields.enddate || document.getElementById('enddate')?.value || '';
+    program.med = program.fields.med || document.getElementById('med')?.value || '';
+    return program;
   }
 
-  function autoSave(){
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(()=>{
-      try { localStorage.setItem(KEY, JSON.stringify(collectFormData())); } catch(e){}
-    }, 800);
-  }
-
-  function restoreForm(data){
+  function restoreWinnerProgram(program) {
+    if (!program) return;
     const form = document.getElementById('theForm');
-
-    Object.keys(data.fields || {}).forEach(id => {
-      const el = document.getElementById(id) || form.querySelector(`[name="${id}"]`);
-      if (el) el.value = data.fields[id];
+    ['startdate', 'enddate', 'med'].forEach(id => {
+      const el = document.getElementById(id);
+      const val = program[id] || program.fields?.[id];
+      if (el && val) el.value = val;
     });
-
     const checks = form.querySelectorAll('input[type="checkbox"]');
-    let checkIdx = 0;
+    let i = 0;
     checks.forEach(el => {
       if (el.closest('#visitFormContainer')) return;
-      if (data.checks && data.checks[checkIdx] !== undefined) el.checked = data.checks[checkIdx];
-      checkIdx++;
+      if (program.checks && program.checks[i] !== undefined) el.checked = program.checks[i];
+      i++;
     });
-
     const mInputs = form.querySelectorAll('input[data-table="metrics"]');
-    (data.tableInputs || []).forEach((val, i) => { if (mInputs[i]) mInputs[i].value = val; });
-
-    const sigs = form.querySelectorAll('.sig-line');
-    (data.sig || []).forEach((val, i) => { if (sigs[i]) sigs[i].innerHTML = val; });
+    (program.tableInputs || []).forEach((val, idx) => { if (mInputs[idx]) mInputs[idx].value = val; });
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
+  function winnerGenerateId() {
+    const id = PatientStore.generateId();
+    document.getElementById('patientUniqueId').value = id;
+    PatientStore.setActiveId(id);
+    document.getElementById('patientIdStatus').textContent = 'Generated ' + id + ' — click Load & Auto-fill';
+  }
+
+  async function winnerLoadPatient() {
+    const input = document.getElementById('patientUniqueId');
+    const status = document.getElementById('patientIdStatus');
+    const id = PatientStore.normalizeId(input.value);
+    if (!PatientStore.isValidId(id)) {
+      status.textContent = 'Invalid ID. Use WIN-XXXXXX format.';
+      return;
+    }
+    status.textContent = 'Loading…';
+    const result = await PatientStore.loadAndApply(id);
+    if (!result.ok) {
+      status.textContent = result.error || 'Load failed';
+      return;
+    }
+    const src = result.fromGithub ? 'GitHub + local' : (result.record ? 'local browser' : 'new patient');
+    status.textContent = 'Loaded ' + id + ' (' + src + ') · auto-fill ready';
+    input.value = id;
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: 'panini-patient-id-changed', id }, '*');
+    }
+  }
+
+  function autoSave() {
+    if (PatientStore.getActiveId()) PatientStore.persistAll();
+  }
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (window.parent !== window) document.body.classList.add('in-iframe');
     if (window.JourneyVisits) JourneyVisits.init();
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) restoreForm(JSON.parse(raw));
-    } catch(e){}
+    const savedId = PatientStore.getActiveId();
+    if (savedId) {
+      document.getElementById('patientUniqueId').value = savedId;
+      await winnerLoadPatient();
+    }
+    document.getElementById('patientUniqueId').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') winnerLoadPatient();
+    });
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.type === 'panini-set-patient-id' && e.data.id) {
+        document.getElementById('patientUniqueId').value = e.data.id;
+        winnerLoadPatient();
+      }
+    });
   });
 </script>
 <script src="../assets/js/module-print.js"></script>

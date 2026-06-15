@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PranaDaily Yoga — Panini Weight Management</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            emerald: { 500: '#10b981', 600: '#059669' },
+            cyan: { 500: '#06b6d4' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Custom Style -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-slate-900 text-slate-100 antialiased selection:bg-emerald-500 selection:text-white">
+
+  <div class="app-container">
+    
+    <!-- ========================================== -->
+    <!-- 1. SIDEBAR / NAVIGATION                    -->
+    <!-- ========================================== -->
+    <aside class="app-sidebar">
+      
+      <!-- App Logo -->
+      <div class="logo-container">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a7 7 0 0 0-7 7c0 2 1 3.5 2.5 5-1.5 1.5-2.5 3-2.5 5a7 7 0 0 0 14 0c0-2-1-3.5-2.5-5 1.5-1.5 2.5-3 2.5-5a7 7 0 0 0-7-7Z"/><path d="M12 10v4"/></svg>
+        </div>
+        <div class="logo-text">PranaDaily</div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-menu">
+        <a class="nav-item active" data-tab="generator">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          <span>Daily Generator</span>
+        </a>
+        <a class="nav-item" data-tab="studio">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          <span>Practice Studio</span>
+        </a>
+        <a class="nav-item" data-tab="library">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 2v20"/></svg>
+          <span>Yoga Library</span>
+        </a>
+        <a class="nav-item" data-tab="favorites">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>My Favorites</span>
+        </a>
+        <a class="nav-item" data-tab="journey">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
+          <span>My Journey</span>
+        </a>
+      </nav>
+
+      <!-- Relaxing Ambient Audio Synthesizer Widget -->
+      <div class="audio-widget">
+        <div class="audio-header">
+          <span>Ambient Relaxing Sound</span>
+          <div class="sound-waves">
+            <div class="sound-wave"></div>
+            <div class="sound-wave"></div>
+            <div class="sound-wave"></div>
+            <div class="sound-wave"></div>
+          </div>
+        </div>
+        <div class="audio-controls">
+          <button class="btn-audio-play" id="btnAudioToggle" title="Play / Pause Ambient">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+          </button>
+          <select class="audio-select" id="ambientSoundSelect">
+            <option value="singing_bowl">Tibetan Singing Bowl</option>
+            <option value="binaural_om">Anahata Om Drone (136Hz)</option>
+            <option value="gentle_rain">Pink Noise Rain & Wind</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="p-4 text-xs text-slate-500 border-t border-slate-800 text-center">
+        Panini Weight Management · PranaDaily Yoga
+      </div>
+
+    </aside>
+
+    <!-- Mobile Header / Top Bar -->
+    <div class="mobile-topbar">
+      <div class="flex items-center gap-2">
+        <div class="logo-icon" style="width: 32px; height: 32px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a7 7 0 0 0-7 7c0 2 1 3.5 2.5 5-1.5 1.5-2.5 3-2.5 5a7 7 0 0 0 14 0c0-2-1-3.5-2.5-5 1.5-1.5 2.5-3 2.5-5a7 7 0 0 0-7-7Z"/></svg>
+        </div>
+        <span class="logo-text" style="font-size: 1.25rem;">PranaDaily</span>
+      </div>
+      <button class="btn-mobile-menu" id="btnMobileMenu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. MAIN APPLICATION CONTENT AREA          -->
+    <!-- ========================================== -->
+    <main class="app-main">
+      
+      <!-- ---------------------------------------- -->
+      <!-- TAB 1: DAILY ROUTINE GENERATOR           -->
+      <!-- ---------------------------------------- -->
+      <section class="tab-pane active" id="tab-generator">
+        
+        <div class="page-header">
+          <h1 class="page-title">Awaken Your Daily Prana</h1>
+          <p class="page-subtitle">Randomly generate a balanced daily yoga session from 150 authentic practices, or select specific categories to create your daily routine.</p>
+        </div>
+
+        <!-- 1. Recommended Presets -->
+        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-emerald-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Recommended Daily Presets
+        </h3>
+        <div class="preset-grid">
+          
+          <div class="preset-card" data-preset="morning">
+            <div class="preset-icon">🌞</div>
+            <div>
+              <div class="preset-title">Morning Energizer</div>
+              <p class="preset-desc">Invigorating warmups, Surya Namaskar, and gentle opening asanas.</p>
+            </div>
+            <div class="preset-meta">
+              <span>8 Poses</span>
+              <span>~16 Mins</span>
+            </div>
+          </div>
+
+          <div class="preset-card" data-preset="evening">
+            <div class="preset-icon">🌙</div>
+            <div>
+              <div class="preset-title">Restorative Evening</div>
+              <p class="preset-desc">Soothing folds, cross-legged postures, and tranquilizing Pranayam.</p>
+            </div>
+            <div class="preset-meta">
+              <span>8 Poses</span>
+              <span>~16 Mins</span>
+            </div>
+          </div>
+
+          <div class="preset-card" data-preset="balance">
+            <div class="preset-icon">⚡</div>
+            <div>
+              <div class="preset-title">Full Body Balance</div>
+              <p class="preset-desc">Holistic harmony of physical strength, deep flexibility, and mudras.</p>
+            </div>
+            <div class="preset-meta">
+              <span>10 Poses</span>
+              <span>~20 Mins</span>
+            </div>
+          </div>
+
+          <div class="preset-card" data-preset="meditation">
+            <div class="preset-icon">🧘</div>
+            <div>
+              <div class="preset-title">Breath & Mind Focus</div>
+              <p class="preset-desc">Dedicated mindfulness session linking psychic mudras and meditation.</p>
+            </div>
+            <div class="preset-meta">
+              <span>8 Poses</span>
+              <span>~16 Mins</span>
+            </div>
+          </div>
+
+          <div class="preset-card" data-preset="power">
+            <div class="preset-icon">🔥</div>
+            <div>
+              <div class="preset-title">Advanced Power Yogi</div>
+              <p class="preset-desc">Vigorous athletic sequence with arm balances and intense wheel arches.</p>
+            </div>
+            <div class="preset-meta">
+              <span>11 Poses</span>
+              <span>~22 Mins</span>
+            </div>
+          </div>
+
+          <div class="preset-card" data-preset="surprise">
+            <div class="preset-icon">🎲</div>
+            <div>
+              <div class="preset-title">Pure Surprise Selection</div>
+              <p class="preset-desc">Let the universe randomly generate 7 surprise practices for you today.</p>
+            </div>
+            <div class="preset-meta">
+              <span>7 Poses</span>
+              <span>~14 Mins</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 2. Spotlight Daily Category Generator -->
+        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-cyan-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          Category Daily Spotlight Generator
+        </h3>
+        <div class="spotlight-builder">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h4 class="font-bold text-lg">Generate your daily session from a specific category</h4>
+              <p class="text-sm text-cyan-200 mt-1">Perfect when you want to focus exclusively on Asanas, Breath, or Mudras today.</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm font-semibold">Pick Count:</span>
+              <select id="spotlightCountSelect" class="bg-slate-900 border border-slate-700 rounded-xl px-4 py-2 font-bold text-emerald-400 outline-none">
+                <option value="1">1 Practice</option>
+                <option value="3" selected>3 Practices</option>
+                <option value="5">5 Practices</option>
+                <option value="7">7 Practices</option>
+              </select>
+              <button class="btn-primary py-2 px-5" id="btnGenerateSpotlight">
+                <span>🎲 Generate Daily Spotlight</span>
+              </button>
+            </div>
+          </div>
+          <!-- Clickable Category Grid -->
+          <div class="spotlight-grid" id="spotlightCategoryCards"></div>
+        </div>
+
+        <!-- 3. Custom Routine Sliders Builder -->
+        <div class="builder-panel">
+          <div class="builder-header">
+            <div>
+              <h2 class="builder-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 Z"/></svg>
+                Custom Routine Builder
+              </h2>
+              <p class="text-slate-400 text-sm mt-1">Choose exactly how many exercises you want from each of our 9 yoga categories.</p>
+            </div>
+            <button class="btn-primary" id="btnGenerateCustom">
+              <span>✨ Generate Custom Routine</span>
+            </button>
+          </div>
+          <div class="category-sliders" id="categorySlidersContainer"></div>
+        </div>
+
+        <!-- 4. Generated Daily Sequence List -->
+        <div class="sequence-container">
+          <div class="sequence-header">
+            <div>
+              <h2 class="font-bold text-2xl flex items-center gap-3">
+                <span>🧘 Your Active Daily Sequence</span>
+              </h2>
+              <p class="text-slate-400 text-sm mt-1">Review your generated session below. You can swap any pose, adjust times, or start practicing immediately.</p>
+            </div>
+            <div class="sequence-stats">
+              <div class="stat-item">
+                <span>Total:</span>
+                <span class="stat-value" id="routineTotalCount">0 exercises</span>
+              </div>
+              <div class="stat-item">
+                <span>Est. Duration:</span>
+                <span class="stat-value text-emerald-400" id="routineTotalTime">0 mins</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Routine Items Render Container -->
+          <div class="routine-list" id="generatedRoutineList"></div>
+
+          <!-- Sequence Footer Actions -->
+          <div class="flex flex-wrap items-center justify-between gap-4 mt-8 pt-6 border-t border-slate-800">
+            <button class="btn-secondary" id="btnSaveActiveRoutine">
+              <span>💾 Save Routine to Favorites</span>
+            </button>
+            <button class="btn-primary text-lg px-8 py-4 shadow-xl" id="btnStartStudio">
+              <span>🚀 Start Practice Session</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </button>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ---------------------------------------- -->
+      <!-- TAB 2: PRACTICE STUDIO PLAYER            -->
+      <!-- ---------------------------------------- -->
+      <section class="tab-pane" id="tab-studio">
+        
+        <div class="studio-container">
+          
+          <!-- Top Studio Nav -->
+          <div class="studio-top-nav">
+            <button class="btn-secondary btn-sm" onclick="window.pranaApp.switchTab('generator')">
+              <span>← Back to Generator</span>
+            </button>
+            <div class="studio-progress-text" id="studioProgressText">Practice 1 of 8</div>
+            <button class="btn-icon" id="btnStudioMuteToggle" title="Mute Timer Chimes" onclick="window.pranaApp.isStudioMuted = !window.pranaApp.isStudioMuted; this.classList.toggle('active');">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><line x1="23" x2="17" y1="9" y2="15"/><line x1="17" x2="23" y1="9" y2="15"/></svg>
+            </button>
+          </div>
+
+          <!-- Main Active Studio Pose Card -->
+          <div class="studio-main-card" id="mainStudioCard">
+            
+            <!-- Left Picture with Timer -->
+            <div class="studio-image-box">
+              <img id="studioMainImg" src="" class="studio-image" alt="Yoga Pose" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <!-- Offline Beautiful Fallback -->
+              <div class="no-image-fallback" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2a7 7 0 0 0-7 7c0 2 1 3.5 2.5 5-1.5 1.5-2.5 3-2.5 5a7 7 0 0 0 14 0c0-2-1-3.5-2.5-5 1.5-1.5 2.5-3 2.5-5a7 7 0 0 0-7-7Z"/></svg>
+                <div class="font-bold">Pose Visualization</div>
+                <div class="text-xs text-slate-400 mt-1">Focus your internal awareness</div>
+              </div>
+              
+              <!-- Timer Floating Overlay -->
+              <div class="studio-timer-overlay">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-sm font-bold text-white">Live Practice Guide</span>
+              </div>
+            </div>
+
+            <!-- Right Pose Controls & Guide -->
+            <div class="studio-info-box">
+              <div>
+                <span class="category-badge cat-simple mb-2" id="studioCatBadge">Category</span>
+                <h2 class="studio-pose-title" id="studioPoseTitle">Pose Title</h2>
+                <span class="studio-pose-sanskrit" id="studioPoseSanskrit">Sanskrit Title</span>
+                
+                <div class="studio-instructions">
+                  <h4>How to practice</h4>
+                  <p id="studioInstructionsText">Step-by-step guidance will appear here...</p>
+                </div>
+              </div>
+
+              <div>
+                <!-- Countdown Display -->
+                <div class="studio-timer-display">
+                  <div class="time-countdown" id="studioTimerDisplay">02:00</div>
+                  <div class="time-adjusters">
+                    <button class="btn-time-adj" data-delta="-30">-30s</button>
+                    <button class="btn-time-adj" data-delta="30">+30s</button>
+                    <button class="btn-time-adj" data-delta="60">+1m</button>
+                  </div>
+                </div>
+
+                <!-- Player Action Buttons -->
+                <div class="studio-controls">
+                  <button class="btn-studio-ctrl" id="btnStudioPrev" title="Previous Pose">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" x2="5" y1="19" y2="5" stroke-width="3"/></svg>
+                  </button>
+                  <button class="btn-studio-ctrl btn-studio-play" id="btnStudioPlayPause" title="Play / Pause">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  </button>
+                  <button class="btn-studio-ctrl" id="btnStudioNext" title="Skip / Next Pose">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" x2="19" y1="5" y2="19" stroke-width="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Up Next Footer Preview -->
+          <div class="studio-up-next" id="studioNextPreview">
+            <span class="next-label">Up Next:</span>
+            <span class="next-pose-name">Next Pose Preview</span>
+          </div>
+
+          <!-- Congratulations Successful Completion Screen -->
+          <div class="completion-screen" id="completionScreen" style="display: none;">
+            <div class="trophy-icon">🏆</div>
+            <h1 class="text-4xl font-extrabold text-white mb-2">Divine Harmony Achieved!</h1>
+            <p class="text-slate-300 text-lg">You have successfully completed your daily active yoga session and nurtured your vital Prana.</p>
+            
+            <div class="completion-stats">
+              <div>
+                <div class="text-3xl font-black text-emerald-400" id="summaryTotalMins">15</div>
+                <div class="text-xs text-slate-400 uppercase mt-1">Minutes Earned</div>
+              </div>
+              <div class="w-px bg-slate-700"></div>
+              <div>
+                <div class="text-3xl font-black text-cyan-400" id="summaryTotalPoses">8</div>
+                <div class="text-xs text-slate-400 uppercase mt-1">Practices Done</div>
+              </div>
+              <div class="w-px bg-slate-700"></div>
+              <div>
+                <div class="text-3xl font-black text-amber-400" id="summaryCurrentStreak">3</div>
+                <div class="text-xs text-slate-400 uppercase mt-1">Day Daily Streak</div>
+              </div>
+            </div>
+
+            <div class="flex justify-center gap-4 mt-6">
+              <button class="btn-secondary" onclick="window.pranaApp.switchTab('generator')">
+                <span>← Create New Routine</span>
+              </button>
+              <button class="btn-primary" onclick="window.pranaApp.switchTab('journey')">
+                <span>View My Progress 📊</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ---------------------------------------- -->
+      <!-- TAB 3: YOGA LIBRARY EXPLORER             -->
+      <!-- ---------------------------------------- -->
+      <section class="tab-pane" id="tab-library">
+        
+        <div class="page-header">
+          <h1 class="page-title">Yoga & Asana Encyclopedia</h1>
+          <p class="page-subtitle">Explore all 150 wonderful practices included from the prompt. Filter by specific category or search for benefits, Sanskrit names, or instructions.</p>
+        </div>
+
+        <div class="catalog-controls">
+          <!-- Search Box -->
+          <div class="search-box">
+            <input type="text" class="search-input" id="catalogSearchInput" placeholder="Search by name, Sanskrit, benefits (e.g. digestion, sleep, posture)...">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+
+          <!-- Category Buttons -->
+          <div class="filter-categories" id="catalogFilterCategories"></div>
+        </div>
+
+        <!-- Catalog Card Grid -->
+        <div class="catalog-grid" id="catalogGridContainer"></div>
+
+      </section>
+
+      <!-- ---------------------------------------- -->
+      <!-- TAB 4: MY FAVORITES & SAVED ROUTINES     -->
+      <!-- ---------------------------------------- -->
+      <section class="tab-pane" id="tab-favorites">
+        
+        <div class="page-header">
+          <h1 class="page-title">My Sacred Collection</h1>
+          <p class="page-subtitle">Instantly launch your saved favorite individual practices or custom-crafted daily yoga sequences.</p>
+        </div>
+
+        <!-- Saved Daily Routines -->
+        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-cyan-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h6"/></svg>
+          Saved Custom Daily Routines
+        </h3>
+        <div class="history-section mb-10">
+          <div class="history-list" id="savedRoutinesContainer"></div>
+        </div>
+
+        <!-- Favorited Poses Grid -->
+        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-amber-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Favorited Individual Practices
+        </h3>
+        <div class="catalog-grid" id="myFavoritesGrid"></div>
+
+      </section>
+
+      <!-- ---------------------------------------- -->
+      <!-- TAB 5: MY JOURNEY & STREAK               -->
+      <!-- ---------------------------------------- -->
+      <section class="tab-pane" id="tab-journey">
+        
+        <div class="page-header">
+          <h1 class="page-title">My Pranic Journey</h1>
+          <p class="page-subtitle">Track your physical and mindfulness milestones. Consistency is the master key to unlocking the true fruits of yoga.</p>
+        </div>
+
+        <!-- Dashboard Stat Cards -->
+        <div class="journey-dashboard">
+          
+          <div class="stat-card">
+            <div class="stat-icon-big">🔥</div>
+            <div class="stat-info">
+              <h5>Active Daily Streak</h5>
+              <h2 id="statCurrentStreak">0</h2>
+              <p class="text-xs text-emerald-400 font-bold mt-1">Days in a row practiced!</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-big" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);">🌊</div>
+            <div class="stat-info">
+              <h5>Total Minutes Earned</h5>
+              <h2 id="statTotalMinutes">0</h2>
+              <p class="text-xs text-cyan-400 font-bold mt-1">Mindful time invested</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-big" style="background: linear-gradient(135deg, #8b5cf6, #ec4899);">⭐</div>
+            <div class="stat-info">
+              <h5>Completed Sessions</h5>
+              <h2 id="statTotalSessions">0</h2>
+              <p class="text-xs text-purple-400 font-bold mt-1">Sacred routines done</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- History Log Section -->
+        <div class="history-section">
+          <div class="history-header">
+            <h3 class="text-xl font-bold flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Practice Log History
+            </h3>
+            <button class="btn-secondary btn-sm" onclick="if(confirm('Clear history log?')){ localStorage.removeItem('prana_history'); window.pranaApp.history=[]; window.pranaApp.renderJourneyStats(); }">
+              <span>Clear Log</span>
+            </button>
+          </div>
+          <div class="history-list" id="journeyHistoryList"></div>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODALS & TOASTS NOTIFICATIONS CONTAINERS   -->
+  <!-- ========================================== -->
+
+  <!-- Pose Detailed Guide Modal -->
+  <div class="modal-backdrop" id="poseDetailsModal">
+    <div class="pose-modal">
+      <button class="btn-modal-close" id="btnPoseModalClose" title="Close">✕</button>
+      
+      <img id="modalHeaderImg" src="" class="modal-header-img" alt="Yoga Pose Guide" onerror="this.style.display='none';">
+      
+      <div class="modal-content">
+        <div class="modal-tags-bar">
+          <span class="category-badge cat-simple" id="modalCatBadge">Category</span>
+        </div>
+
+        <h1 class="modal-title" id="modalPoseTitle">Pose Title</h1>
+        <span class="modal-sanskrit" id="modalPoseSanskrit">Sanskrit Title</span>
+
+        <!-- Step-by-Step Instructions -->
+        <div class="section-box">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Step-by-Step Execution Guide
+          </h3>
+          <p class="text-slate-200 text-base leading-relaxed" id="modalPoseDesc">Detailed explanation...</p>
+        </div>
+
+        <!-- Highlighted Benefits -->
+        <div class="section-box mt-4">
+          <h3>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+            Holistic Physiological Benefits
+          </h3>
+          <div class="benefits-grid mt-3" id="modalBenefitsGrid"></div>
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button class="btn-primary" onclick="window.pranaApp.closePoseModal();">
+            <span>Got it, let's practice! 🧘</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Toasts Notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application JS Bundle -->
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    if (window.parent !== window) {
+      document.documentElement.classList.add('panini-embedded');
+    }
+  </script>
+
+</body>
+</html>

@@ -3,56 +3,164 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Psychological & Behavioral Readiness Assessment</title>
+<title>Psychological &amp; Behavioral Readiness Assessment</title>
 <style>
-  *{box-sizing:border-box} body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#f4f7f6;color:#17252a} .page{max-width:1050px;margin:14px auto;background:#fff;padding:16px 20px;border:1px solid #d7e2df;border-radius:10px} h1{margin:0 0 4px;font-size:22px;color:#0b5d56} h2{font-size:14px;margin:9px 0 5px;color:#0b5d56;border-bottom:1px solid #d7e2df;padding-bottom:2px} h3{font-size:12.5px;margin:6px 0 3px;color:#123b38} p,li{font-size:11.2px;line-height:1.28;margin:3px 0}.subtitle{font-size:11.5px;color:#526966;margin-bottom:8px}.row{display:grid;grid-template-columns:1.4fr .7fr .45fr .8fr;gap:8px;margin-bottom:6px}.row label{font-size:10px;color:#526966;display:block;margin-bottom:2px}.row input{width:100%;border:none;border-bottom:1px solid #6e817f;font-size:11px;padding:4px 0;background:transparent;color:#17252a}.field{border-bottom:1px solid #6e817f;min-height:22px;font-size:11px;padding-top:6px;color:#526966} table{width:100%;border-collapse:collapse;margin:4px 0 6px} th,td{border:1px solid #d7e2df;padding:4px;font-size:10.7px;vertical-align:top} th{background:#e9f3f1;color:#123b38;text-align:left}.score{width:38px;text-align:center}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.check{display:grid;grid-template-columns:14px 1fr 42px;gap:4px;align-items:start;margin:2px 0;font-size:10.7px}.box{width:12px;height:12px;border:1px solid #444;display:inline-block}.note{background:#fff8e6;border-left:4px solid #f2b84b;padding:6px 8px;font-size:10.8px;margin-top:5px}.urgent{background:#fdecec;border-left:4px solid #d93025;padding:6px 8px;font-size:10.8px;margin-top:5px}.mini{font-size:10px;color:#526966}.blank{border-bottom:1px solid #6e817f;min-height:18px}.summary div{border:1px solid #d7e2df;padding:5px;min-height:38px;font-size:10.7px}.pb{page-break-before:always}.footer{font-size:9.5px;color:#526966;margin-top:6px}@media print{body{background:white}.page{margin:0;max-width:none;border:none;border-radius:0;padding:8mm} h1{font-size:20px} h2{font-size:13px;margin:7px 0 4px} p,li,th,td,.check,.note,.urgent,.summary div{font-size:9.8px}.pb{page-break-before:always}.no-break{break-inside:avoid}}
+  *{box-sizing:border-box}
+  body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#f4f7f6;color:#17252a}
+  .save-bar{
+    position:sticky;top:0;z-index:40;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
+    padding:10px 16px;background:#0b5d56;color:#fff;font-size:11px;
+  }
+  .save-bar .status{opacity:.95;flex:1 1 140px}
+  .save-bar .pid{opacity:.85;font-size:10px}
+  .mode-toggle{display:flex;gap:4px;background:rgba(255,255,255,.15);border-radius:8px;padding:3px}
+  .mode-btn{border:none;background:transparent;color:#fff;padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
+  .mode-btn.active{background:#fff;color:#0b5d56}
+  .pid-row{display:flex;gap:4px;align-items:center}
+  .pid-row input{width:110px;border:none;border-radius:6px;padding:5px 8px;font-size:11px;font-weight:700;font-family:ui-monospace,monospace}
+  .pid-row button{border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:#fff;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:600;cursor:pointer}
+  .pid-row button:hover{background:rgba(255,255,255,.3)}
+  .fill-hint{background:#e9f3f1;border:1px solid #b8d9d2;border-radius:8px;padding:8px 12px;font-size:11px;color:#0b5d56;margin-bottom:10px}
+  .page{max-width:1050px;margin:14px auto;background:#fff;padding:16px 20px;border:1px solid #d7e2df;border-radius:10px}
+  h1{margin:0 0 4px;font-size:22px;color:#0b5d56}
+  h2{font-size:14px;margin:9px 0 5px;color:#0b5d56;border-bottom:1px solid #d7e2df;padding-bottom:2px}
+  h3{font-size:12.5px;margin:6px 0 3px;color:#123b38}
+  p,li{font-size:11.2px;line-height:1.28;margin:3px 0}
+  .subtitle{font-size:11.5px;color:#526966;margin-bottom:8px}
+  .row{display:grid;grid-template-columns:1.4fr .7fr .45fr .8fr;gap:8px;margin-bottom:6px}
+  .row label{font-size:10px;color:#526966;display:block;margin-bottom:2px}
+  .row input{width:100%;border:1px solid #d7e2df;border-radius:6px;font-size:12px;padding:6px 8px;background:#fff;color:#17252a}
+  .row input:focus{outline:none;border-color:#0b5d56;box-shadow:0 0 0 2px rgba(11,93,86,.15)}
+  table{width:100%;border-collapse:collapse;margin:4px 0 6px}
+  th,td{border:1px solid #d7e2df;padding:6px 4px;font-size:10.7px;vertical-align:middle}
+  th{background:#e9f3f1;color:#123b38;text-align:left}
+  .score{width:42px;text-align:center;padding:4px 2px!important}
+  .score-btn{
+    display:flex;align-items:center;justify-content:center;position:relative;
+    width:36px;height:36px;margin:0 auto;border:2px solid #c5d5d2;border-radius:8px;
+    cursor:pointer;background:#fff;transition:all .15s;
+  }
+  .score-btn:hover{border-color:#0b5d56;background:#f0f9f8}
+  .score-btn.selected{background:#0b5d56;border-color:#0b5d56}
+  .score-btn.selected .score-num{color:#fff}
+  .score-btn input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+  .score-num{font-weight:700;font-size:13px;color:#17252a;pointer-events:none;line-height:1}
+  .total-row th,.total-row td{font-weight:700;background:#f0f7f5}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .check{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin:5px 0;font-size:11px;padding:6px 8px;background:#fafcfb;border:1px solid #e5eeec;border-radius:6px}
+  .check input{width:18px;height:18px;margin:0;accent-color:#0b5d56;cursor:pointer}
+  .check .yes-lbl{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#0b5d56;min-width:48px;justify-content:flex-end}
+  .check .yes-lbl input{width:18px;height:18px;margin:0}
+  .inline-radios{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:11px;margin:4px 0}
+  .inline-radios label{display:inline-flex;align-items:center;gap:5px;cursor:pointer;padding:5px 10px;border:1px solid #d7e2df;border-radius:6px;background:#fff}
+  .inline-radios label:has(input:checked){background:#e9f3f1;border-color:#0b5d56;font-weight:600}
+  .inline-radios input{accent-color:#0b5d56;width:16px;height:16px}
+  .note{background:#fff8e6;border-left:4px solid #f2b84b;padding:6px 8px;font-size:10.8px;margin-top:5px}
+  .urgent{background:#fdecec;border-left:4px solid #d93025;padding:6px 8px;font-size:10.8px;margin-top:5px;display:none}
+  .urgent.active{display:block}
+  .mini{font-size:10px;color:#526966}
+  .severity{font-size:10px;color:#0b5d56;font-weight:700;margin-top:2px}
+  textarea.text-inp, input.text-inp{
+    width:100%;border:1px solid #d7e2df;border-radius:6px;font-size:12px;padding:8px;
+    background:#fff;color:#17252a;font-family:inherit;resize:vertical;min-height:44px
+  }
+  textarea.text-inp:focus, input.text-inp:focus{outline:none;border-color:#0b5d56}
+  input.num-inp{width:52px;border:2px solid #d7e2df;border-radius:6px;text-align:center;font-size:13px;font-weight:700;padding:6px}
+  input.num-inp:focus{outline:none;border-color:#0b5d56}
+  .clinician-only{display:block}
+  body.mode-patient .clinician-only{display:none!important}
+  .summary div{border:1px solid #d7e2df;padding:5px;min-height:38px;font-size:10.7px}
+  .summary-action{margin-top:4px}
+  .pb{page-break-before:always}
+  .footer{font-size:9.5px;color:#526966;margin-top:6px}
+  @media(max-width:720px){.row{grid-template-columns:1fr 1fr}.grid2,.grid3{grid-template-columns:1fr}}
+  @media print{
+    body{background:white}
+    .save-bar{display:none!important}
+    .page{margin:0;max-width:none;border:none;border-radius:0;padding:8mm}
+    h1{font-size:20px} h2{font-size:13px;margin:7px 0 4px}
+    p,li,th,td,.check,.note,.urgent,.summary div{font-size:9.8px}
+    .pb{page-break-before:always}
+    .no-break{break-inside:avoid}
+    .urgent.active{display:block}
+  }
 </style>
 </head>
 <body>
+
+<div class="save-bar no-print">
+  <div class="mode-toggle">
+    <button type="button" class="mode-btn" id="modePatient">Patient fills</button>
+    <button type="button" class="mode-btn active" id="modeClinician">Clinician fills</button>
+  </div>
+  <div class="pid-row">
+    <input type="text" id="psychPatientId" placeholder="WIN-XXXXXX" spellcheck="false" aria-label="Patient ID">
+    <button type="button" id="psychPatientLoad">Load</button>
+    <button type="button" id="psychPatientGen" title="Generate ID">+</button>
+  </div>
+  <span class="status" id="psychSaveStatus">Tap scores &amp; checkboxes to fill · auto-saves</span>
+  <span class="pid" id="psychPatientIdLabel"></span>
+</div>
+
+<form id="psychForm" autocomplete="on">
 <div class="page">
   <h1>Psychological &amp; Behavioral Readiness Assessment</h1>
   <div class="subtitle">For patients starting chronic weight management with nutrition, activity and GLP‑1/GIP or GLP‑1 therapy. Chronic weight management relies heavily on behavioral adaptation. Identifying untreated psychological barriers early is critical. Screening tool only — not a diagnosis.</div>
   <div class="row">
-    <div><label>Name</label><input type="text" data-panini="name"></div>
-    <div><label>Date</label><input type="text" data-panini="assessmentDate"></div>
-    <div><label>Age</label><input type="text" data-panini="age"></div>
-    <div><label>Clinician</label><input type="text" data-panini="clinician"></div>
+    <div><label>Name</label><input type="text" data-panini="name" placeholder="Patient name"></div>
+    <div><label>Date</label><input type="text" data-panini="assessmentDate" placeholder="DD/MM/YYYY"></div>
+    <div><label>Age</label><input type="text" data-panini="age" placeholder="Years"></div>
+    <div class="clinician-only"><label>Clinician</label><input type="text" data-panini="clinician" placeholder="Assessor name"></div>
   </div>
+
+  <div class="fill-hint no-print"><strong>How to fill:</strong> Tap a number (0–3) in each PHQ-9 / GAD-7 row · check <strong>Yes</strong> boxes · type in text fields. Everything saves automatically.</div>
 
   <h2>1) Mood &amp; Anxiety Screening — PHQ‑9 and GAD‑7 baseline</h2>
   <p><b>Score each:</b> 0=Not at all, 1=Several days, 2=More than half the days, 3=Nearly every day. Use to document baseline mental health stability and decide if added support/referral is needed.</p>
   <div class="grid2 no-break">
     <div>
       <h3>PHQ‑9 Depression Screen — past 2 weeks</h3>
-      <table><tr><th>Item</th><th class="score">0</th><th class="score">1</th><th class="score">2</th><th class="score">3</th></tr>
-        <tr><td>1. Little interest or pleasure in doing things</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>2. Feeling down, depressed or hopeless</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>3. Sleep trouble or sleeping too much</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>4. Feeling tired or having little energy</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>5. Poor appetite or overeating</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>6. Feeling bad about yourself / failure</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>7. Trouble concentrating</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>8. Moving/speaking slowly or being fidgety/restless</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>9. Thoughts you would be better off dead or self-harm</td><td></td><td></td><td></td><td></td></tr>
-        <tr><th>Total PHQ‑9</th><td colspan="4"></td></tr>
+      <table>
+        <tr><th>Item</th><th class="score">0</th><th class="score">1</th><th class="score">2</th><th class="score">3</th></tr>
+        <tr><td>1. Little interest or pleasure in doing things</td><td class="score"><label><input type="radio" name="phq1" value="0"></label></td><td class="score"><label><input type="radio" name="phq1" value="1"></label></td><td class="score"><label><input type="radio" name="phq1" value="2"></label></td><td class="score"><label><input type="radio" name="phq1" value="3"></label></td></tr>
+        <tr><td>2. Feeling down, depressed or hopeless</td><td class="score"><label><input type="radio" name="phq2" value="0"></label></td><td class="score"><label><input type="radio" name="phq2" value="1"></label></td><td class="score"><label><input type="radio" name="phq2" value="2"></label></td><td class="score"><label><input type="radio" name="phq2" value="3"></label></td></tr>
+        <tr><td>3. Sleep trouble or sleeping too much</td><td class="score"><label><input type="radio" name="phq3" value="0"></label></td><td class="score"><label><input type="radio" name="phq3" value="1"></label></td><td class="score"><label><input type="radio" name="phq3" value="2"></label></td><td class="score"><label><input type="radio" name="phq3" value="3"></label></td></tr>
+        <tr><td>4. Feeling tired or having little energy</td><td class="score"><label><input type="radio" name="phq4" value="0"></label></td><td class="score"><label><input type="radio" name="phq4" value="1"></label></td><td class="score"><label><input type="radio" name="phq4" value="2"></label></td><td class="score"><label><input type="radio" name="phq4" value="3"></label></td></tr>
+        <tr><td>5. Poor appetite or overeating</td><td class="score"><label><input type="radio" name="phq5" value="0"></label></td><td class="score"><label><input type="radio" name="phq5" value="1"></label></td><td class="score"><label><input type="radio" name="phq5" value="2"></label></td><td class="score"><label><input type="radio" name="phq5" value="3"></label></td></tr>
+        <tr><td>6. Feeling bad about yourself / failure</td><td class="score"><label><input type="radio" name="phq6" value="0"></label></td><td class="score"><label><input type="radio" name="phq6" value="1"></label></td><td class="score"><label><input type="radio" name="phq6" value="2"></label></td><td class="score"><label><input type="radio" name="phq6" value="3"></label></td></tr>
+        <tr><td>7. Trouble concentrating</td><td class="score"><label><input type="radio" name="phq7" value="0"></label></td><td class="score"><label><input type="radio" name="phq7" value="1"></label></td><td class="score"><label><input type="radio" name="phq7" value="2"></label></td><td class="score"><label><input type="radio" name="phq7" value="3"></label></td></tr>
+        <tr><td>8. Moving/speaking slowly or being fidgety/restless</td><td class="score"><label><input type="radio" name="phq8" value="0"></label></td><td class="score"><label><input type="radio" name="phq8" value="1"></label></td><td class="score"><label><input type="radio" name="phq8" value="2"></label></td><td class="score"><label><input type="radio" name="phq8" value="3"></label></td></tr>
+        <tr><td>9. Thoughts you would be better off dead or self-harm</td><td class="score"><label><input type="radio" name="phq9" value="0"></label></td><td class="score"><label><input type="radio" name="phq9" value="1"></label></td><td class="score"><label><input type="radio" name="phq9" value="2"></label></td><td class="score"><label><input type="radio" name="phq9" value="3"></label></td></tr>
+        <tr class="total-row"><th>Total PHQ‑9</th><td colspan="4" id="phqTotal" style="text-align:center">—</td></tr>
       </table>
-      <div class="urgent"><b>Safety:</b> If PHQ‑9 item 9 &gt;0, or any self-harm/suicide concern: urgent clinical assessment/referral.</div>
+      <div class="severity" id="phqSeverity"></div>
+      <div class="urgent" id="phqSafetyAlert"><b>Safety alert:</b> PHQ‑9 item 9 is &gt;0 — urgent clinical assessment/referral required.</div>
+      <div class="note"><b>Safety:</b> If PHQ‑9 item 9 &gt;0, or any self-harm/suicide concern: urgent clinical assessment/referral.</div>
     </div>
     <div>
       <h3>GAD‑7 Anxiety Screen — past 2 weeks</h3>
-      <table><tr><th>Item</th><th class="score">0</th><th class="score">1</th><th class="score">2</th><th class="score">3</th></tr>
-        <tr><td>1. Feeling nervous, anxious or on edge</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>2. Not able to stop or control worrying</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>3. Worrying too much about different things</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>4. Trouble relaxing</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>5. Being so restless it is hard to sit still</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>6. Becoming easily annoyed or irritable</td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>7. Feeling afraid as if something awful might happen</td><td></td><td></td><td></td><td></td></tr>
-        <tr><th>Total GAD‑7</th><td colspan="4"></td></tr>
+      <table>
+        <tr><th>Item</th><th class="score">0</th><th class="score">1</th><th class="score">2</th><th class="score">3</th></tr>
+        <tr><td>1. Feeling nervous, anxious or on edge</td><td class="score"><label><input type="radio" name="gad1" value="0"></label></td><td class="score"><label><input type="radio" name="gad1" value="1"></label></td><td class="score"><label><input type="radio" name="gad1" value="2"></label></td><td class="score"><label><input type="radio" name="gad1" value="3"></label></td></tr>
+        <tr><td>2. Not able to stop or control worrying</td><td class="score"><label><input type="radio" name="gad2" value="0"></label></td><td class="score"><label><input type="radio" name="gad2" value="1"></label></td><td class="score"><label><input type="radio" name="gad2" value="2"></label></td><td class="score"><label><input type="radio" name="gad2" value="3"></label></td></tr>
+        <tr><td>3. Worrying too much about different things</td><td class="score"><label><input type="radio" name="gad3" value="0"></label></td><td class="score"><label><input type="radio" name="gad3" value="1"></label></td><td class="score"><label><input type="radio" name="gad3" value="2"></label></td><td class="score"><label><input type="radio" name="gad3" value="3"></label></td></tr>
+        <tr><td>4. Trouble relaxing</td><td class="score"><label><input type="radio" name="gad4" value="0"></label></td><td class="score"><label><input type="radio" name="gad4" value="1"></label></td><td class="score"><label><input type="radio" name="gad4" value="2"></label></td><td class="score"><label><input type="radio" name="gad4" value="3"></label></td></tr>
+        <tr><td>5. Being so restless it is hard to sit still</td><td class="score"><label><input type="radio" name="gad5" value="0"></label></td><td class="score"><label><input type="radio" name="gad5" value="1"></label></td><td class="score"><label><input type="radio" name="gad5" value="2"></label></td><td class="score"><label><input type="radio" name="gad5" value="3"></label></td></tr>
+        <tr><td>6. Becoming easily annoyed or irritable</td><td class="score"><label><input type="radio" name="gad6" value="0"></label></td><td class="score"><label><input type="radio" name="gad6" value="1"></label></td><td class="score"><label><input type="radio" name="gad6" value="2"></label></td><td class="score"><label><input type="radio" name="gad6" value="3"></label></td></tr>
+        <tr><td>7. Feeling afraid as if something awful might happen</td><td class="score"><label><input type="radio" name="gad7" value="0"></label></td><td class="score"><label><input type="radio" name="gad7" value="1"></label></td><td class="score"><label><input type="radio" name="gad7" value="2"></label></td><td class="score"><label><input type="radio" name="gad7" value="3"></label></td></tr>
+        <tr class="total-row"><th>Total GAD‑7</th><td colspan="4" id="gadTotal" style="text-align:center">—</td></tr>
       </table>
+      <div class="severity" id="gadSeverity"></div>
       <p class="mini"><b>Interpretation guide:</b> PHQ‑9/GAD‑7 5=mild, 10=moderate, 15=moderately severe/severe range. Consider mental health support if ≥10, functional impairment, or clinician concern.</p>
       <h3>Functional impact</h3>
-      <p>These problems make daily routine, work, relationships or treatment adherence: ☐ Not difficult ☐ Somewhat ☐ Very ☐ Extremely difficult</p>
+      <p class="mini">These problems make daily routine, work, relationships or treatment adherence:</p>
+      <div class="inline-radios">
+        <label><input type="radio" name="funcImpact" value="not"> Not difficult</label>
+        <label><input type="radio" name="funcImpact" value="somewhat"> Somewhat</label>
+        <label><input type="radio" name="funcImpact" value="very"> Very</label>
+        <label><input type="radio" name="funcImpact" value="extreme"> Extremely difficult</label>
+      </div>
     </div>
   </div>
 
@@ -60,38 +168,53 @@
   <p><b>Binge Eating Scale (BES):</b> Consider using the validated BES separately when available. This brief BES‑style screen flags possible Binge Eating Disorder (BED), which may influence medication choice, nutrition pacing and need for CBT/eating‑disorder therapy.</p>
   <div class="grid2 no-break">
     <div>
-      <div class="check"><span class="box"></span><span>Episodes of eating an unusually large amount of food</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Loss of control during eating episodes</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Eating much faster than usual</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Eating until uncomfortably full</span><span>☐ Yes</span></div>
+      <div class="check"><label for="bingeLarge">Episodes of eating an unusually large amount of food</label><span class="yes-lbl"><input type="checkbox" name="bingeLarge" id="bingeLarge" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="bingeControl">Loss of control during eating episodes</label><span class="yes-lbl"><input type="checkbox" name="bingeControl" id="bingeControl" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="bingeFast">Eating much faster than usual</label><span class="yes-lbl"><input type="checkbox" name="bingeFast" id="bingeFast" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="bingeFull">Eating until uncomfortably full</label><span class="yes-lbl"><input type="checkbox" name="bingeFull" id="bingeFull" aria-label="Yes"> Yes</span></div>
     </div>
     <div>
-      <div class="check"><span class="box"></span><span>Eating when not physically hungry / emotional eating</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Eating alone due to embarrassment</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Guilt, shame, disgust or distress after eating</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Frequency: ☐ &lt;weekly ☐ weekly+ ☐ most days; Duration: ☐ &lt;3 mo ☐ ≥3 mo</span><span></span></div>
+      <div class="check"><label for="bingeEmotional">Eating when not physically hungry / emotional eating</label><span class="yes-lbl"><input type="checkbox" name="bingeEmotional" id="bingeEmotional" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="bingeAlone">Eating alone due to embarrassment</label><span class="yes-lbl"><input type="checkbox" name="bingeAlone" id="bingeAlone" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="bingeGuilt">Guilt, shame, disgust or distress after eating</label><span class="yes-lbl"><input type="checkbox" name="bingeGuilt" id="bingeGuilt" aria-label="Yes"> Yes</span></div>
+      <p class="mini"><b>Frequency:</b></p>
+      <div class="inline-radios">
+        <label><input type="radio" name="bingeFreq" value="ltweekly"> &lt;weekly</label>
+        <label><input type="radio" name="bingeFreq" value="weekly"> weekly+</label>
+        <label><input type="radio" name="bingeFreq" value="mostdays"> most days</label>
+      </div>
+      <p class="mini"><b>Duration:</b></p>
+      <div class="inline-radios">
+        <label><input type="radio" name="bingeDuration" value="lt3mo"> &lt;3 mo</label>
+        <label><input type="radio" name="bingeDuration" value="gte3mo"> ≥3 mo</label>
+      </div>
     </div>
   </div>
-  <p><b>Eating disorder red flags:</b> vomiting, laxatives/diuretics, extreme restriction/fasting, compulsive exercise, fear of eating, rapid weight cycling, severe body-image distress. ☐ No ☐ Yes — consider specialist referral.</p>
+  <p><b>Eating disorder red flags:</b> vomiting, laxatives/diuretics, extreme restriction/fasting, compulsive exercise, fear of eating, rapid weight cycling, severe body-image distress.</p>
+  <div class="inline-radios">
+    <label><input type="radio" name="edRedFlags" value="no"> No</label>
+    <label><input type="radio" name="edRedFlags" value="yes"> Yes — consider specialist referral</label>
+  </div>
 
   <div class="grid2 no-break">
     <div>
       <h2>3) Stress &amp; Coping — past month</h2>
-      <table><tr><th>Item</th><th class="score">0</th><th class="score">1</th><th class="score">2</th><th class="score">3</th><th class="score">4</th></tr>
-        <tr><td>Unable to control important things</td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>Difficulties piling up too high</td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>Confident handling personal problems*</td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>Things were going your way*</td><td></td><td></td><td></td><td></td><td></td></tr>
+      <table>
+        <tr><th>Item</th><th class="score">0</th><th class="score">1</th><th class="score">2</th><th class="score">3</th><th class="score">4</th></tr>
+        <tr><td>Unable to control important things</td><td class="score"><label><input type="radio" name="stress1" value="0"></label></td><td class="score"><label><input type="radio" name="stress1" value="1"></label></td><td class="score"><label><input type="radio" name="stress1" value="2"></label></td><td class="score"><label><input type="radio" name="stress1" value="3"></label></td><td class="score"><label><input type="radio" name="stress1" value="4"></label></td></tr>
+        <tr><td>Difficulties piling up too high</td><td class="score"><label><input type="radio" name="stress2" value="0"></label></td><td class="score"><label><input type="radio" name="stress2" value="1"></label></td><td class="score"><label><input type="radio" name="stress2" value="2"></label></td><td class="score"><label><input type="radio" name="stress2" value="3"></label></td><td class="score"><label><input type="radio" name="stress2" value="4"></label></td></tr>
+        <tr><td>Confident handling personal problems*</td><td class="score"><label><input type="radio" name="stress3" value="0"></label></td><td class="score"><label><input type="radio" name="stress3" value="1"></label></td><td class="score"><label><input type="radio" name="stress3" value="2"></label></td><td class="score"><label><input type="radio" name="stress3" value="3"></label></td><td class="score"><label><input type="radio" name="stress3" value="4"></label></td></tr>
+        <tr><td>Things were going your way*</td><td class="score"><label><input type="radio" name="stress4" value="0"></label></td><td class="score"><label><input type="radio" name="stress4" value="1"></label></td><td class="score"><label><input type="radio" name="stress4" value="2"></label></td><td class="score"><label><input type="radio" name="stress4" value="3"></label></td><td class="score"><label><input type="radio" name="stress4" value="4"></label></td></tr>
       </table>
       <p class="mini">0=Never, 1=Almost never, 2=Sometimes, 3=Fairly often, 4=Very often. *Reverse score positive items.</p>
     </div>
     <div>
       <h2>4) Sleep &amp; Fatigue</h2>
-      <div class="check"><span class="box"></span><span>Average sleep &lt;6 hours/night</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Insomnia ≥3 nights/week</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Daytime sleepiness/fatigue affects routine</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Loud snoring, choking/gasping, witnessed apnoea</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Morning headaches or high BP with sleep symptoms</span><span>☐ Yes</span></div>
+      <div class="check"><label for="sleepShort">Average sleep &lt;6 hours/night</label><span class="yes-lbl"><input type="checkbox" name="sleepShort" id="sleepShort" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="sleepInsomnia">Insomnia ≥3 nights/week</label><span class="yes-lbl"><input type="checkbox" name="sleepInsomnia" id="sleepInsomnia" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="sleepFatigue">Daytime sleepiness/fatigue affects routine</label><span class="yes-lbl"><input type="checkbox" name="sleepFatigue" id="sleepFatigue" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="sleepApnoea">Loud snoring, choking/gasping, witnessed apnoea</label><span class="yes-lbl"><input type="checkbox" name="sleepApnoea" id="sleepApnoea" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="sleepHeadache">Morning headaches or high BP with sleep symptoms</label><span class="yes-lbl"><input type="checkbox" name="sleepHeadache" id="sleepHeadache" aria-label="Yes"> Yes</span></div>
       <p><b>If snoring/apnoea/daytime sleepiness:</b> screen for obstructive sleep apnoea and consider sleep referral.</p>
     </div>
   </div>
@@ -102,58 +225,84 @@
   <p>Ask the patient to define their “goal weight” and what they believe is required to get there. Use answers to correct unrealistic expectations early and align treatment with health, function and sustainability.</p>
   <div class="grid2 no-break">
     <div>
-      <p><b>My goal weight or health goal is:</b></p><div class="blank"></div>
-      <p><b>Why this goal matters to me:</b></p><div class="blank"></div>
-      <p><b>I believe I need to do the following to get there:</b></p><div class="blank"></div><div class="blank"></div>
+      <p><b>My goal weight or health goal is:</b></p><textarea class="text-inp" name="goalWeight" rows="2"></textarea>
+      <p><b>Why this goal matters to me:</b></p><textarea class="text-inp" name="goalWhy" rows="2"></textarea>
+      <p><b>I believe I need to do the following to get there:</b></p><textarea class="text-inp" name="goalPlan" rows="3"></textarea>
     </div>
     <div>
-      <p><b>My biggest concern about medication, diet or exercise:</b></p><div class="blank"></div>
-      <p><b>Past attempts: what worked / did not work?</b></p><div class="blank"></div>
-      <p><b>What would count as success besides the scale?</b></p><div class="blank"></div><div class="blank"></div>
+      <p><b>My biggest concern about medication, diet or exercise:</b></p><textarea class="text-inp" name="goalConcern" rows="2"></textarea>
+      <p><b>Past attempts: what worked / did not work?</b></p><textarea class="text-inp" name="goalPast" rows="2"></textarea>
+      <p><b>What would count as success besides the scale?</b></p><textarea class="text-inp" name="goalSuccess" rows="3"></textarea>
     </div>
   </div>
 
   <h2>6) Readiness, Barriers &amp; Support</h2>
   <div class="grid2 no-break">
     <div>
-      <table><tr><th>Rate 0–10</th><th class="score">Score</th></tr>
-        <tr><td>Importance of changing health behaviours now</td><td></td></tr>
-        <tr><td>Confidence to follow nutrition plan</td><td></td></tr>
-        <tr><td>Confidence to increase physical activity safely</td><td></td></tr>
-        <tr><td>Confidence to use medication and attend follow-ups</td><td></td></tr>
+      <table>
+        <tr><th>Rate 0–10</th><th class="score">Score</th></tr>
+        <tr><td>Importance of changing health behaviours now</td><td class="score"><input class="num-inp" type="number" name="readyImportance" min="0" max="10"></td></tr>
+        <tr><td>Confidence to follow nutrition plan</td><td class="score"><input class="num-inp" type="number" name="readyNutrition" min="0" max="10"></td></tr>
+        <tr><td>Confidence to increase physical activity safely</td><td class="score"><input class="num-inp" type="number" name="readyActivity" min="0" max="10"></td></tr>
+        <tr><td>Confidence to use medication and attend follow-ups</td><td class="score"><input class="num-inp" type="number" name="readyMedication" min="0" max="10"></td></tr>
       </table>
     </div>
     <div>
-      <div class="check"><span class="box"></span><span>Low social support / family conflict around weight</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Work schedule, finances or transport may impair adherence</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Alcohol/cannabis/other substance use affects eating, sleep or mood</span><span>☐ Yes</span></div>
-      <div class="check"><span class="box"></span><span>Weight stigma, shame or avoidance of healthcare/exercise settings</span><span>☐ Yes</span></div>
+      <div class="check"><label for="barrierSupport">Low social support / family conflict around weight</label><span class="yes-lbl"><input type="checkbox" name="barrierSupport" id="barrierSupport" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="barrierWork">Work schedule, finances or transport may impair adherence</label><span class="yes-lbl"><input type="checkbox" name="barrierWork" id="barrierWork" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="barrierSubstance">Alcohol/cannabis/other substance use affects eating, sleep or mood</label><span class="yes-lbl"><input type="checkbox" name="barrierSubstance" id="barrierSubstance" aria-label="Yes"> Yes</span></div>
+      <div class="check"><label for="barrierStigma">Weight stigma, shame or avoidance of healthcare/exercise settings</label><span class="yes-lbl"><input type="checkbox" name="barrierStigma" id="barrierStigma" aria-label="Yes"> Yes</span></div>
     </div>
   </div>
 
   <h2>7) GLP‑1/GIP or GLP‑1 Medication Journey Check</h2>
   <div class="grid3 summary no-break">
-    <div><b>Expectations</b><br>Understands medication supports lifestyle change; loss is gradual and plateau may occur. ☐ Yes ☐ No</div>
-    <div><b>Adherence</b><br>Can manage dose schedule, injections/tablets, storage, cost and follow-up. ☐ Yes ☐ No</div>
-    <div><b>Side-effect plan</b><br>Knows nausea, reflux, constipation, low appetite; hydration/protein plan. ☐ Yes ☐ No</div>
-    <div><b>Eating pattern</b><br>Will avoid skipping all meals; plans protein, fibre, fluids and constipation prevention. ☐ Yes ☐ No</div>
-    <div><b>Activity plan</b><br>Has safe starting movement/resistance plan to preserve lean mass. ☐ Yes ☐ No</div>
-    <div><b>Mood monitoring</b><br>Will report mood worsening, anxiety, eating-disorder symptoms or self-harm thoughts. ☐ Yes ☐ No</div>
+    <div><b>Expectations</b><br><span class="mini">Understands medication supports lifestyle change; loss is gradual and plateau may occur.</span>
+      <div class="inline-radios"><label><input type="radio" name="glpExpect" value="yes"> Yes</label><label><input type="radio" name="glpExpect" value="no"> No</label></div></div>
+    <div><b>Adherence</b><br><span class="mini">Can manage dose schedule, injections/tablets, storage, cost and follow-up.</span>
+      <div class="inline-radios"><label><input type="radio" name="glpAdherence" value="yes"> Yes</label><label><input type="radio" name="glpAdherence" value="no"> No</label></div></div>
+    <div><b>Side-effect plan</b><br><span class="mini">Knows nausea, reflux, constipation, low appetite; hydration/protein plan.</span>
+      <div class="inline-radios"><label><input type="radio" name="glpSideFx" value="yes"> Yes</label><label><input type="radio" name="glpSideFx" value="no"> No</label></div></div>
+    <div><b>Eating pattern</b><br><span class="mini">Will avoid skipping all meals; plans protein, fibre, fluids and constipation prevention.</span>
+      <div class="inline-radios"><label><input type="radio" name="glpEating" value="yes"> Yes</label><label><input type="radio" name="glpEating" value="no"> No</label></div></div>
+    <div><b>Activity plan</b><br><span class="mini">Has safe starting movement/resistance plan to preserve lean mass.</span>
+      <div class="inline-radios"><label><input type="radio" name="glpActivity" value="yes"> Yes</label><label><input type="radio" name="glpActivity" value="no"> No</label></div></div>
+    <div><b>Mood monitoring</b><br><span class="mini">Will report mood worsening, anxiety, eating-disorder symptoms or self-harm thoughts.</span>
+      <div class="inline-radios"><label><input type="radio" name="glpMood" value="yes"> Yes</label><label><input type="radio" name="glpMood" value="no"> No</label></div></div>
   </div>
 
-  <h2>Clinician Summary / Action Plan</h2>
-  <div class="grid3 summary no-break">
-    <div><b>Mood/anxiety risk</b><br>☐ Low ☐ Moderate ☐ High<br>Action:</div>
-    <div><b>Binge/eating-disorder risk</b><br>☐ Low ☐ Moderate ☐ High<br>Action:</div>
-    <div><b>Stress/sleep risk</b><br>☐ Low ☐ Moderate ☐ High<br>Action:</div>
-    <div><b>Readiness</b><br>☐ Ready ☐ Ambivalent ☐ Not ready<br>Next step:</div>
-    <div><b>Referrals</b><br>☐ Dietitian ☐ Psychology ☐ Psychiatry ☐ Sleep ☐ Exercise physio</div>
-    <div><b>Treatment decision</b><br>☐ Proceed ☐ Proceed + support ☐ Stabilize/refer first</div>
+  <h2 class="clinician-only">Clinician Summary / Action Plan</h2>
+  <div class="grid3 summary no-break clinician-only">
+    <div><b>Mood/anxiety risk</b>
+      <div class="inline-radios"><label><input type="radio" name="sumMood" value="low"> Low</label><label><input type="radio" name="sumMood" value="moderate"> Moderate</label><label><input type="radio" name="sumMood" value="high"> High</label></div>
+      <div class="summary-action">Action: <input class="text-inp" type="text" name="sumMoodAction"></div></div>
+    <div><b>Binge/eating-disorder risk</b>
+      <div class="inline-radios"><label><input type="radio" name="sumBinge" value="low"> Low</label><label><input type="radio" name="sumBinge" value="moderate"> Moderate</label><label><input type="radio" name="sumBinge" value="high"> High</label></div>
+      <div class="summary-action">Action: <input class="text-inp" type="text" name="sumBingeAction"></div></div>
+    <div><b>Stress/sleep risk</b>
+      <div class="inline-radios"><label><input type="radio" name="sumStress" value="low"> Low</label><label><input type="radio" name="sumStress" value="moderate"> Moderate</label><label><input type="radio" name="sumStress" value="high"> High</label></div>
+      <div class="summary-action">Action: <input class="text-inp" type="text" name="sumStressAction"></div></div>
+    <div><b>Readiness</b>
+      <div class="inline-radios"><label><input type="radio" name="sumReady" value="ready"> Ready</label><label><input type="radio" name="sumReady" value="ambivalent"> Ambivalent</label><label><input type="radio" name="sumReady" value="notready"> Not ready</label></div>
+      <div class="summary-action">Next step: <input class="text-inp" type="text" name="sumReadyNext"></div></div>
+    <div><b>Referrals</b>
+      <div class="check"><input type="checkbox" name="refDietitian" id="refDietitian"><label for="refDietitian">Dietitian</label></div>
+      <div class="check"><input type="checkbox" name="refPsychology" id="refPsychology"><label for="refPsychology">Psychology</label></div>
+      <div class="check"><input type="checkbox" name="refPsychiatry" id="refPsychiatry"><label for="refPsychiatry">Psychiatry</label></div>
+      <div class="check"><input type="checkbox" name="refSleep" id="refSleep"><label for="refSleep">Sleep</label></div>
+      <div class="check"><input type="checkbox" name="refExercise" id="refExercise"><label for="refExercise">Exercise physio</label></div></div>
+    <div><b>Treatment decision</b>
+      <div class="inline-radios"><label><input type="radio" name="sumTreatment" value="proceed"> Proceed</label><label><input type="radio" name="sumTreatment" value="proceedsupport"> Proceed + support</label><label><input type="radio" name="sumTreatment" value="stabilize"> Stabilize/refer first</label></div></div>
   </div>
   <div class="note"><b>Brief intervention:</b> agree on 1 nutrition goal, 1 movement goal, 1 sleep/stress goal and 1 medication-adherence plan. Follow up in 2–4 weeks. Use compassionate, weight-neutral language and avoid blame.</div>
   <div class="footer">This two-page printable form is for screening and shared decision-making. It does not replace validated full assessments, diagnostic interview, eating-disorder evaluation or emergency psychiatric assessment when indicated.</div>
 </div>
+</form>
+
+<script src="../assets/js/patient-store.js"></script>
 <script src="../assets/js/patient-sync.js"></script>
+<script src="../assets/js/psych-form.js"></script>
 <script src="../assets/js/module-print.js"></script>
+<script>window.addEventListener('DOMContentLoaded', () => PsychForm.init());</script>
 </body>
 </html>

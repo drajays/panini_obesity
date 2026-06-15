@@ -1,8 +1,10 @@
 /**
- * Floating print button for module pages (works standalone or in iframe)
+ * Floating print button for module pages (standalone only — app shell has topbar print)
  */
 (function () {
-  if (window.self !== window.top) {
+  const isEmbedded = window.self !== window.top;
+
+  if (isEmbedded) {
     document.documentElement.classList.add('embedded-module');
   }
 
@@ -10,9 +12,9 @@
   style.textContent = `
     .panini-print-fab {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 9999;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9000;
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -32,23 +34,29 @@
       background: #1e3a8a;
       transform: translateY(-2px);
     }
+    body.has-panini-fab {
+      padding-bottom: 72px;
+    }
     .embedded-module .toolbar .btn.solid { display: none !important; }
     .embedded-module button[onclick="triggerPrintMode()"] { display: none !important; }
+    .embedded-module .panini-print-fab { display: none !important; }
     @media print {
       .panini-print-fab { display: none !important; }
+      body.has-panini-fab { padding-bottom: 0; }
     }
     @media (max-width: 600px) {
-      .panini-print-fab { padding: 12px 14px; font-size: 13px; }
+      .panini-print-fab { padding: 12px 14px; font-size: 13px; left: 16px; bottom: 16px; }
       .panini-print-fab .label { display: none; }
     }
   `;
   document.head.appendChild(style);
 
+  if (isEmbedded) return;
+
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'panini-print-fab';
   btn.setAttribute('aria-label', 'Print this form');
-  btn.innerHTML = '<span aria-hidden="true">🖨️</span><span class="label">Print / PDF</span>';
 
   function doPrint() {
     if (typeof window.triggerPrintMode === 'function') window.triggerPrintMode();
@@ -59,9 +67,11 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     if (typeof window.triggerPrintMode === 'function') {
-      const label = btn.querySelector('.label');
-      if (label) label.textContent = 'Print 2-Page Report';
+      btn.innerHTML = '<span aria-hidden="true">🖨️</span><span class="label">Print Report</span>';
+    } else {
+      btn.innerHTML = '<span aria-hidden="true">🖨️</span><span class="label">Print / PDF</span>';
     }
+    document.body.classList.add('has-panini-fab');
     document.body.appendChild(btn);
   });
 })();

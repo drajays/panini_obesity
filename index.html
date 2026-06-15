@@ -20,7 +20,7 @@
 
       <div class="sidebar-footer">
         AACE · EASO · KSSO · OMA aligned<br>
-        Works offline · Data saved locally in browser
+        Anonymous Patient ID · No names in data files
       </div>
     </aside>
 
@@ -36,6 +36,11 @@
           </div>
         </div>
         <div class="topbar-actions">
+          <div class="topbar-patient" id="topbarPatient" title="Anonymous ID — no names stored">
+            <input type="text" id="globalPatientId" placeholder="WIN-XXXXXX" autocomplete="off" spellcheck="false" aria-label="Patient unique ID">
+            <button class="btn btn-sm" id="globalPatientLoad" type="button">Load</button>
+            <button class="btn btn-sm" id="globalPatientGen" type="button" title="Generate new ID">+</button>
+          </div>
           <button class="btn" id="homeBtn" type="button" title="Back to home">
             <span aria-hidden="true">🏠</span>
             <span class="btn-label">Home</span>
@@ -62,10 +67,10 @@
             <strong>Suggested clinical order:</strong>
             ① Initial Evaluation + Workup Checklist + Weight Trajectory Map →
             ② Psych/Behavioral Readiness →
-            ③ Dietary Recall + Exercise Assessment →
+            ③ Dietary Recall + Dietary Contract + Exercise + Yoga + Clinical Input Audit →
             ④ 3-Year Winner Program (19 bi-monthly visit assessments).
             Every module includes an easy <strong>Print / PDF</strong> option.
-            Patient details (name, age, height, weight, BP, etc.) <strong>auto-fill across all modules</strong> once entered.
+            Use a <strong>Patient Unique ID</strong> (no name stored) — data auto-fills on the next visit from browser + GitHub <code>data/patients/</code>.
           </div>
 
           <div class="module-grid" id="moduleGrid"></div>
@@ -74,6 +79,7 @@
     </div>
   </div>
 
+  <script src="assets/js/patient-store.js"></script>
   <script src="assets/js/app.js"></script>
 </body>
 </html>
