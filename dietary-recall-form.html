@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dietary Recall &amp; Nutrition Assessment</title>
+<style>
+  :root {
+    --bg: #faf9f6;
+    --card: #fff;
+    --text: #2d2a26;
+    --muted: #6b635b;
+    --accent: #4a7c59;
+    --accent-light: #e8f0e9;
+    --border: #e3ded7;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+    --transition: .28s cubic-bezier(.4,0,.2,1);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { font-size:15px; scroll-behavior:smooth; }
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text); line-height:1.55;
+    min-height:100vh; display:flex; justify-content:center; padding:0 1rem;
+  }
+
+  .container { max-width:820px; width:100%; padding:2rem 0; }
+
+  /* — Header — */
+  .header {
+    text-align:center; margin-bottom:1.8rem;
+    padding:1.6rem; background:var(--card); border-radius:var(--radius);
+    box-shadow:var(--shadow); border:1px solid var(--border);
+  }
+  .header h1 { font-size:1.55rem; font-weight:650; color:var(--accent); letter-spacing:-.01em; }
+  .header p  { font-size:.88rem; color:var(--muted); margin-top:.3rem; }
+
+  /* — Stepper — */
+  .stepper {
+    display:flex; justify-content:center; gap:.5rem; margin-bottom:1.5rem;
+    align-items:center;
+  }
+  .step-dot {
+    width:12px; height:12px; border-radius:50%;
+    background:var(--border); transition:var(--transition);
+  }
+  .step-dot.active, .step-dot.done { background:var(--accent); }
+  .step-line { width:40px; height:2px; background:var(--border); border-radius:2px; transition:var(--transition); }
+  .step-line.done { background:var(--accent); }
+
+  /* — Page — */
+  .page { display:none; }
+  .page.active { display:block; animation:fadeSlide .35s ease; }
+  @keyframes fadeSlide { from{opacity:.55;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* — Cards — */
+  .card {
+    background:var(--card); border-radius:var(--radius);
+    box-shadow:var(--shadow); border:1px solid var(--border);
+    padding:1.4rem 1.6rem; margin-bottom:1.2rem;
+  }
+  .card h2 {
+    font-size:1.05rem; font-weight:650; margin-bottom:1rem;
+    display:flex; align-items:center; gap:.45rem;
+    color:var(--accent); letter-spacing:-.005em;
+  }
+  .card h2 .icon { font-size:1.15rem; }
+
+  /* — Grid — */
+  .row { display:flex; gap:1rem; flex-wrap:wrap; }
+  .row > * { flex:1 1 200px; }
+
+  /* — Form elements — */
+  label {
+    display:block; font-size:.78rem; font-weight:600;
+    color:var(--muted); margin-bottom:.3rem; letter-spacing:.01em;
+    text-transform:uppercase;
+  }
+  input, select, textarea {
+    width:100%; padding:.58rem .7rem; font-size:.9rem;
+    border:1.5px solid var(--border); border-radius:7px;
+    background:var(--bg); color:var(--text);
+    font-family:inherit; transition:var(--transition);
+    appearance:none; -webkit-appearance:none;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline:none; border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(74,124,89,.12);
+  }
+  textarea { resize:vertical; min-height:72px; }
+  select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b635b' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right .7rem center; padding-right:2rem; }
+
+  /* — Radio / Checkbox pill — */
+  .pill-group { display:flex; flex-wrap:wrap; gap:.45rem; }
+  .pill-group input { display:none; }
+  .pill-group label {
+    text-transform:none; font-weight:500; font-size:.82rem;
+    padding:.45rem .85rem; border-radius:20px;
+    border:1.5px solid var(--border); cursor:pointer;
+    color:var(--text); background:var(--bg);
+    transition:var(--transition); user-select:none;
+    letter-spacing:0; margin:0;
+  }
+  .pill-group input:checked + label {
+    background:var(--accent-light); border-color:var(--accent);
+    color:var(--accent); font-weight:600;
+  }
+
+  /* — Frequency grid — */
+  .freq-table { width:100%; border-collapse:collapse; font-size:.84rem; }
+  .freq-table th, .freq-table td {
+    text-align:center; padding:.48rem .3rem; border-bottom:1px solid var(--border);
+  }
+  .freq-table th { font-size:.72rem; font-weight:650; color:var(--muted); text-transform:uppercase; letter-spacing:.02em; }
+  .freq-table td:first-child, .freq-table th:first-child { text-align:left; font-weight:600; color:var(--text); }
+  .freq-table td:first-child { font-weight:500; }
+  .freq-table input[type=radio] { width:auto; accent-color:var(--accent); }
+  .freq-table tbody tr:hover { background:rgba(74,124,89,.04); }
+
+  /* — Buttons — */
+  .btn-row { display:flex; justify-content:space-between; gap:1rem; margin-top:.6rem; }
+  .btn {
+    font-size:.88rem; font-weight:600; padding:.62rem 1.6rem;
+    border-radius:8px; cursor:pointer; border:none;
+    transition:var(--transition); font-family:inherit;
+    letter-spacing:.01em;
+  }
+  .btn-primary { background:var(--accent); color:#fff; }
+  .btn-primary:hover { background:#3d694b; }
+  .btn-outline { background:transparent; color:var(--accent); border:2px solid var(--accent); }
+  .btn-outline:hover { background:var(--accent-light); }
+  .btn:disabled { opacity:.45; pointer-events:none; }
+
+  /* — Validation — */
+  .field { margin-bottom:.85rem; }
+  .field-sm { margin-bottom:.5rem; }
+  .required::after { content:' *'; color:#c0392b; font-weight:500; }
+
+  hr.divider { border:none; border-top:1px solid var(--border); margin:1rem 0; }
+
+  /* — Summary — */
+  .summary-box {
+    background:var(--accent-light); border-radius:var(--radius);
+    padding:1rem 1.2rem; font-size:.85rem; line-height:1.7;
+  }
+  .summary-box strong { color:var(--accent); }
+
+  /* — Print — */
+  @media print {
+    body { background:#fff; padding:0; }
+    .container { max-width:100%; padding:0; }
+    .card { box-shadow:none; border:1px solid #ccc; break-inside:avoid; }
+    .btn-row, .stepper, .nav-area { display:none !important; }
+    .page { display:block !important; animation:none; }
+    .page + .page { margin-top:1.2rem; }
+  }
+
+  @media (max-width:600px) {
+    .card { padding:1rem 1.1rem; }
+    .freq-table { font-size:.72rem; }
+    .freq-table th, .freq-table td { padding:.3rem .15rem; }
+    .row > * { flex:1 1 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>🥗 Dietary Recall &amp; Nutrition Assessment</h1>
+    <p>A comprehensive 24‑hour recall &amp; habitual diet questionnaire — Confidential</p>
+  </div>
+
+  <!-- Stepper -->
+  <div class="stepper" id="stepper">
+    <span class="step-dot active" id="d1"></span>
+    <span class="step-line" id="l1"></span>
+    <span class="step-dot" id="d2"></span>
+  </div>
+
+  <form id="dietForm" novalidate>
+
+    <!-- ==================== PAGE 1 ==================== -->
+    <div class="page active" id="page1">
+
+      <!-- Section: Personal Info -->
+      <div class="card">
+        <h2><span class="icon">👤</span> Personal Information</h2>
+        <div class="row">
+          <div class="field"><label class="required">Full Name</label><input name="name" placeholder="e.g. Priya Sharma" required></div>
+          <div class="field"><label class="required">Age (years)</label><input name="age" type="number" min="1" max="120" placeholder="e.g. 34" required></div>
+          <div class="field"><label class="required">Sex</label>
+            <select name="sex" required>
+              <option value="" disabled selected>Select…</option>
+              <option>Female</option><option>Male</option><option>Other / Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Height (cm)</label><input name="height" type="number" step="0.1" min="50" max="260" placeholder="e.g. 162"></div>
+          <div class="field"><label>Weight (kg)</label><input name="weight" type="number" step="0.1" min="20" max="350" placeholder="e.g. 58"></div>
+          <div class="field"><label>Waist Circumference (cm)</label><input name="waist" type="number" step="0.1" min="30" max="200" placeholder="Optional"></div>
+        </div>
+      </div>
+
+      <!-- Section: Eating Pattern -->
+      <div class="card">
+        <h2><span class="icon">🍽️</span> General Eating Pattern</h2>
+        <div class="field">
+          <label class="required">How many meals do you typically eat per day?</label>
+          <div class="pill-group">
+            <input type="radio" name="mealsPerDay" id="m1" value="1–2" required><label for="m1">1–2</label>
+            <input type="radio" name="mealsPerDay" id="m2" value="3 (standard)"><label for="m2">3 (standard)</label>
+            <input type="radio" name="mealsPerDay" id="m3" value="4–5"><label for="m3">4–5</label>
+            <input type="radio" name="mealsPerDay" id="m4" value="6+"><label for="m4">6+</label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="required">Do you snack between meals?</label>
+          <div class="pill-group">
+            <input type="radio" name="snacking" id="sn1" value="Rarely/Never" required><label for="sn1">Rarely / Never</label>
+            <input type="radio" name="snacking" id="sn2" value="Occasionally"><label for="sn2">Occasionally</label>
+            <input type="radio" name="snacking" id="sn3" value="Daily"><label for="sn3">Daily</label>
+            <input type="radio" name="snacking" id="sn4" value="Multiple times/day"><label for="sn4">Multiple × /day</label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="required">Typical breakfast time</label>
+          <input name="breakfastTime" type="time" required>
+        </div>
+        <div class="field">
+          <label>Do you follow any specific diet?</label>
+          <div class="pill-group">
+            <input type="radio" name="specificDiet" id="sd0" value="None" checked><label for="sd0">None</label>
+            <input type="radio" name="specificDiet" id="sd1" value="Vegetarian"><label for="sd1">Vegetarian</label>
+            <input type="radio" name="specificDiet" id="sd2" value="Vegan"><label for="sd2">Vegan</label>
+            <input type="radio" name="specificDiet" id="sd3" value="Keto/Low-carb"><label for="sd3">Keto / Low-carb</label>
+            <input type="radio" name="specificDiet" id="sd4" value="Intermittent fasting"><label for="sd4">Intermittent fasting</label>
+            <input type="radio" name="specificDiet" id="sd5" value="Other"><label for="sd5">Other</label>
+          </div>
+        </div>
+        <div class="field" id="otherDietWrap" style="display:none">
+          <label>Please specify</label>
+          <input name="specificDietOther" placeholder="Describe your diet…">
+        </div>
+      </div>
+
+      <!-- Section: 24‑hr Recall intro -->
+      <div class="card">
+        <h2><span class="icon">🕐</span> 24‑Hour Dietary Recall — Yesterday's Intake</h2>
+        <p style="font-size:.84rem;color:var(--muted);margin-bottom:1rem;">
+          Think about everything you ate &amp; drank <strong>yesterday</strong>, from waking up until bedtime.
+          Include all meals, snacks, beverages, sauces, and condiments.
+        </p>
+        <div class="field"><label>Was yesterday a typical eating day?</label>
+          <div class="pill-group">
+            <input type="radio" name="typicalDay" id="tdY" value="Yes" checked><label for="tdY">Yes</label>
+            <input type="radio" name="typicalDay" id="tdN" value="No"><label for="tdN">No — it was unusual</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <div class="btn-row nav-area">
+        <span></span>
+        <button type="button" class="btn btn-primary" onclick="goTo(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- ==================== PAGE 2 ==================== -->
+    <div class="page" id="page2">
+
+      <!-- 24-hr Meal-by-meal -->
+      <div class="card">
+        <h2><span class="icon">📋</span> Yesterday's Meals — Detailed Breakdown</h2>
+
+        <div class="field">
+          <label class="required">Breakfast — Foods &amp; drinks (with approx. portions)</label>
+          <textarea name="recallBreakfast" placeholder="e.g. 2 idlis + 1 bowl sambar (200 ml) + 1 tsp coconut chutney + black coffee (150 ml, no sugar)" required></textarea>
+        </div>
+        <div class="field">
+          <label>Mid‑morning snack</label>
+          <textarea name="recallMidMorning" placeholder="e.g. 1 banana + handful of almonds (15 g)"></textarea>
+        </div>
+        <div class="field">
+          <label class="required">Lunch — Foods &amp; drinks</label>
+          <textarea name="recallLunch" placeholder="e.g. 2 rotis + ½ cup dal + 1 cup mixed veg sabzi + salad + 1 glass buttermilk" required></textarea>
+        </div>
+        <div class="field">
+          <label>Afternoon snack / tea</label>
+          <textarea name="recallAfternoon" placeholder="e.g. 1 cup chai (150 ml, ½ tsp sugar) + 2 digestive biscuits"></textarea>
+        </div>
+        <div class="field">
+          <label class="required">Dinner — Foods &amp; drinks</label>
+          <textarea name="recallDinner" placeholder="e.g. 1 cup brown rice + fish curry (1 piece, 80 g) + ½ cup stir‑fried veggies" required></textarea>
+        </div>
+        <div class="field">
+          <label>Post‑dinner / bedtime snack or drink</label>
+          <textarea name="recallBedtime" placeholder="e.g. 1 glass warm milk (200 ml) with turmeric"></textarea>
+        </div>
+        <div class="field">
+          <label>Water intake yesterday (glasses / litres)</label>
+          <input name="waterIntake" placeholder="e.g. 8 glasses (~2 litres)">
+        </div>
+      </div>
+
+      <!-- Food Frequency -->
+      <div class="card" style="overflow-x:auto;">
+        <h2><span class="icon">📊</span> Food Frequency Questionnaire (Typical Week)</h2>
+        <p style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem;">
+          How often do you consume each food group in a typical week?
+        </p>
+        <table class="freq-table">
+          <thead>
+            <tr>
+              <th>Food Group</th>
+              <th>Never / Rarely</th>
+              <th>1–2× /wk</th>
+              <th>3–4× /wk</th>
+              <th>5–6× /wk</th>
+              <th>Daily</th>
+              <th>2+× /day</th>
+            </tr>
+          </thead>
+          <tbody id="ffqBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Eating Behaviour -->
+      <div class="card">
+        <h2><span class="icon">🧠</span> Eating Behaviour &amp; Lifestyle</h2>
+        <div class="field">
+          <label>Do you often eat when stressed, bored, or emotional?</label>
+          <div class="pill-group">
+            <input type="radio" name="emotionalEating" id="ee0" value="Never"><label for="ee0">Never</label>
+            <input type="radio" name="emotionalEating" id="ee1" value="Occasionally"><label for="ee1">Occasionally</label>
+            <input type="radio" name="emotionalEating" id="ee2" value="Frequently"><label for="ee2">Frequently</label>
+            <input type="radio" name="emotionalEating" id="ee3" value="Always"><label for="ee3">Almost always</label>
+          </div>
+        </div>
+        <div class="field">
+          <label class="required">Rate your appetite on most days</label>
+          <div class="pill-group">
+            <input type="radio" name="appetite" id="ap0" value="Poor" required><label for="ap0">Poor</label>
+            <input type="radio" name="appetite" id="ap1" value="Fair"><label for="ap1">Fair</label>
+            <input type="radio" name="appetite" id="ap2" value="Good"><label for="ap2">Good</label>
+            <input type="radio" name="appetite" id="ap3" value="Excellent"><label for="ap3">Excellent</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label class="required">Physical activity level</label>
+            <select name="activityLevel" required>
+              <option value="" disabled selected>Select…</option>
+              <option>Sedentary (little or no exercise)</option>
+              <option>Lightly active (1–3 days/wk)</option>
+              <option>Moderately active (3–5 days/wk)</option>
+              <option>Very active (6–7 days/wk)</option>
+              <option>Extra active (intense daily training)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Sleep (hours/night on average)</label>
+            <select name="sleepHours">
+              <option value="" disabled selected>Select…</option>
+              <option>&lt;5</option><option>5–6</option><option>7–8</option><option>8–9</option><option>&gt;9</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Known food allergies or intolerances</label>
+          <input name="allergies" placeholder="e.g. lactose, gluten, peanuts, none">
+        </div>
+        <div class="field">
+          <label>Any supplements taken regularly?</label>
+          <input name="supplements" placeholder="e.g. Vitamin D 2000 IU, B12, protein powder">
+        </div>
+        <div class="field">
+          <label>Additional notes for the nutritionist</label>
+          <textarea name="notes" placeholder="Anything else about your diet, habits, or health goals…"></textarea>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <div class="btn-row nav-area">
+        <button type="button" class="btn btn-outline" onclick="goTo(1)">← Back</button>
+        <button type="submit" class="btn btn-primary">✅ Submit Assessment</button>
+      </div>
+    </div>
+
+  </form>
+
+  <!-- Submitted summary placeholder -->
+  <div class="card" id="summaryCard" style="display:none;"></div>
+
+</div>
+
+<script>
+  // ── FFQ items ──
+  const ffqItems = [
+    "Cereals / grains (rice, roti, bread, poha…)",
+    "Pulses & legumes (dal, chana, rajma, sprouts…)",
+    "Green leafy vegetables (spinach, methi, amaranth…)",
+    "Other vegetables (gourd, brinjal, cauliflower…)",
+    "Fresh fruits (whole, not juice)",
+    "Milk & dairy (milk, curd, paneer, cheese…)",
+    "Eggs",
+    "Meat / poultry (chicken, mutton…)",
+    "Fish & seafood",
+    "Nuts & seeds (almonds, walnuts, chia…)",
+    "Fried foods (samosas, pakoras, chips…)",
+    "Sweets & desserts (mithai, ice cream, pastries…)",
+    "Sugary beverages (cola, packaged juice, energy drinks…)",
+    "Tea / coffee",
+    "Alcohol (beer, wine, spirits…)",
+    "Processed / packaged snacks (biscuits, instant noodles…)",
+  ];
+
+  const freqOptions = ["Never/Rarely","1–2×/wk","3–4×/wk","5–6×/wk","Daily","2+×/day"];
+
+  (function buildFFQ(){
+    const tbody = document.getElementById('ffqBody');
+    ffqItems.forEach((item,i) => {
+      const tr = document.createElement('tr');
+      const tdLabel = document.createElement('td');
+      tdLabel.textContent = item;
+      tr.appendChild(tdLabel);
+      freqOptions.forEach(opt => {
+        const td = document.createElement('td');
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'ffq_' + i;
+        radio.value = opt;
+        radio.required = true;
+        td.appendChild(radio);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  })();
+
+  // ── Page navigation ──
+  function goTo(n) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page'+n).classList.add('active');
+    // stepper
+    document.getElementById('d1').classList.toggle('active', n===1);
+    document.getElementById('d1').classList.toggle('done', n>1);
+    document.getElementById('l1').classList.toggle('done', n>1);
+    document.getElementById('d2').classList.toggle('active', n===2);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // ── Show "other diet" field ──
+  document.querySelectorAll('input[name="specificDiet"]').forEach(r => {
+    r.addEventListener('change', function(){
+      document.getElementById('otherDietWrap').style.display = this.value==='Other' ? 'block' : 'none';
+    });
+  });
+
+  // ── Submit ──
+  document.getElementById('dietForm').addEventListener('submit', function(e){
+    e.preventDefault();
+
+    // Basic client-side validation
+    const required = this.querySelectorAll('[required]');
+    let valid = true;
+    required.forEach(el => {
+      if (!el.value.trim()) { valid = false; el.style.borderColor = '#c0392b'; }
+      else { el.style.borderColor = ''; }
+    });
+
+    // Check at least one FFQ per row selected
+    if (valid) {
+      ffqItems.forEach((_,i) => {
+        const selected = this.querySelector('input[name="ffq_'+i+'"]:checked');
+        if (!selected) valid = false;
+      });
+    }
+
+    if (!valid) {
+      alert('⚠️ Please fill in all required fields (marked with *) and answer every food-frequency row before submitting.');
+      return;
+    }
+
+    // Build summary
+    const fd = new FormData(this);
+    let html = '<h2 style="color:var(--accent);margin-bottom:.8rem;">✅ Assessment Submitted — Summary</h2>';
+    html += '<div class="summary-box">';
+    html += '<strong>Name:</strong> ' + (fd.get('name')||'—') + ' &nbsp;|&nbsp; <strong>Age:</strong> ' + fd.get('age') + ' &nbsp;|&nbsp; <strong>Sex:</strong> ' + fd.get('sex') + '<br>';
+    html += '<strong>Height:</strong> ' + (fd.get('height')||'—') + ' cm &nbsp;|&nbsp; <strong>Weight:</strong> ' + (fd.get('weight')||'—') + ' kg';
+    if (fd.get('waist')) html += ' &nbsp;|&nbsp; <strong>Waist:</strong> ' + fd.get('waist') + ' cm';
+    html += '<br><strong>Meals/day:</strong> ' + fd.get('mealsPerDay') + ' &nbsp;|&nbsp; <strong>Snacking:</strong> ' + fd.get('snacking');
+    html += ' &nbsp;|&nbsp; <strong>Breakfast time:</strong> ' + fd.get('breakfastTime');
+    html += '<br><strong>Diet:</strong> ' + (fd.get('specificDiet')==='Other' ? fd.get('specificDietOther') : fd.get('specificDiet'));
+    html += ' &nbsp;|&nbsp; <strong>Typical day:</strong> ' + fd.get('typicalDay');
+    html += '<br><strong>Activity:</strong> ' + fd.get('activityLevel') + ' &nbsp;|&nbsp; <strong>Appetite:</strong> ' + fd.get('appetite');
+    html += ' &nbsp;|&nbsp; <strong>Sleep:</strong> ' + (fd.get('sleepHours')||'—');
+    html += '<br><strong>Allergies:</strong> ' + (fd.get('allergies')||'None') + ' &nbsp;|&nbsp; <strong>Supplements:</strong> ' + (fd.get('supplements')||'None');
+    html += '</div>';
+
+    // 24h recall
+    html += '<p style="margin-top:1rem;font-weight:650;">📋 24‑Hour Recall:</p>';
+    html += '<div class="summary-box">';
+    ['recallBreakfast','recallMidMorning','recallLunch','recallAfternoon','recallDinner','recallBedtime'].forEach(k => {
+      const v = fd.get(k);
+      if (v) html += '<strong>' + k.replace('recall','').replace(/([A-Z])/g,' $1').trim() + ':</strong> ' + v + '<br>';
+    });
+    html += '<strong>Water:</strong> ' + (fd.get('waterIntake')||'—') + '</div>';
+
+    // FFQ
+    html += '<p style="margin-top:1rem;font-weight:650;">📊 FFQ Highlights:</p>';
+    html += '<div class="summary-box">';
+    ffqItems.forEach((item,i) => {
+      const val = fd.get('ffq_'+i);
+      if (val && val!=='Never/Rarely') html += item + ' → <strong>' + val + '</strong><br>';
+    });
+    html += '</div>';
+
+    if (fd.get('notes')) html += '<p style="margin-top:1rem;"><strong>Notes:</strong> ' + fd.get('notes') + '</p>';
+
+    const card = document.getElementById('summaryCard');
+    card.innerHTML = html;
+    card.style.display = 'block';
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('d2').classList.add('done');
+    document.getElementById('d2').classList.remove('active');
+    document.getElementById('d1').classList.add('done');
+    document.getElementById('d1').classList.remove('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0c4e811ef64b232',t:'MTc4MTU2MTQ0NA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏆 3-Year "Obesity Winner" Program — Patient Journey Form</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --teal: #0d9488;
+    --teal-dark: #0f766e;
+    --teal-light: #ccfbf1;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --blue: #2563eb;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --rose: #e11d48;
+    --ink: #1f2937;
+    --slate: #475569;
+    --slate-light: #94a3b8;
+    --line: #e2e8f0;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --radius: 12px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+    padding: 0;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Top toolbar (hidden in print) ---------- */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--teal-dark);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  }
+  .toolbar .brand { font-weight: 700; font-size: 14px; display:flex; align-items:center; gap:8px; }
+  .toolbar .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    border: 1px solid rgba(255,255,255,.5);
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s;
+    font-weight: 600;
+  }
+  .btn:hover { background: rgba(255,255,255,.28); }
+  .btn.solid { background: #fff; color: var(--teal-dark); border-color:#fff; }
+  .btn.solid:hover { background: #e2e8f0; }
+  .saved-badge { font-size: 12px; opacity: .9; min-height: 16px; }
+
+  /* ---------- Page wrap ---------- */
+  .page {
+    max-width: 920px;
+    margin: 24px auto;
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 24px rgba(15,23,42,.08);
+    overflow: hidden;
+  }
+  .section { padding: 26px 30px; border-bottom: 1px solid var(--line); }
+  .section:last-child { border-bottom: none; }
+
+  /* ---------- Header ---------- */
+  .hero {
+    background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+    color: #fff;
+    padding: 34px 30px;
+    text-align: center;
+  }
+  .hero .ribbon { font-size: 42px; }
+  .hero h1 { font-size: 26px; margin: 6px 0 4px; letter-spacing: .2px; }
+  .hero .sub { font-size: 14px; opacity: .92; max-width: 640px; margin: 0 auto; }
+
+  /* ---------- Philosophy ---------- */
+  .philosophy {
+    background: var(--teal-light);
+    border-left: 5px solid var(--teal);
+    margin: 20px 0 0;
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    font-size: 14px;
+  }
+  .philosophy strong { color: var(--teal-dark); }
+
+  /* ---------- Headings ---------- */
+  h2.section-title {
+    font-size: 19px;
+    color: var(--teal-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--teal-light);
+  }
+  h2.section-title .icon { font-size: 22px; }
+  h3 { font-size: 15px; margin: 14px 0 8px; color: var(--ink); }
+  .focus-note { font-size: 13px; color: var(--slate); font-style: italic; margin: 0 0 10px; }
+
+  /* ---------- Form fields ---------- */
+  .grid { display: grid; gap: 14px 18px; }
+  .grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  @media (max-width: 680px) { .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  label.fld { font-size: 12.5px; font-weight: 600; color: var(--slate); text-transform: uppercase; letter-spacing: .4px; }
+  input[type="text"], input[type="date"], input[type="number"], textarea, select {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 9px 11px;
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ink);
+    width: 100%;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(13,148,136,.15);
+  }
+  .underline-field {
+    border: none;
+    border-bottom: 1.5px dashed var(--slate-light);
+    border-radius: 0;
+    padding: 4px 2px;
+    background: transparent;
+    font-size: 14px;
+    width: 100%;
+  }
+  .underline-field:focus { border-bottom-color: var(--teal); box-shadow:none; outline:none; }
+
+  /* ---------- Tables ---------- */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { border: 1px solid var(--line); padding: 9px 10px; text-align: left; vertical-align: middle; }
+  thead th { background: var(--teal); color: #fff; font-weight: 600; font-size: 12.5px; text-transform: uppercase; letter-spacing: .3px; }
+  tbody tr:nth-child(even) { background: #f8fafc; }
+  td.metric-label { font-weight: 600; background: #f1f5f9; color: var(--slate); white-space: nowrap; }
+  td.month-label { font-weight: 600; color: var(--teal-dark); white-space: nowrap; }
+  table input { border: 1px solid transparent; background: transparent; padding: 5px 6px; border-radius: 5px; width: 100%; }
+  table input:focus { border-color: var(--teal); background: #fff; }
+  .checkin-scroll { overflow-x: auto; }
+  .checkin-scroll table { min-width: 680px; }
+  .checkin-scroll td:first-child { background: var(--teal-light); font-weight:700; color: var(--teal-dark); }
+
+  /* ---------- Milestone checkboxes ---------- */
+  .milestone {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: #fff;
+    transition: background .15s, border-color .15s;
+    cursor: pointer;
+  }
+  .milestone:hover { background: #f8fafc; border-color: var(--slate-light); }
+  .milestone input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px; height: 22px;
+    min-width: 22px;
+    border: 2px solid var(--slate-light);
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    margin-top: 1px;
+    transition: all .15s;
+  }
+  .milestone input[type="checkbox"]:checked {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .milestone input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 900;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  .milestone input[type="checkbox"]:checked ~ .m-text { color: var(--slate-light); text-decoration: line-through; }
+  .m-text { font-size: 14px; line-height: 1.45; }
+  .m-text .tag { display:inline-block; font-weight:700; color: var(--teal-dark); }
+  .m-text .badge {
+    display:inline-block; background: var(--green-light); color: var(--green);
+    font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 20px; margin-left: 4px;
+  }
+
+  /* ---------- Phase cards ---------- */
+  .phase {
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 22px;
+    border: 1px solid var(--line);
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+  .phase-head {
+    padding: 14px 18px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .phase-head .num {
+    width: 34px; height: 34px; min-width:34px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    display:flex; align-items:center; justify-content:center;
+    font-weight: 800; font-size: 16px;
+  }
+  .phase-head h3 { color:#fff; margin:0; font-size:16px; }
+  .phase-head .months { font-size: 12.5px; opacity:.92; }
+  .phase-body { padding: 16px 18px 6px; background:#fff; }
+  .p1 .phase-head { background: linear-gradient(135deg,#0ea5e9,#0284c7); }
+  .p2 .phase-head { background: linear-gradient(135deg,#0d9488,#0f766e); }
+  .p3 .phase-head { background: linear-gradient(135deg,#d97706,#b45309); }
+  .p4 .phase-head { background: linear-gradient(135deg,#16a34a,#15803d); }
+
+  /* ---------- Pillars ---------- */
+  .pillar {
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--line);
+  }
+  .pillar h3 { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .pillar ul { list-style: none; padding-left: 0; }
+  .pillar li {
+    position: relative;
+    padding: 7px 0 7px 26px;
+    font-size: 14px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .pillar li:last-child { border-bottom: none; }
+  .pillar li::before {
+    content: "✔";
+    position: absolute; left: 0; top: 7px;
+    font-weight: 800;
+  }
+  .pillar.med { background: #eff6ff; border-color:#bfdbfe; }
+  .pillar.med li::before { color: var(--blue); }
+  .pillar.med h3 { color: var(--blue); }
+  .pillar.nut { background: #f0fdf4; border-color:#bbf7d0; }
+  .pillar.nut li::before { color: var(--green); }
+  .pillar.nut h3 { color: var(--green); }
+  .pillar.phys { background: #fffbeb; border-color:#fde68a; }
+  .pillar.phys li::before { color: var(--amber); }
+  .pillar.phys h3 { color: var(--amber); }
+  .agree-check { display:flex; align-items:center; gap:8px; font-size:13px; margin-top:12px; color: var(--slate); }
+
+  /* ---------- Signatures ---------- */
+  .sig-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 8px; }
+  @media (max-width:680px){ .sig-grid{ grid-template-columns:1fr; } }
+  .sig-box {
+    border: 1.5px dashed var(--slate-light);
+    border-radius: 10px;
+    padding: 16px;
+    background: #f8fafc;
+  }
+  .sig-box .role { font-weight: 700; color: var(--teal-dark); font-size:14px; margin-bottom: 10px; }
+  .sig-line {
+    border-bottom: 2px solid var(--ink);
+    height: 42px;
+    margin-bottom: 6px;
+    cursor: text;
+  }
+  .sig-line[contenteditable]:focus { outline: none; background: #fff; }
+  .sig-meta { display:flex; gap:14px; font-size:12px; color: var(--slate); }
+  .sig-meta input { width: 110px; }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 12px;
+    color: var(--slate-light);
+    background: #f8fafc;
+  }
+  .footer strong { color: var(--slate); }
+
+  /* ---------- Print ---------- */
+  @media print {
+    body { background: #fff; }
+    .toolbar { display: none; }
+    .page { box-shadow: none; margin: 0; border-radius: 0; max-width: 100%; }
+    .section, .phase-body { break-inside: avoid; }
+    .milestone input[type="checkbox"] { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    thead th, .phase-head, .pillar, .checkin-scroll td:first-child {
+      print-color-adjust: exact; -webkit-print-color-adjust: exact;
+    }
+    input, textarea { border: 1px solid #999 !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TOOLBAR ============ -->
+<div class="toolbar">
+  <div class="brand">🏆 <span>3-Year Obesity Winner Program</span></div>
+  <div class="actions">
+    <span class="saved-badge" id="saveStatus"></span>
+    <button class="btn" onclick="saveData()">💾 Save</button>
+    <button class="btn" onclick="loadData()">📂 Load Saved</button>
+    <button class="btn solid" onclick="window.print()">🖨️ Print / PDF</button>
+  </div>
+</div>
+
+<form id="theForm" autocomplete="on" oninput="autoSave()">
+
+<div class="page">
+
+  <!-- ============ HERO ============ -->
+  <div class="hero">
+    <div class="ribbon">🏆</div>
+    <h1>The 3-Year "Obesity Winner" Program</h1>
+    <div class="sub">Patient Journey Form — a 36-month roadmap integrating GLP-1 therapy, optimized nutrition &amp; targeted exercise for metabolic reset, lean muscle preservation, and lifelong sustainable habits.</div>
+  </div>
+
+  <!-- ============ SECTION 1: PROFILE + PHILOSOPHY ============ -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">📋</span> Patient Profile &amp; Program Philosophy</h2>
+
+    <div class="philosophy">
+      <strong>Program Philosophy:</strong> Obesity is a chronic, manageable condition. This 36-month journey is designed not just for rapid weight loss, but for <em>metabolic reset, lean muscle preservation, and lifelong sustainable habits</em> using the triad of <strong>GLP-1 therapy, optimized nutrition, and targeted exercise.</strong>
+    </div>
+
+    <div style="height:18px"></div>
+
+    <div class="grid cols-2">
+      <div class="field">
+        <label class="fld" for="pname">Patient Name</label>
+        <input type="text" id="pname" name="pname" placeholder="Full name">
+      </div>
+      <div class="field">
+        <label class="fld" for="startdate">Start Date</label>
+        <input type="date" id="startdate" name="startdate">
+      </div>
+      <div class="field">
+        <label class="fld" for="enddate">Target Completion Date</label>
+        <input type="date" id="enddate" name="enddate">
+      </div>
+      <div class="field">
+        <label class="fld" for="med">Prescribed GLP-1 Medication</label>
+        <input type="text" id="med" name="med" placeholder="e.g., Semaglutide, Tirzepatide, dose">
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:14px;">
+      <label class="fld" for="why">Primary "Why" (Motivation)</label>
+      <textarea id="why" name="why" rows="2" placeholder="What is your deepest reason for embarking on this journey?"></textarea>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 2: BASELINE METRICS ============ -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">📏</span> Baseline Metrics (Month 0)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:34%">Metric</th>
+          <th>Baseline Value</th>
+          <th>1-Year Goal</th>
+          <th>3-Year Goal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="metric-label">⚖️ Weight (kg / lbs)</td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+        </tr>
+        <tr>
+          <td class="metric-label">📐 Body Mass Index (BMI)</td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+        </tr>
+        <tr>
+          <td class="metric-label">🔥 Body Fat Percentage (%)</td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+        </tr>
+        <tr>
+          <td class="metric-label">🎽 Waist Circumference</td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+        </tr>
+        <tr>
+          <td class="metric-label">🩸 HbA1c / Fasting Glucose</td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+        </tr>
+        <tr>
+          <td class="metric-label">💓 Blood Pressure</td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ SECTION 3: MILESTONE ROADMAP ============ -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">🗺️</span> The 3-Year Milestone Roadmap</h2>
+    <p class="focus-note">This journey is divided into four distinct phases. Check off the milestones as they are achieved.</p>
+
+    <!-- PHASE 1 -->
+    <div class="phase p1">
+      <div class="phase-head">
+        <div class="num">1</div>
+        <div>
+          <h3>Initiation &amp; Tolerance</h3>
+          <div class="months">Months 0–3 · Medication acclimation, minimizing GI side effects, establishing baseline habits, early water/fat weight loss.</div>
+        </div>
+      </div>
+      <div class="phase-body">
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 1:</span> Successfully complete initial GLP-1 dose escalation with manageable side effects.</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 1:</span> Establish a daily protein goal (1.2–1.5g per kg of ideal body weight) to prevent muscle loss.</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 2:</span> Integrate foundational daily movement (e.g., 7,000 steps/day).</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 3 Milestone:</span> Achieve <strong>5% total body weight loss (TBWL)</strong>.<span class="badge">5% TBWL</span></span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 3 Milestone:</span> Complete basic resistance training induction (2×/week) to signal muscle retention.</span></label>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="phase p2">
+      <div class="phase-head">
+        <div class="num">2</div>
+        <div>
+          <h3>Active Weight Loss &amp; Optimization</h3>
+          <div class="months">Months 4–12 · Maximizing fat loss, reaching therapeutic GLP-1 dosage, improving cardiovascular fitness &amp; building strength.</div>
+        </div>
+      </div>
+      <div class="phase-body">
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 6:</span> Reach target therapeutic dose of GLP-1.</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 6 Milestone:</span> Achieve <strong>10–15% TBWL</strong>. Noticeable changes in clothing size.<span class="badge">10–15%</span></span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 6:</span> Habituate structured exercise (150 mins moderate cardio + 2–3× resistance training weekly).</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 9:</span> Re-evaluate caloric intake; adjust macros as metabolic rate adapts to new, lower body weight.</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 12 Milestone:</span> Achieve <strong>15–20%+ TBWL</strong>.<span class="badge">15–20%+</span></span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 12 Milestone:</span> Annual lab review (HbA1c, lipids, liver enzymes) showing significant metabolic improvement.</span></label>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="phase p3">
+      <div class="phase-head">
+        <div class="num">3</div>
+        <div>
+          <h3>Stabilization &amp; Body Recomposition</h3>
+          <div class="months">Months 13–24 · Managing plateaus, psychological adaptation to new body size, shifting focus from the scale to body composition.</div>
+        </div>
+      </div>
+      <div class="phase-body">
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 15:</span> Implement diet breaks or macro-cycling to manage metabolic adaptation and dietary fatigue.</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 18 Milestone:</span> Achieve maximum weight-loss plateau (often occurs between months 12–18 on GLP-1s).</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 18:</span> Provider discussion on long-term GLP-1 strategy (maintain dose, titrate down, or space out doses).</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 21:</span> Master intuitive eating principles while maintaining protein &amp; fiber targets without strict tracking.</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 24 Milestone:</span> Successfully maintain <strong>&gt;20% TBWL</strong> for 6 consecutive months.<span class="badge">&gt;20% maintained</span></span></label>
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="phase p4">
+      <div class="phase-head">
+        <div class="num">4</div>
+        <div>
+          <h3>Long-Term Maintenance &amp; "Winner" Status</h3>
+          <div class="months">Months 25–36 · Lifelong sustainability, defending the new set-point weight, absolute lifestyle integration.</div>
+        </div>
+      </div>
+      <div class="phase-body">
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 28:</span> Independence in adjusting exercise routines to avoid boredom and maintain fitness.</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 32:</span> Psychological milestone — zero anxiety regarding food choices in social settings/holidays.</span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 36 Milestone:</span> <strong>Program Graduation</strong> — successfully maintained goal weight/composition for over a year.<span class="badge">🎓 GRADUATION</span></span></label>
+        <label class="milestone"><input type="checkbox"><span class="m-text"><span class="tag">Month 36 Milestone:</span> Final 3-year lab panel &amp; DEXA / Body Composition scan confirming healthy visceral fat levels and preserved lean muscle mass.</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 4: QUARTERLY CHECK-IN ============ -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">📊</span> Quarterly Check-In Tracker</h2>
+    <p class="focus-note">Use this table during clinical visits every 3 months to log progress. Adherence &amp; consistency scored 1–10.</p>
+    <div class="checkin-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Check-In</th>
+            <th>Date</th>
+            <th>Weight</th>
+            <th>GLP-1 Dose</th>
+            <th>Dietary Adherence (1–10)</th>
+            <th>Exercise Consistency (1–10)</th>
+            <th>Notes / Adjustments Made</th>
+          </tr>
+        </thead>
+        <tbody id="checkinBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 5: 3 PILLARS ============ -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">🛡️</span> The 3 Pillars of Success — Patient Agreement</h2>
+
+    <div class="pillar med">
+      <h3>1. 💊 Medical — GLP-1 Adherence</h3>
+      <ul>
+        <li>I understand GLP-1 medications reduce appetite and delay gastric emptying.</li>
+        <li>I will communicate any persistent nausea, reflux, or GI distress to my provider <em>before</em> adjusting my dose.</li>
+        <li>I understand this medication is a tool, not a cure, and works synergistically with my lifestyle choices.</li>
+      </ul>
+      <label class="agree-check"><input type="checkbox"> I agree to the Medical Pillar.</label>
+    </div>
+
+    <div class="pillar nut">
+      <h3>2. 🥗 Nutritional — Dietary Strategy</h3>
+      <ul>
+        <li><strong>Protein First:</strong> I will prioritize protein at every meal to protect my muscle mass while losing weight.</li>
+        <li><strong>Hydration &amp; Fiber:</strong> I will consume adequate water and fiber to support digestion and prevent medication-induced constipation.</li>
+        <li><strong>Nutrient Density:</strong> Since my overall food volume will decrease, I will focus on high-quality, nutrient-dense whole foods.</li>
+      </ul>
+      <label class="agree-check"><input type="checkbox"> I agree to the Nutritional Pillar.</label>
+    </div>
+
+    <div class="pillar phys">
+      <h3>3. 🏋️ Physical — Exercise Protocol</h3>
+      <ul>
+        <li><strong>Resistance Training:</strong> I commit to lifting weights or doing bodyweight resistance at least 2 days/week to signal my body to keep muscle and burn fat.</li>
+        <li><strong>NEAT (Non-Exercise Activity Thermogenesis):</strong> I will aim to stay generally active throughout the day beyond my structured workouts.</li>
+      </ul>
+      <label class="agree-check"><input type="checkbox"> I agree to the Physical Pillar.</label>
+    </div>
+  </div>
+
+  <!-- ============ SECTION 6: SIGNATURES ============ -->
+  <div class="section">
+    <h2 class="section-title"><span class="icon">✍️</span> Acknowledgement &amp; Signatures</h2>
+    <p class="focus-note">By signing below, both patient and provider acknowledge the goals, milestones, and agreements outlined in this 3-year program.</p>
+    <div class="sig-grid">
+      <div class="sig-box">
+        <div class="role">👤 Patient Signature</div>
+        <div class="sig-line" contenteditable="true"></div>
+        <div class="sig-meta">
+          <span>Date:</span>
+          <input type="date" id="patientDate">
+        </div>
+      </div>
+      <div class="sig-box">
+        <div class="role">🩺 Provider Signature</div>
+        <div class="sig-line" contenteditable="true"></div>
+        <div class="sig-meta">
+          <span>Date:</span>
+          <input type="date" id="providerDate">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <strong>🏆 3-Year "Obesity Winner" Program</strong> — Patient Journey Form · All data is saved locally in your browser. Works fully offline.
+  </div>
+
+</div>
+</form>
+
+<script>
+  /* ---- Build quarterly check-in rows ---- */
+  (function(){
+    const months = [3,6,9,12,15,18,21,24,27,30,33,36];
+    const tbody = document.getElementById('checkinBody');
+    months.forEach(m => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>Month ${m}</td>
+        <td><input type="date"></td>
+        <td><input type="text" placeholder="e.g. 82 kg"></td>
+        <td><input type="text" placeholder="dose"></td>
+        <td><input type="number" min="1" max="10"></td>
+        <td><input type="number" min="1" max="10"></td>
+        <td><input type="text" placeholder="notes"></td>`;
+      tbody.appendChild(tr);
+    });
+  })();
+
+  /* ---- Auto-save to localStorage ---- */
+  const KEY = 'obesityWinnerForm_v1';
+  let saveTimer = null;
+
+  function collectData(){
+    const form = document.getElementById('theForm');
+    const data = { fields: {}, checks: [], tableInputs: [], sig: [] };
+
+    // named fields + dates
+    form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"], textarea').forEach(el => {
+      if (el.closest('#checkinBody') || el.dataset.table) return; // handled separately
+      const id = el.id || el.name;
+      if (id) data.fields[id] = el.value;
+    });
+
+    // checkboxes (milestones + agreements)
+    form.querySelectorAll('input[type="checkbox"]').forEach(el => {
+      data.checks.push(el.checked);
+    });
+
+    // metric table inputs
+    form.querySelectorAll('input[data-table="metrics"]').forEach(el => {
+      data.tableInputs.push(el.value);
+    });
+
+    // signature lines (contenteditable)
+    form.querySelectorAll('.sig-line').forEach(el => {
+      data.sig.push(el.innerHTML);
+    });
+
+    return data;
+  }
+
+  function autoSave(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(()=>{
+      try {
+        localStorage.setItem(KEY, JSON.stringify(collectData()));
+        const s = document.getElementById('saveStatus');
+        s.textContent = '✓ Auto-saved ' + new Date().toLocaleTimeString();
+      } catch(e){}
+    }, 600);
+  }
+
+  function saveData(){
+    try {
+      localStorage.setItem(KEY, JSON.stringify(collectData()));
+      const s = document.getElementById('saveStatus');
+      s.textContent = '✓ Saved ' + new Date().toLocaleTimeString();
+    } catch(e){ alert('Could not save locally.'); }
+  }
+
+  function restore(data){
+    const form = document.getElementById('theForm');
+
+    // fields
+    Object.keys(data.fields || {}).forEach(id => {
+      const el = document.getElementById(id) || form.querySelector(`[name="${id}"]`);
+      if (el) el.value = data.fields[id];
+    });
+
+    // checkboxes
+    const checks = form.querySelectorAll('input[type="checkbox"]');
+    (data.checks || []).forEach((val, i) => { if (checks[i]) checks[i].checked = val; });
+
+    // metric table
+    const mInputs = form.querySelectorAll('input[data-table="metrics"]');
+    (data.tableInputs || []).forEach((val, i) => { if (mInputs[i]) mInputs[i].value = val; });
+
+    // signatures
+    const sigs = form.querySelectorAll('.sig-line');
+    (data.sig || []).forEach((val, i) => { if (sigs[i]) sigs[i].innerHTML = val; });
+  }
+
+  function loadData(){
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) { document.getElementById('saveStatus').textContent = 'No saved data found.'; return; }
+      restore(JSON.parse(raw));
+      document.getElementById('saveStatus').textContent = '✓ Loaded saved data';
+    } catch(e){ alert('Could not load saved data.'); }
+  }
+
+  // load on start
+  window.addEventListener('DOMContentLoaded', () => {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) restore(JSON.parse(raw));
+    } catch(e){}
+  });
+</script>
+
+</body>
+</html>

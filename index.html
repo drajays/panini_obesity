@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Panini Chronic Weight Management — clinical forms for obesity evaluation, workup, nutrition, exercise, and 3-year GLP-1 program tracking.">
+  <title>Panini — Chronic Weight Management</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1>⚖️ Panini Weight Management</h1>
+        <p>Evidence-based clinical forms for chronic obesity care — fill, save &amp; print anytime.</p>
+      </div>
+
+      <div class="nav-section">Modules</div>
+      <ul class="nav-list" id="navList"></ul>
+
+      <div class="sidebar-footer">
+        AACE · EASO · KSSO · OMA aligned<br>
+        Works offline · Data saved locally in browser
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">☰</button>
+          <div>
+            <div class="page-title" id="pageTitle">Chronic Weight Management</div>
+            <div class="page-subtitle" id="pageSubtitle">Clinical forms toolkit — fill, save &amp; print</div>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn" id="homeBtn" type="button" title="Back to home">
+            <span aria-hidden="true">🏠</span>
+            <span class="btn-label">Home</span>
+          </button>
+          <button class="btn btn-print" id="printBtn" type="button" title="Print current form (Ctrl+P)">
+            <span aria-hidden="true">🖨️</span>
+            <span class="btn-label">Print / PDF</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="content" id="content">
+        <div class="home-view" id="homeView">
+          <div class="hero">
+            <h2>Chronic Weight Management Toolkit</h2>
+            <p>
+              A complete clinical workflow for obesity care — from initial bilingual evaluation
+              and secondary-cause workup through behavioral readiness, nutrition &amp; activity assessment,
+              and long-term GLP-1 program tracking.
+            </p>
+          </div>
+
+          <div class="workflow">
+            <strong>Suggested clinical order:</strong>
+            ① Initial Evaluation + Workup Checklist →
+            ② Psych/Behavioral Readiness →
+            ③ Dietary Recall + Exercise Assessment →
+            ④ 3-Year Winner Program (quarterly check-ins).
+            Every module includes an easy <strong>Print / PDF</strong> option.
+          </div>
+
+          <div class="module-grid" id="moduleGrid"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bedside Physical Activity Assessment — Obesity Treatment Baseline</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #1a2330;
+    background: #eef1f5;
+    margin: 0;
+    padding: 24px;
+    line-height: 1.45;
+    font-size: 14px;
+  }
+  .sheet {
+    max-width: 880px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 32px 38px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.12);
+    border-radius: 6px;
+  }
+  header {
+    border-bottom: 3px solid #1d6fa5;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+  }
+  header h1 {
+    margin: 0 0 4px;
+    font-size: 21px;
+    color: #144a6e;
+  }
+  header .sub {
+    font-size: 12.5px;
+    color: #5a6675;
+  }
+  .pt-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px 16px;
+    margin-bottom: 22px;
+  }
+  .fld { display: flex; flex-direction: column; }
+  .fld.span2 { grid-column: span 2; }
+  .fld label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #6b7686; margin-bottom: 3px; }
+  .fld .line { border-bottom: 1px solid #aab4c0; min-height: 22px; }
+  section {
+    border: 1px solid #d6dde5;
+    border-radius: 6px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .s-head {
+    background: #1d6fa5;
+    color: #fff;
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .s-head .tag { background: rgba(255,255,255,.25); padding: 1px 8px; border-radius: 10px; font-size: 11px; }
+  .s-body { padding: 14px 16px; }
+  .q { margin-bottom: 12px; }
+  .q:last-child { margin-bottom: 0; }
+  .q .qt { font-weight: 600; margin-bottom: 5px; }
+  .ans { display: inline-flex; align-items: center; gap: 6px; margin-right: 18px; }
+  .box {
+    display: inline-block;
+    width: 46px; border-bottom: 1px solid #1a2330;
+    text-align: center; font-weight: 700; color: #144a6e;
+  }
+  .unit { color: #5a6675; font-size: 12.5px; }
+  .calc {
+    background: #f1f7fb; border: 1px dashed #1d6fa5;
+    padding: 8px 12px; border-radius: 5px; margin-top: 8px; font-size: 13px;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { border: 1px solid #c7d0da; padding: 6px 8px; text-align: left; }
+  th { background: #eaf1f7; font-weight: 600; }
+  td.c { text-align: center; }
+  .cb { display: inline-block; width: 15px; height: 15px; border: 1.5px solid #5a6675; border-radius: 3px; vertical-align: middle; }
+  .dasi-list { columns: 2; column-gap: 26px; font-size: 12.5px; margin: 0; padding: 0; list-style: none; }
+  .dasi-list li { break-inside: avoid; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+  .dasi-list .w { margin-left: auto; color: #6b7686; font-size: 11px; white-space: nowrap; }
+  .obj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .obj-card { border: 1px solid #d6dde5; border-radius: 5px; padding: 10px 12px; }
+  .obj-card h4 { margin: 0 0 6px; font-size: 13px; color: #144a6e; }
+  .summary { background: #144a6e; color: #fff; }
+  .summary .s-body { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+  .summary .met { text-align: center; }
+  .summary .met .v { font-size: 26px; font-weight: 700; }
+  .summary .met .l { font-size: 11px; opacity: .85; text-transform: uppercase; letter-spacing: .04em; }
+  .interp { margin-top: 12px; font-size: 13px; }
+  .interp .opt { margin-right: 20px; }
+  .footnote { font-size: 10.5px; color: #8a94a2; margin-top: 16px; border-top: 1px solid #e2e7ed; padding-top: 8px; }
+  .signrow { display: flex; gap: 40px; margin-top: 20px; }
+  .signrow .sf { flex: 1; }
+  .signrow .sf .line { border-bottom: 1px solid #1a2330; height: 28px; }
+  .signrow .sf label { font-size: 11px; color: #6b7686; }
+  @media print {
+    body { background: #fff; padding: 0; font-size: 12px; }
+    .sheet { box-shadow: none; max-width: none; padding: 14px 18px; }
+    section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <h1>Bedside Physical Activity Assessment</h1>
+    <div class="sub">Baseline documentation of exercise behavior — Obesity / Cardio-Metabolic Treatment Program</div>
+  </header>
+
+  <!-- PATIENT -->
+  <div class="pt-grid">
+    <div class="fld span2"><label>Patient Name</label><div class="line"></div></div>
+    <div class="fld"><label>MRN / ID</label><div class="line"></div></div>
+    <div class="fld"><label>Date</label><div class="line"></div></div>
+    <div class="fld"><label>Age</label><div class="line"></div></div>
+    <div class="fld"><label>Sex</label><div class="line"></div></div>
+    <div class="fld"><label>BMI (kg/m²)</label><div class="line"></div></div>
+    <div class="fld"><label>Assessor</label><div class="line"></div></div>
+  </div>
+
+  <!-- 1. EVS -->
+  <section>
+    <div class="s-head">1. Exercise Vital Sign (EVS) <span class="tag">~30 sec</span></div>
+    <div class="s-body">
+      <div class="q">
+        <div class="qt">Q1. On average, how many <u>days per week</u> do you do moderate-to-strenuous exercise (e.g., a brisk walk)?</div>
+        <span class="ans"><span class="box"></span><span class="unit">days/week</span></span>
+      </div>
+      <div class="q">
+        <div class="qt">Q2. On average, how many <u>minutes</u> do you exercise at this level each day?</div>
+        <span class="ans"><span class="box"></span><span class="unit">min/day</span></span>
+      </div>
+      <div class="calc">
+        <strong>Weekly total = Days × Minutes =</strong>
+        <span class="box"></span> × <span class="box"></span> =
+        <span class="box"></span> <span class="unit">min/week</span><br>
+        <span class="cb"></span> ≥ 150 min/week (meets guideline) &nbsp;&nbsp;
+        <span class="cb"></span> &lt; 150 min/week (inactive — flag)
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. GODIN -->
+  <section>
+    <div class="s-head">2. Godin–Shephard Leisure-Time Activity (GSLTPAQ) <span class="tag">~1 min</span></div>
+    <div class="s-body">
+      <p style="margin-top:0;font-size:12.5px;">In a typical <u>7-day week</u>, how many times do you do the following for more than 15 minutes during free time?</p>
+      <table>
+        <thead><tr><th>Intensity</th><th>Examples</th><th class="c"># times/week</th><th class="c">Weight</th><th class="c">Subtotal</th></tr></thead>
+        <tbody>
+          <tr><td>Strenuous</td><td>Running, fast cycling, vigorous swimming</td><td class="c"><span class="box"></span></td><td class="c">× 9</td><td class="c"><span class="box"></span></td></tr>
+          <tr><td>Moderate</td><td>Brisk walking, easy cycling, dancing</td><td class="c"><span class="box"></span></td><td class="c">× 5</td><td class="c"><span class="box"></span></td></tr>
+          <tr><td>Mild</td><td>Easy walking, light stretching, golf</td><td class="c"><span class="box"></span></td><td class="c">× 3</td><td class="c"><span class="box"></span></td></tr>
+        </tbody>
+      </table>
+      <div class="calc">
+        <strong>Godin Score (sum of subtotals) =</strong> <span class="box"></span> &nbsp;&nbsp;
+        <span class="cb"></span> ≥ 24 Active &nbsp;
+        <span class="cb"></span> 14–23 Moderately active &nbsp;
+        <span class="cb"></span> &lt; 14 Insufficiently active
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. DASI -->
+  <section>
+    <div class="s-head">3. Duke Activity Status Index (DASI) — functional capacity <span class="tag">~2 min</span></div>
+    <div class="s-body">
+      <p style="margin-top:0;font-size:12.5px;">Tick each task the patient <u>can do without difficulty</u>. Add the weights of all ticked items.</p>
+      <ul class="dasi-list">
+        <li><span class="cb"></span> Take care of yourself (eat, dress, bathe) <span class="w">2.75</span></li>
+        <li><span class="cb"></span> Walk indoors, e.g., around the house <span class="w">1.75</span></li>
+        <li><span class="cb"></span> Walk 1–2 blocks on level ground <span class="w">2.75</span></li>
+        <li><span class="cb"></span> Climb a flight of stairs / walk up a hill <span class="w">5.50</span></li>
+        <li><span class="cb"></span> Run a short distance <span class="w">8.00</span></li>
+        <li><span class="cb"></span> Light housework (dusting, dishes) <span class="w">2.70</span></li>
+        <li><span class="cb"></span> Moderate housework (vacuum, groceries) <span class="w">3.50</span></li>
+        <li><span class="cb"></span> Heavy housework (scrub floors, move furniture) <span class="w">8.00</span></li>
+        <li><span class="cb"></span> Yard work (rake, mow, weed) <span class="w">4.50</span></li>
+        <li><span class="cb"></span> Sexual relations <span class="w">5.25</span></li>
+        <li><span class="cb"></span> Moderate recreation (dancing, bowling) <span class="w">6.00</span></li>
+        <li><span class="cb"></span> Strenuous sport (swim, tennis, football) <span class="w">7.50</span></li>
+      </ul>
+      <div class="calc">
+        <strong>DASI total =</strong> <span class="box"></span> /58.2
+        &nbsp;→&nbsp; <strong>VO₂ peak ≈</strong> (0.43 × DASI) + 9.6 = <span class="box"></span> mL/kg/min
+        &nbsp;→&nbsp; <strong>METs ≈</strong> VO₂ ÷ 3.5 = <span class="box"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. OBJECTIVE -->
+  <section>
+    <div class="s-head">4. Immediate Objective Surrogates <span class="tag">optional, ~2 min</span></div>
+    <div class="s-body">
+      <div class="obj-grid">
+        <div class="obj-card">
+          <h4>Smartphone / Wearable</h4>
+          30-day avg steps/day: <span class="box"></span><br>
+          Resting HR: <span class="box"></span> bpm<br>
+          Source: <span class="cb"></span> Apple Health <span class="cb"></span> Google Fit <span class="cb"></span> Watch <span class="cb"></span> N/A
+        </div>
+        <div class="obj-card">
+          <h4>Heart Rate Recovery (HRR)</h4>
+          Peak HR: <span class="box"></span> bpm<br>
+          HR at 1 min post-exertion: <span class="box"></span> bpm<br>
+          <strong>HRR (drop) =</strong> <span class="box"></span> bpm <span class="unit">(&gt;12 normal)</span>
+        </div>
+        <div class="obj-card">
+          <h4>Handgrip Dynamometry</h4>
+          Right: <span class="box"></span> kg &nbsp; Left: <span class="box"></span> kg<br>
+          <span class="cb"></span> Low for age/sex (frailty flag)
+        </div>
+        <div class="obj-card">
+          <h4>30-Second Sit-to-Stand</h4>
+          Repetitions: <span class="box"></span><br>
+          <span class="cb"></span> Below age-norm (lower-body weakness flag)
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUMMARY -->
+  <section class="summary">
+    <div class="s-head" style="background:#0e3550;">Baseline Summary &amp; Activity Classification</div>
+    <div class="s-body">
+      <div class="met"><div class="v">__ /wk</div><div class="l">EVS min/week</div></div>
+      <div class="met"><div class="v">__</div><div class="l">Godin Score</div></div>
+      <div class="met"><div class="v">__ METs</div><div class="l">DASI capacity</div></div>
+    </div>
+  </section>
+
+  <div class="interp">
+    <strong>Overall baseline classification:</strong>
+    <span class="opt"><span class="cb"></span> Active (meets ≥150 min &amp; Godin ≥24)</span>
+    <span class="opt"><span class="cb"></span> Insufficiently active</span>
+    <span class="opt"><span class="cb"></span> Sedentary / high-risk</span>
+  </div>
+
+  <div class="pt-grid" style="margin-top:14px;grid-template-columns:1fr;">
+    <div class="fld"><label>Barriers to activity (pain, time, motivation, comorbidity)</label><div class="line"></div></div>
+    <div class="fld"><label>Initial exercise goal / prescription</label><div class="line"></div></div>
+  </div>
+
+  <div class="signrow">
+    <div class="sf"><div class="line"></div><label>Clinician signature</label></div>
+    <div class="sf"><div class="line"></div><label>Date &amp; time</label></div>
+    <div class="sf"><div class="line"></div><label>Next review date</label></div>
+  </div>
+
+  <div class="footnote">
+    Tools: Exercise Vital Sign (EVS); Godin–Shephard Leisure-Time PA Questionnaire; Duke Activity Status Index (DASI, max 58.2; VO₂peak = 0.43×DASI + 9.6).
+    Recommended minimum protocol for a busy ward: <strong>EVS + smartphone step average.</strong> For documentation/baseline tracking only — not a substitute for formal cardiopulmonary exercise testing.
+  </div>
+
+</div>
+</body>
+</html>

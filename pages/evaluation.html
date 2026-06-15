@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obesity Evaluation Form - Bilingual (English / हिंदी) | 2-Page A4 Proforma</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap');
+
+        @page {
+            size: A4;
+            margin: 0.5cm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, 'Noto Sans Devanagari', Helvetica, sans-serif;
+            font-size: 8pt;
+            line-height: 1.15;
+            color: #222;
+            width: 210mm;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        .page {
+            width: 210mm;
+            min-height: 287mm;
+            padding: 4mm 5mm;
+            background: white;
+            page-break-after: always;
+        }
+        
+        .page:last-child {
+            page-break-after: auto;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #1e40af;
+            padding-bottom: 2mm;
+            margin-bottom: 3mm;
+        }
+        
+        .header h1 {
+            font-size: 12pt;
+            color: #1e40af;
+            margin-bottom: 1mm;
+        }
+        
+        .header p {
+            font-size: 7pt;
+            color: #444;
+        }
+        
+        .language-switch {
+            text-align: center;
+            margin-bottom: 3mm;
+            padding: 2mm;
+            background: #f1f5f9;
+            border: 1px solid #64748b;
+            border-radius: 4px;
+        }
+        
+        .language-switch button {
+            padding: 3px 12px;
+            margin: 0 3px;
+            font-size: 8pt;
+            cursor: pointer;
+            border: 1px solid #1e40af;
+            background: white;
+            color: #1e40af;
+            border-radius: 3px;
+        }
+        
+        .language-switch button.active {
+            background: #1e40af;
+            color: white;
+        }
+        
+        .patient-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 2mm;
+            margin-bottom: 3mm;
+            padding: 2mm;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+        }
+        
+        .patient-info label {
+            font-size: 6.5pt;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.3mm;
+        }
+        
+        .patient-info input {
+            width: 100%;
+            padding: 1.2mm;
+            border: 1px solid #64748b;
+            font-size: 7.5pt;
+        }
+        
+        .section {
+            margin-bottom: 2.5mm;
+        }
+        
+        .section-title {
+            background: #1e40af;
+            color: white;
+            padding: 1.2mm 2.5mm;
+            font-size: 7.5pt;
+            font-weight: bold;
+            margin-bottom: 1.5mm;
+        }
+        
+        .question {
+            margin-bottom: 1.8mm;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: #1e40af;
+            display: inline-block;
+            width: 5mm;
+        }
+        
+        .question-text {
+            display: inline;
+            font-size: 7.5pt;
+        }
+        
+        .answer-textarea {
+            width: 100%;
+            border: 1px solid #64748b;
+            padding: 1.2mm;
+            font-size: 7pt;
+            resize: vertical;
+            min-height: 7mm;
+            margin-top: 0.8mm;
+            font-family: Arial, 'Noto Sans Devanagari', sans-serif;
+        }
+        
+        .footer {
+            font-size: 6pt;
+            color: #666;
+            text-align: center;
+            margin-top: 2mm;
+            border-top: 1px solid #cbd5e1;
+            padding-top: 1.5mm;
+        }
+        
+        .instructions {
+            font-size: 6.5pt;
+            background: #fefce8;
+            padding: 1.5mm;
+            border: 1px solid #eab308;
+            margin-bottom: 2.5mm;
+        }
+        
+        .signature-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5mm;
+            margin-top: 3mm;
+        }
+        
+        .signature-box {
+            border-bottom: 1px solid #64748b;
+            height: 7mm;
+        }
+        
+        .label-small {
+            font-size: 6.5pt;
+            font-weight: bold;
+        }
+
+        /* Print Styles - Clean 2 Page Proforma */
+        @media print {
+            body {
+                width: 210mm;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .language-switch {
+                display: none !important;
+            }
+            
+            .page {
+                min-height: 287mm;
+                padding: 5mm 6mm;
+                page-break-after: always;
+                box-shadow: none;
+            }
+            
+            .page:last-child {
+                page-break-after: auto;
+            }
+            
+            .answer-textarea {
+                border: 1px solid #64748b;
+                min-height: 6.5mm;
+            }
+            
+            .section-title {
+                background: #1e40af !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        
+        .lang-en, .lang-hi {
+            display: none;
+        }
+        
+        .lang-en.active, .lang-hi.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <!-- Language Switcher (Hidden on Print) -->
+    <div class="language-switch">
+        <button onclick="switchLanguage('en')" id="btn-en" class="active">English</button>
+        <button onclick="switchLanguage('hi')" id="btn-hi">हिंदी</button>
+    </div>
+
+    <!-- ========== ENGLISH VERSION ========== -->
+    <div id="content-en" class="lang-en active">
+        <div class="header">
+            <h1>Comprehensive Obesity Evaluation Form</h1>
+            <p><strong>30 Key Questions for Treatment Assessment</strong> | Based on AACE 2025, EASO 2024, KSSO 2022 &amp; OMA Guidelines</p>
+        </div>
+
+        <div class="patient-info">
+            <div><label>Patient Name:</label><input type="text"></div>
+            <div><label>Date of Birth / Age:</label><input type="text"></div>
+            <div><label>Date of Assessment:</label><input type="text"></div>
+            <div><label>Clinician / Clinic:</label><input type="text"></div>
+        </div>
+
+        <div class="instructions">
+            <strong>Instructions:</strong> Answer all questions honestly. This form helps assess obesity as a chronic disease, identify complications, and guide personalized treatment. All information is confidential.
+        </div>
+
+        <!-- English Sections -->
+        <div class="section">
+            <div class="section-title">1. Weight History &amp; Trajectory (Q1–5)</div>
+            <div class="question"><span class="question-number">1.</span> <span class="question-text">Describe your weight history (highest/lowest adult weight, ages or events of major changes, rapid/unintentional changes).</span></div>
+            <textarea class="answer-textarea" rows="2"></textarea>
+            
+            <div class="question"><span class="question-number">2.</span> <span class="question-text">At what age/life stage did significant weight gain begin? What factors contributed (pregnancy, medications, stress, menopause)?</span></div>
+            <textarea class="answer-textarea" rows="2"></textarea>
+            
+            <div class="question"><span class="question-number">3.</span> <span class="question-text">Previous weight loss attempts (diets, exercise, programs, medications, surgery)? Outcomes and reasons for stopping?</span></div>
+            <textarea class="answer-textarea" rows="2"></textarea>
+            
+            <div class="question"><span class="question-number">4.</span> <span class="question-text">What is your “healthiest” or target weight, and why? What are your current treatment goals?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">5.</span> <span class="question-text">Any recent weight changes (past 6–12 months) and possible explanations?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">2. Medical History &amp; Comorbidities (Q6–12)</div>
+            <div class="question"><span class="question-number">6.</span> <span class="question-text">Diagnosed conditions? (T2DM/prediabetes, hypertension, dyslipidemia, heart disease, OSA, osteoarthritis, NAFLD, GERD, PCOS, gout, etc.)</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">7.</span> <span class="question-text">Current symptoms linked to obesity? (shortness of breath, chest pain, leg swelling, joint pain, snoring, daytime sleepiness, polyuria, polydipsia, skin changes)</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">8.</span> <span class="question-text">Recent tests/screenings for obesity complications (glucose, lipids, LFTs, BP, sleep study, cancer screening)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">9.</span> <span class="question-text">Smoking, alcohol, or recreational substance use (amount/frequency)?</span></div>
+            <div style="display:flex; gap:2mm;"><input type="text" placeholder="Smoking" style="flex:1; padding:1mm; font-size:7pt;"><input type="text" placeholder="Alcohol" style="flex:1; padding:1mm; font-size:7pt;"><input type="text" placeholder="Other" style="flex:1; padding:1mm; font-size:7pt;"></div>
+            
+            <div class="question"><span class="question-number">10.</span> <span class="question-text">Menstrual irregularities, PCOS symptoms (hirsutism, acne, infertility), or pregnancy plans/contraception?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">11.</span> <span class="question-text">Urogenital/reproductive/hormonal symptoms (ED, low libido, stress incontinence)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">12.</span> <span class="question-text">Symptoms suggesting secondary/endocrine cause (fatigue, cold intolerance, purple striae, easy bruising, muscle weakness)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">3. Medications, Supplements &amp; Family History (Q13–16)</div>
+            <div class="question"><span class="question-number">13.</span> <span class="question-text">Current medications/supplements? Any that caused weight changes (steroids, antidepressants, etc.)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">14.</span> <span class="question-text">Previous anti-obesity medications or supplements tried? Effectiveness and side effects?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">15.</span> <span class="question-text">Family history of obesity, diabetes, heart disease, thyroid disorders, or metabolic conditions?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">16.</span> <span class="question-text">Known genetic conditions or syndromes affecting weight/metabolism in family?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+        </div>
+    </div>
+
+    <!-- ========== HINDI VERSION ========== -->
+    <div id="content-hi" class="lang-hi">
+        <div class="header">
+            <h1>व्यापक मोटापा मूल्यांकन फॉर्म</h1>
+            <p><strong>उपचार मूल्यांकन हेतु 30 प्रमुख प्रश्न</strong> | AACE 2025, EASO 2024, KSSO 2022 एवं OMA दिशानिर्देशों पर आधारित</p>
+        </div>
+
+        <div class="patient-info">
+            <div><label>रोगी का नाम:</label><input type="text"></div>
+            <div><label>जन्म तिथि / आयु:</label><input type="text"></div>
+            <div><label>मूल्यांकन की तिथि:</label><input type="text"></div>
+            <div><label>चिकित्सक / क्लिनिक:</label><input type="text"></div>
+        </div>
+
+        <div class="instructions">
+            <strong>निर्देश:</strong> सभी प्रश्नों का ईमानदारी से उत्तर दें। यह फॉर्म मोटापे को एक पुरानी बीमारी के रूप में मूल्यांकन करने, जटिलताओं की पहचान करने और व्यक्तिगत उपचार योजना बनाने में मदद करता है। सभी जानकारी गोपनीय रखी जाएगी।
+        </div>
+
+        <!-- Hindi Sections -->
+        <div class="section">
+            <div class="section-title">1. वजन का इतिहास एवं प्रक्षेपवक्र (प्रश्न 1–5)</div>
+            <div class="question"><span class="question-number">1.</span> <span class="question-text">अपने वजन का इतिहास बताएं (वयस्क अवस्था में सबसे अधिक और सबसे कम वजन, प्रमुख बदलावों की आयु या घटनाएँ, तेज या अनजाने में वजन बढ़ना/घटना)।</span></div>
+            <textarea class="answer-textarea" rows="2"></textarea>
+            
+            <div class="question"><span class="question-number">2.</span> <span class="question-text">किस आयु या जीवन चरण में महत्वपूर्ण वजन बढ़ना शुरू हुआ? कौन-कौन से कारक जिम्मेदार थे (गर्भावस्था, दवाएँ, तनाव, रजोनिवृत्ति)?</span></div>
+            <textarea class="answer-textarea" rows="2"></textarea>
+            
+            <div class="question"><span class="question-number">3.</span> <span class="question-text">वजन घटाने के लिए पहले किए गए प्रयास (आहार, व्यायाम, प्रोग्राम, दवाएँ, सर्जरी)? परिणाम और रोकने के कारण?</span></div>
+            <textarea class="answer-textarea" rows="2"></textarea>
+            
+            <div class="question"><span class="question-number">4.</span> <span class="question-text">आपका “स्वास्थ्यवर्धक” या लक्ष्य वजन क्या है और क्यों? वर्तमान उपचार के आपके लक्ष्य क्या हैं?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">5.</span> <span class="question-text">पिछले 6–12 महीनों में कोई हालिया वजन परिवर्तन हुआ है? संभावित कारण क्या हैं?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">2. चिकित्सा इतिहास एवं सह-रोग (प्रश्न 6–12)</div>
+            <div class="question"><span class="question-number">6.</span> <span class="question-text">निदान किए गए रोग? (टाइप 2 मधुमेह/प्रीडायबिटीज, उच्च रक्तचाप, डिस्लिपिडेमिया, हृदय रोग, OSA, ऑस्टियोआर्थराइटिस, NAFLD, GERD, PCOS, गाउट आदि)</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">7.</span> <span class="question-text">मोटापे से जुड़े वर्तमान लक्षण? (साँस फूलना, सीने में दर्द, पैरों में सूजन, जोड़ों का दर्द, खर्राटे, दिन में अत्यधिक नींद, बार-बार पेशाब, अत्यधिक प्यास, त्वचा में बदलाव)</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">8.</span> <span class="question-text">मोटापे की जटिलताओं के लिए हालिया जाँच/स्क्रीनिंग (ग्लूकोज, लिपिड, LFT, BP, स्लीप स्टडी, कैंसर स्क्रीनिंग)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">9.</span> <span class="question-text">धूम्रपान, शराब या अन्य नशीले पदार्थों का सेवन (मात्रा/आवृत्ति)?</span></div>
+            <div style="display:flex; gap:2mm;"><input type="text" placeholder="धूम्रपान" style="flex:1; padding:1mm; font-size:7pt;"><input type="text" placeholder="शराब" style="flex:1; padding:1mm; font-size:7pt;"><input type="text" placeholder="अन्य" style="flex:1; padding:1mm; font-size:7pt;"></div>
+            
+            <div class="question"><span class="question-number">10.</span> <span class="question-text">मासिक धर्म की अनियमितता, PCOS के लक्षण (अत्यधिक बाल उगना, मुंहासे, बांझपन), या गर्भावस्था की योजना/गर्भनिरोधक?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">11.</span> <span class="question-text">मूत्रजनन, प्रजनन या हार्मोन संबंधी लक्षण (नपुंसकता, यौन इच्छा में कमी, तनाव मूत्र असंयम)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">12.</span> <span class="question-text">माध्यमिक/अंतःस्रावी कारण के संकेत (थकान, ठंड लगना, बैंगनी निशान, आसानी से चोट लगना, मांसपेशियों की कमजोरी)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">3. दवाएँ, सप्लीमेंट्स एवं पारिवारिक इतिहास (प्रश्न 13–16)</div>
+            <div class="question"><span class="question-number">13.</span> <span class="question-text">वर्तमान में ली जा रही दवाएँ/सप्लीमेंट्स? कोई ऐसी दवा जिससे वजन में बदलाव हुआ हो (स्टेरॉयड, एंटीडिप्रेसेंट आदि)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">14.</span> <span class="question-text">पहले मोटापा-रोधी दवाएँ या सप्लीमेंट्स आजमाए? प्रभावशीलता और दुष्प्रभाव?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">15.</span> <span class="question-text">परिवार में मोटापा, मधुमेह, हृदय रोग, थायरॉइड विकार या चयापचय संबंधी रोगों का इतिहास?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">16.</span> <span class="question-text">परिवार में वजन या चयापचय प्रभावित करने वाली कोई ज्ञात आनुवंशिक स्थिति या सिंड्रोम?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page">
+    <!-- English Page 2 Content -->
+    <div id="page2-en" class="lang-en active">
+        <div class="header" style="border-bottom: 1px solid #1e40af; padding-bottom: 1.5mm; margin-bottom: 2.5mm;">
+            <h1 style="font-size: 10.5pt;">Obesity Evaluation Form – Page 2</h1>
+        </div>
+
+        <div class="section">
+            <div class="section-title">4. Lifestyle – Nutrition, Activity, Sleep &amp; Stress (Q17–21)</div>
+            <div class="question"><span class="question-number">17.</span> <span class="question-text">Typical daily/weekly eating patterns (meals, snacks, timing, night eating, emotional triggers)?</span></div>
+            <textarea class="answer-textarea" rows="2"></textarea>
+            
+            <div class="question"><span class="question-number">18.</span> <span class="question-text">Most frequent foods/beverages? Eating out frequency? Cultural/dietary preferences or restrictions?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">19.</span> <span class="question-text">Current physical activity level? Structured exercise? Barriers (pain, time, access, motivation)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">20.</span> <span class="question-text">Average nightly sleep hours? Insomnia, snoring, awakenings, or daytime fatigue?</span></div>
+            <div style="display:flex; gap:2mm;"><input type="text" placeholder="Sleep hours" style="flex:1; padding:1mm; font-size:7pt;"><input type="text" placeholder="Sleep issues" style="flex:2; padding:1mm; font-size:7pt;"></div>
+            
+            <div class="question"><span class="question-number">21.</span> <span class="question-text">Stress level and coping strategies? Recent major stressors?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">5. Psychological, Behavioral &amp; Motivational Factors (Q22–26)</div>
+            <div class="question"><span class="question-number">22.</span> <span class="question-text">History of depression, anxiety, PTSD, or other mental health conditions? Impact of weight on mood/self-esteem?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">23.</span> <span class="question-text">Binge eating, loss of control, purging, restrictive dieting, or diagnosed/suspected eating disorder?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">24.</span> <span class="question-text">Current motivation for treatment? Specific, realistic goals (weight loss %, energy, blood sugar, mobility)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">25.</span> <span class="question-text">Feelings about treatment options (lifestyle, medications, counseling, bariatric surgery)? Concerns or preferences?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">26.</span> <span class="question-text">Experienced weight stigma/bias in healthcare, work, or social settings? Impact on health approach?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">6. Social Determinants, Environment &amp; Additional Context (Q27–30)</div>
+            <div class="question"><span class="question-number">27.</span> <span class="question-text">Access to affordable healthy food, safe exercise spaces, transportation, stable housing? Financial/environmental barriers?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">28.</span> <span class="question-text">Support systems (family, friends, community, workplace)? Level of involvement in your goals?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">29.</span> <span class="question-text">History of trauma, adverse childhood experiences (ACEs), or psychosocial stressors related to weight/eating?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">30.</span> <span class="question-text">Anything else about your health, lifestyle, culture, or expectations we should know?</span></div>
+            <textarea class="answer-textarea" rows="2"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Additional Notes / Clinician Observations</div>
+            <textarea class="answer-textarea" rows="3" placeholder="Space for additional comments, referrals, or follow-up items..."></textarea>
+        </div>
+
+        <div class="signature-row">
+            <div><div class="label-small">Patient Signature:</div><div class="signature-box"></div></div>
+            <div><div class="label-small">Clinician Signature / Date:</div><div class="signature-box"></div></div>
+        </div>
+
+        <div class="footer">
+            <strong>References:</strong> AACE 2025 ABCD Algorithm, EASO 2024, KSSO 2022, OMA Obesity Algorithm, Endocrine Society Guidelines.<br>
+            This form supports comprehensive, person-centered obesity evaluation. Reassess periodically. | Page 2 of 2 | Confidential
+        </div>
+    </div>
+
+    <!-- Hindi Page 2 Content -->
+    <div id="page2-hi" class="lang-hi">
+        <div class="header" style="border-bottom: 1px solid #1e40af; padding-bottom: 1.5mm; margin-bottom: 2.5mm;">
+            <h1 style="font-size: 10.5pt;">मोटापा मूल्यांकन फॉर्म – पृष्ठ 2</h1>
+        </div>
+
+        <div class="section">
+            <div class="section-title">4. जीवनशैली – पोषण, गतिविधि, नींद एवं तनाव (प्रश्न 17–21)</div>
+            <div class="question"><span class="question-number">17.</span> <span class="question-text">दैनिक/साप्ताहिक खान-पान की आदतें (भोजन, नाश्ता, समय, रात में खाना, भावनात्मक ट्रिगर)?</span></div>
+            <textarea class="answer-textarea" rows="2"></textarea>
+            
+            <div class="question"><span class="question-number">18.</span> <span class="question-text">सबसे अधिक खाए जाने वाले खाद्य पदार्थ/पेय? बाहर खाने की आवृत्ति? सांस्कृतिक/आहार संबंधी प्राथमिकताएँ या प्रतिबंध?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">19.</span> <span class="question-text">वर्तमान शारीरिक गतिविधि का स्तर? संरचित व्यायाम? बाधाएँ (दर्द, समय, पहुँच, प्रेरणा)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">20.</span> <span class="question-text">रात में औसत नींद के घंटे? अनिद्रा, खर्राटे, बार-बार जागना या दिन में थकान?</span></div>
+            <div style="display:flex; gap:2mm;"><input type="text" placeholder="नींद के घंटे" style="flex:1; padding:1mm; font-size:7pt;"><input type="text" placeholder="नींद संबंधी समस्याएँ" style="flex:2; padding:1mm; font-size:7pt;"></div>
+            
+            <div class="question"><span class="question-number">21.</span> <span class="question-text">तनाव का स्तर और मुकाबला करने के तरीके? हालिया प्रमुख तनावपूर्ण घटनाएँ?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">5. मनोवैज्ञानिक, व्यवहारिक एवं प्रेरक कारक (प्रश्न 22–26)</div>
+            <div class="question"><span class="question-number">22.</span> <span class="question-text">अवसाद, चिंता, PTSD या अन्य मानसिक स्वास्थ्य स्थितियों का इतिहास? वजन का मूड या आत्मसम्मान पर प्रभाव?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">23.</span> <span class="question-text">भोजन का अधिक मात्रा में सेवन, नियंत्रण खोना, उल्टी करना, प्रतिबंधात्मक आहार, या खाने के विकार का निदान/संशय?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">24.</span> <span class="question-text">उपचार के लिए वर्तमान प्रेरणा? विशिष्ट, यथार्थवादी लक्ष्य (वजन घटाने का प्रतिशत, ऊर्जा, रक्त शर्करा, गतिशीलता)?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">25.</span> <span class="question-text">उपचार विकल्पों (जीवनशैली, दवाएँ, काउंसलिंग, बेरिएट्रिक सर्जरी) के प्रति भावनाएँ? चिंताएँ या प्राथमिकताएँ?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">26.</span> <span class="question-text">स्वास्थ्य सेवा, कार्यस्थल या सामाजिक परिवेश में वजन संबंधी भेदभाव/कलंक का अनुभव? स्वास्थ्य दृष्टिकोण पर प्रभाव?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">6. सामाजिक निर्धारक, पर्यावरण एवं अतिरिक्त संदर्भ (प्रश्न 27–30)</div>
+            <div class="question"><span class="question-number">27.</span> <span class="question-text">किफायती स्वस्थ भोजन, सुरक्षित व्यायाम स्थान, परिवहन, स्थिर आवास की पहुँच? वित्तीय/पर्यावरणीय बाधाएँ?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">28.</span> <span class="question-text">समर्थन प्रणाली (परिवार, मित्र, समुदाय, कार्यस्थल)? आपके लक्ष्यों में उनकी भागीदारी का स्तर?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">29.</span> <span class="question-text">आघात, प्रतिकूल बचपन के अनुभव (ACEs), या वजन/खान-पान से जुड़े मनोसामाजिक तनाव का इतिहास?</span></div>
+            <textarea class="answer-textarea" rows="1.5"></textarea>
+            
+            <div class="question"><span class="question-number">30.</span> <span class="question-text">आपके स्वास्थ्य, जीवनशैली, संस्कृति या उपचार की अपेक्षाओं के बारे में कोई अन्य बात जो हम जानना चाहिए?</span></div>
+            <textarea class="answer-textarea" rows="2"></textarea>
+        </div>
+
+        <div class="section">
+            <div class="section-title">अतिरिक्त टिप्पणियाँ / चिकित्सक की टिप्पणियाँ</div>
+            <textarea class="answer-textarea" rows="3" placeholder="अतिरिक्त टिप्पणियों, रेफरल या अनुवर्ती कार्रवाई के लिए स्थान..."></textarea>
+        </div>
+
+        <div class="signature-row">
+            <div><div class="label-small">रोगी के हस्ताक्षर:</div><div class="signature-box"></div></div>
+            <div><div class="label-small">चिकित्सक के हस्ताक्षर / तिथि:</div><div class="signature-box"></div></div>
+        </div>
+
+        <div class="footer">
+            <strong>संदर्भ:</strong> AACE 2025 ABCD Algorithm, EASO 2024, KSSO 2022, OMA Obesity Algorithm, Endocrine Society Guidelines.<br>
+            यह फॉर्म व्यापक, रोगी-केंद्रित मोटापा मूल्यांकन का समर्थन करता है। समय-समय पर पुनर्मूल्यांकन करें। | पृष्ठ 2 में से 2 | गोपनीय
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchLanguage(lang) {
+        // Toggle buttons
+        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+        document.getElementById('btn-hi').classList.toggle('active', lang === 'hi');
+        
+        // Toggle content
+        const enContent = document.getElementById('content-en');
+        const hiContent = document.getElementById('content-hi');
+        const enPage2 = document.getElementById('page2-en');
+        const hiPage2 = document.getElementById('page2-hi');
+        
+        if (lang === 'en') {
+            enContent.classList.add('active');
+            enPage2.classList.add('active');
+            hiContent.classList.remove('active');
+            hiPage2.classList.remove('active');
+        } else {
+            hiContent.classList.add('active');
+            hiPage2.classList.add('active');
+            enContent.classList.remove('active');
+            enPage2.classList.remove('active');
+        }
+    }
+    
+    // Default to English on load
+    window.onload = function() {
+        document.getElementById('content-en').classList.add('active');
+        document.getElementById('page2-en').classList.add('active');
+    }
+</script>
+<script src="../assets/js/module-print.js"></script>
+</body>
+</html>

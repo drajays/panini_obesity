@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obesity Evaluation: Secondary Causes &amp; Test Checklist | Bilingual Proforma</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&amp;display=swap');
+
+        @page {
+            size: A4;
+            margin: 0.6cm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, 'Noto Sans Devanagari', Helvetica, sans-serif;
+            font-size: 8pt;
+            line-height: 1.2;
+            color: #222;
+            width: 210mm;
+            margin: 0 auto;
+            background: white;
+            padding: 3mm;
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #1e40af;
+            padding-bottom: 2mm;
+            margin-bottom: 3mm;
+        }
+        
+        .header h1 {
+            font-size: 12pt;
+            color: #1e40af;
+            margin-bottom: 1mm;
+        }
+        
+        .header p {
+            font-size: 7pt;
+            color: #444;
+        }
+        
+        .language-switch {
+            text-align: center;
+            margin-bottom: 3mm;
+        }
+        
+        .language-switch button {
+            padding: 2px 10px;
+            font-size: 7.5pt;
+            cursor: pointer;
+            border: 1px solid #1e40af;
+            background: white;
+            color: #1e40af;
+            margin: 0 2px;
+            border-radius: 3px;
+        }
+        
+        .language-switch button.active {
+            background: #1e40af;
+            color: white;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4mm;
+        }
+        
+        .section {
+            border: 1px solid #64748b;
+            padding: 2mm;
+            background: #fafafa;
+        }
+        
+        .section-title {
+            background: #1e40af;
+            color: white;
+            padding: 1.5mm 2.5mm;
+            font-size: 8pt;
+            font-weight: bold;
+            margin-bottom: 2mm;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.3mm;
+            gap: 2mm;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+        
+        .item-text {
+            font-size: 7.3pt;
+            flex: 1;
+        }
+        
+        .sub-item {
+            margin-left: 5mm;
+            font-size: 6.8pt;
+            color: #444;
+        }
+        
+        .patient-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2mm;
+            margin-bottom: 3mm;
+            padding: 2mm;
+            background: #f1f5f9;
+            border: 1px solid #64748b;
+        }
+        
+        .patient-info label {
+            font-size: 6.5pt;
+            font-weight: bold;
+        }
+        
+        .patient-info input {
+            width: 100%;
+            padding: 1mm;
+            border: 1px solid #64748b;
+            font-size: 7pt;
+        }
+        
+        .footer {
+            font-size: 6pt;
+            color: #666;
+            text-align: center;
+            margin-top: 3mm;
+            border-top: 1px solid #cbd5e1;
+            padding-top: 1.5mm;
+        }
+        
+        .notes {
+            margin-top: 3mm;
+            border: 1px solid #64748b;
+            padding: 2mm;
+        }
+        
+        .notes label {
+            font-size: 7pt;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 1mm;
+        }
+        
+        .notes textarea {
+            width: 100%;
+            height: 18mm;
+            border: 1px solid #64748b;
+            padding: 1.5mm;
+            font-size: 7pt;
+            resize: vertical;
+        }
+        
+        @media print {
+            body {
+                width: 210mm;
+                padding: 3mm;
+            }
+            .language-switch {
+                display: none !important;
+            }
+            .section {
+                background: white !important;
+            }
+            .section-title {
+                background: #1e40af !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+        
+        .lang-en, .lang-hi {
+            display: none;
+        }
+        
+        .lang-en.active, .lang-hi.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Obesity Evaluation: Secondary Causes &amp; Recommended Tests Checklist</h1>
+    <p>Evidence-based checklist from AACE 2025, EASO 2024, KSSO 2022, Endocrine Society &amp; OMA Guidelines</p>
+</div>
+
+<!-- Language Switcher -->
+<div class="language-switch">
+    <button onclick="switchLanguage('en')" id="btn-en" class="active">English</button>
+    <button onclick="switchLanguage('hi')" id="btn-hi">हिंदी</button>
+</div>
+
+<!-- Patient Info -->
+<div class="patient-info">
+    <div><label>Patient Name:</label><input type="text"></div>
+    <div><label>Date of Birth / Age:</label><input type="text"></div>
+    <div><label>Date of Assessment:</label><input type="text"></div>
+</div>
+
+<!-- ========== ENGLISH VERSION ========== -->
+<div id="content-en" class="lang-en active">
+    <div class="main-grid">
+        
+        <!-- Secondary Causes -->
+        <div class="section">
+            <div class="section-title">SECONDARY CAUSES OF OBESITY (Check if suspected)</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>Endocrine Disorders</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Hypothyroidism (TSH)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Cushing’s syndrome (Cortisol, dexamethasone suppression)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Polycystic Ovary Syndrome (PCOS)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Hypogonadism (Testosterone, LH/FSH)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Growth hormone deficiency</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>Genetic / Syndromic Causes</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Prader-Willi syndrome</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Bardet-Biedl syndrome</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Alström syndrome</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Monogenic obesity (MC4R, LEPR mutations)</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>Medication-Induced</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Glucocorticoids / Steroids</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Antipsychotics (Olanzapine, Quetiapine, etc.)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Antidepressants (Mirtazapine, Paroxetine)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Antiepileptics (Valproate, Carbamazepine)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Insulin &amp; Sulfonylureas</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Beta-blockers, Hormonal contraceptives</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>Other Secondary Causes</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Hypothalamic lesions / tumors / injury</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Obstructive Sleep Apnea (OSA)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Depression / Psychiatric disorders</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Iatrogenic (Post-bariatric surgery weight regain)</div>
+        </div>
+        
+        <!-- Test Checklist -->
+        <div class="section">
+            <div class="section-title">RECOMMENDED TESTS &amp; SCREENINGS</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>Anthropometric Assessment</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Height, Weight, BMI calculation</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Waist circumference (men &gt;102 cm, women &gt;88 cm)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Waist-to-height ratio (&gt;0.5)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Body composition (BIA / DXA) – if available</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>Basic Laboratory Tests</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Fasting plasma glucose / HbA1c</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Lipid profile (Total cholesterol, LDL, HDL, TG)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Liver function tests (ALT, AST, GGT)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> TSH (Thyroid function)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Complete blood count (CBC)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Renal function (Creatinine, eGFR)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Uric acid</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>Additional / Targeted Tests</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> 75g OGTT (if fasting glucose inconclusive)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> STOP-BANG or polysomnography (for OSA)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> ECG (if cardiac risk)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Testosterone / LH / FSH (men with hypogonadism symptoms)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Cortisol testing (if Cushing’s suspected)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Overnight Dexamethasone Suppression Test (ONDST)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Pelvic ultrasound + hormonal profile (PCOS)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> USG Whole Abdomen (NAFLD, gallstones, PCOS)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Fibroscan (liver fibrosis assessment)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Fundus examination (diabetic retinopathy screening)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Full thyroid profile: T3, T4 + TSH</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Serum Amylase &amp; Lipase</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Genetic testing (early onset severe obesity)</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>Comorbidity Screening</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Blood pressure (every visit)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Depression screening (PHQ-9)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Eating disorder screening</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Cancer screening (age-appropriate)</div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- ========== HINDI VERSION ========== -->
+<div id="content-hi" class="lang-hi">
+    <div class="main-grid">
+        
+        <!-- Secondary Causes Hindi -->
+        <div class="section">
+            <div class="section-title">मोटापे के द्वितीयक कारण (यदि संदिग्ध हो तो चेक करें)</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>अंतःस्रावी विकार</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> हाइपोथायरॉइडिज्म (TSH)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> कुशिंग सिंड्रोम (कोर्टिसोल, डेक्सामेथासोन सप्रेशन)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> पॉलीसिस्टिक ओवरी सिंड्रोम (PCOS)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> हाइपोगोनाडिज्म (टेस्टोस्टेरोन, LH/FSH)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> ग्रोथ हार्मोन की कमी</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>आनुवंशिक / सिंड्रोमिक कारण</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> प्रेडर-विली सिंड्रोम</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> बार्डेट-बीडल सिंड्रोम</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> अल्स्ट्रॉम सिंड्रोम</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> मोनोजेनिक मोटापा (MC4R, LEPR म्यूटेशन)</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>दवा-प्रेरित</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> ग्लूकोकोर्टिकॉइड्स / स्टेरॉयड</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> एंटीसाइकोटिक्स (ओलान्ज़ापाइन, क्वेटियापाइन)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> एंटीडिप्रेसेंट्स (मिर्टाजापाइन, पैरोक्सेटीन)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> एंटीएपिलेप्टिक्स (वाल्प्रोएट, कार्बामाज़ेपाइन)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> इंसुलिन एवं सल्फोनिलयूरिया</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> बीटा-ब्लॉकर्स, हार्मोनल गर्भनिरोधक</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>अन्य द्वितीयक कारण</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> हाइपोथैलेमिक घाव / ट्यूमर / चोट</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> ऑब्स्ट्रक्टिव स्लीप एप्निया (OSA)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> अवसाद / मनोवैज्ञानिक विकार</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> इट्रोजेनिक (बेरिएट्रिक सर्जरी के बाद वजन वापसी)</div>
+        </div>
+        
+        <!-- Test Checklist Hindi -->
+        <div class="section">
+            <div class="section-title">अनुशंसित परीक्षण एवं स्क्रीनिंग</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>मानवमितीय मूल्यांकन</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> ऊँचाई, वजन, BMI गणना</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> कमर की परिधि (पुरुष &gt;102 सेमी, महिला &gt;88 सेमी)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> कमर-से-ऊँचाई अनुपात (&gt;0.5)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> शरीर संरचना (BIA / DXA) – यदि उपलब्ध हो</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>बुनियादी प्रयोगशाला परीक्षण</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> उपवास प्लाज्मा ग्लूकोज / HbA1c</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> लिपिड प्रोफाइल (कुल कोलेस्ट्रॉल, LDL, HDL, TG)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> लीवर फंक्शन टेस्ट (ALT, AST, GGT)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> TSH (थायरॉइड फंक्शन)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> पूर्ण रक्त गणना (CBC)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> किडनी फंक्शन (क्रिएटिनिन, eGFR)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> यूरिक एसिड</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>अतिरिक्त / लक्षित परीक्षण</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> 75g OGTT (यदि उपवास ग्लूकोज अस्पष्ट हो)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> STOP-BANG या पॉलीसोम्नोग्राफी (OSA के लिए)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> ECG (हृदय जोखिम होने पर)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> टेस्टोस्टेरोन / LH / FSH (हाइपोगोनाडिज्म लक्षणों वाले पुरुषों में)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> कोर्टिसोल परीक्षण (कुशिंग संदिग्ध होने पर)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Overnight Dexamethasone Suppression Test (ONDST)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> पेल्विक अल्ट्रासाउंड + हार्मोनल प्रोफाइल (PCOS)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> USG पूर्ण उदर (NAFLD, पित्ताशय पथरी, PCOS)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> Fibroscan (यकृत फाइब्रोसिस मूल्यांकन)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> फंडस परीक्षा (मधुमेह रेटिनोपैथी स्क्रीनिंग)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> पूर्ण थायरॉइड प्रोफाइल: T3, T4 + TSH</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> सीरम एमाइलेज एवं लाइपेज</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> जेनेटिक परीक्षण (शुरुआती गंभीर मोटापा)</div>
+            
+            <div class="checklist-item">
+                <input type="checkbox">
+                <div class="item-text"><strong>सह-रोग स्क्रीनिंग</strong></div>
+            </div>
+            <div class="checklist-item sub-item"><input type="checkbox"> रक्तचाप (हर विजिट पर)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> अवसाद स्क्रीनिंग (PHQ-9)</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> खाने के विकार की स्क्रीनिंग</div>
+            <div class="checklist-item sub-item"><input type="checkbox"> कैंसर स्क्रीनिंग (आयु के अनुसार)</div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Notes Section -->
+<div class="notes">
+    <label>Additional Notes / Findings / Referrals:</label>
+    <textarea placeholder="Write any additional observations, suspected diagnoses, or referrals here..."></textarea>
+</div>
+
+<div class="footer">
+    <strong>References:</strong> AACE 2025 ABCD Algorithm • EASO 2024 Guidelines • KSSO 2022 • Endocrine Society • OMA Obesity Algorithm<br>
+    This checklist supports comprehensive obesity evaluation. Use in conjunction with full history and physical examination. | Confidential
+</div>
+
+<script>
+    function switchLanguage(lang) {
+        document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+        document.getElementById('btn-hi').classList.toggle('active', lang === 'hi');
+        
+        const en = document.getElementById('content-en');
+        const hi = document.getElementById('content-hi');
+        
+        if (lang === 'en') {
+            en.classList.add('active');
+            hi.classList.remove('active');
+        } else {
+            hi.classList.add('active');
+            en.classList.remove('active');
+        }
+    }
+    
+    window.onload = function() {
+        document.getElementById('content-en').classList.add('active');
+    }
+</script>
+
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0c4dda37ee18171',t:'MTc4MTU2MTAxNg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
