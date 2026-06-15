@@ -486,6 +486,93 @@
   .clinician-insight { background: var(--amber-light); border-left: 4px solid var(--amber); }
   .clinician-insight strong { color: #b45309; }
 
+  .visit-pill.done { border-color: var(--green); }
+  .visit-done-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  .journey-toolbar-status {
+    font-size: 12px;
+    opacity: .95;
+    padding: 4px 10px;
+    background: rgba(255,255,255,.15);
+    border-radius: 6px;
+  }
+
+  #journeyProgressPanel {
+    margin-bottom: 20px;
+    padding: 18px;
+    background: #f8fafc;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .progress-stats {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 720px) { .progress-stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  .stat-card .stat-val { display: block; font-size: 18px; font-weight: 800; color: var(--teal-dark); }
+  .stat-card .stat-lbl { font-size: 10px; color: var(--slate); text-transform: uppercase; letter-spacing: .04em; }
+  .stat-card.stat-next .stat-val { color: var(--amber); }
+  .spark-wrap { margin-bottom: 14px; min-height: 40px; }
+  .spark-empty { font-size: 12px; color: var(--slate); margin: 0; }
+  .progress-table-wrap { overflow-x: auto; margin-bottom: 14px; }
+  .progress-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .progress-table th, .progress-table td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; }
+  .progress-table th { background: var(--teal-light); color: var(--teal-dark); font-size: 11px; }
+  .progress-table tr.row-done { background: #f0fdf4; }
+  .progress-table tr.row-pending { color: var(--slate-light); }
+  .progress-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn-progress {
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .btn-progress:hover { background: var(--bg); }
+  .btn-progress.primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .btn-progress.primary:hover { background: var(--teal-dark); }
+
+  .progress-report-output {
+    margin-top: 18px;
+    padding: 20px;
+    background: #fff;
+    border: 2px solid var(--teal);
+    border-radius: var(--radius);
+  }
+  .report-document .report-header { border-bottom: 2px solid var(--teal); padding-bottom: 12px; margin-bottom: 16px; }
+  .report-document .report-header h3 { margin: 0 0 8px; color: var(--teal-dark); }
+  .report-document .report-header p { margin: 4px 0; font-size: 13px; color: var(--slate); }
+  .report-visit-block {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .report-visit-block h4 { margin: 0 0 6px; font-size: 14px; color: var(--teal-dark); }
+  .report-insight { color: var(--slate); font-size: 12px; margin-top: 6px; }
+  .report-footer { margin-top: 16px; font-size: 11px; color: var(--slate-light); text-align: center; }
+
   /* ---------- Print ---------- */
   @media print {
     body { background: #fff; }
@@ -494,6 +581,17 @@
     body.print-active-visit #journeyVisitsSection .visit-nav { display: none !important; }
     body.print-active-visit .visit-form-wrap { display: none !important; }
     body.print-active-visit .visit-form-wrap.visit-print-target { display: block !important; }
+    body.print-progress-report .section:not(#journeyVisitsSection),
+    body.print-progress-report .hero,
+    body.print-progress-report .toolbar,
+    body.print-progress-report .visit-nav,
+    body.print-progress-report .visit-form-wrap,
+    body.print-progress-report .progress-stats,
+    body.print-progress-report .spark-wrap,
+    body.print-progress-report .progress-table-wrap,
+    body.print-progress-report .progress-actions { display: none !important; }
+    body.print-progress-report #journeyProgressPanel { display: block !important; border: none; padding: 0; }
+    body.print-progress-report .progress-report-output { display: block !important; border: none; margin: 0; padding: 0; }
     .toolbar { display: none; }
     .page { box-shadow: none; margin: 0; border-radius: 0; max-width: 100%; }
     .section, .phase-body, .visit-card { break-inside: avoid; }
@@ -511,10 +609,9 @@
 <div class="toolbar">
   <div class="brand">🏆 <span>3-Year Obesity Winner Program</span></div>
   <div class="actions">
-    <span class="saved-badge" id="saveStatus"></span>
-    <button class="btn" onclick="saveData()">💾 Save</button>
-    <button class="btn" onclick="loadData()">📂 Load Saved</button>
-    <button class="btn solid" onclick="window.print()">🖨️ Print / PDF</button>
+    <span class="journey-toolbar-status" id="journeyStatus">0/19 visits logged</span>
+    <button class="btn" type="button" onclick="JourneyVisits.generateProgressReport()">📈 Progress Report</button>
+    <button class="btn solid" type="button" onclick="window.print()">🖨️ Print Visit</button>
   </div>
 </div>
 
@@ -542,7 +639,7 @@
     <div class="grid cols-2">
       <div class="field">
         <label class="fld" for="pname">Patient Name</label>
-        <input type="text" id="pname" name="pname" data-panini="name" placeholder="Full name">
+        <input type="text" id="pname" name="pname" placeholder="Full name">
       </div>
       <div class="field">
         <label class="fld" for="startdate">Start Date</label>
@@ -554,7 +651,7 @@
       </div>
       <div class="field">
         <label class="fld" for="med">Prescribed GLP-1 Medication</label>
-        <input type="text" id="med" name="med" data-panini="glp1Med" placeholder="e.g., Semaglutide, Tirzepatide, dose">
+        <input type="text" id="med" name="med" placeholder="e.g., Semaglutide, Tirzepatide, dose">
       </div>
     </div>
 
@@ -579,37 +676,37 @@
       <tbody>
         <tr>
           <td class="metric-label">⚖️ Weight (kg / lbs)</td>
-          <td><input type="text" data-table="metrics" data-panini="weight"></td>
+          <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
         <tr>
           <td class="metric-label">📐 Body Mass Index (BMI)</td>
-          <td><input type="text" data-table="metrics" data-panini="bmi" data-panini-apply-only="bmi"></td>
+          <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
         <tr>
           <td class="metric-label">🔥 Body Fat Percentage (%)</td>
-          <td><input type="text" data-table="metrics" data-panini="bodyFat"></td>
+          <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
         <tr>
           <td class="metric-label">🎽 Waist Circumference</td>
-          <td><input type="text" data-table="metrics" data-panini="waist"></td>
+          <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
         <tr>
           <td class="metric-label">🩸 HbA1c / Fasting Glucose</td>
-          <td><input type="text" data-table="metrics" data-panini="hba1c"></td>
+          <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
         <tr>
           <td class="metric-label">💓 Blood Pressure</td>
-          <td><input type="text" data-table="metrics" data-panini="bp"></td>
+          <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
@@ -698,7 +795,8 @@
   <!-- ============ SECTION 4: BI-MONTHLY VISIT FORMS ============ -->
   <div class="section" id="journeyVisitsSection">
     <h2 class="section-title"><span class="icon">📊</span> Bi-Monthly Clinical Visit Forms</h2>
-    <p class="focus-note">19 unique assessments at every 2nd month (Month 0, 2, 4 … 36). Each visit includes core vitals plus a distinct clinical assessment and insight panel. Select a month below.</p>
+    <p class="focus-note">Enter data visit-by-visit — no manual save needed. Each visit auto-saves as you type. Use the progress panel below to follow your journey and generate reports.</p>
+    <div id="journeyProgressPanel"></div>
     <nav class="visit-nav" id="visitNav" aria-label="Visit month navigation"></nav>
     <div id="visitFormContainer"></div>
   </div>
@@ -762,7 +860,7 @@
   </div>
 
   <div class="footer">
-    <strong>🏆 3-Year "Obesity Winner" Program</strong> — Patient Journey Form · All data is saved locally in your browser. Works fully offline.
+    <strong>🏆 3-Year "Obesity Winner" Program</strong> — Visit data auto-saves in your browser. Generate progress reports anytime.
   </div>
 
 </div>
@@ -771,17 +869,16 @@
 <script src="../assets/js/journey-visits-data.js"></script>
 <script src="../assets/js/journey-visits.js"></script>
 <script>
-  /* ---- Auto-save to localStorage (v2 with bi-monthly visits) ---- */
+  /* ---- Auto-save milestones & profile (visits saved separately by JourneyVisits) ---- */
   const KEY = 'obesityWinnerForm_v2';
-  const KEY_LEGACY = 'obesityWinnerForm_v1';
   let saveTimer = null;
 
-  function collectData(){
+  function collectFormData(){
     const form = document.getElementById('theForm');
-    const data = { version: 2, fields: {}, checks: [], tableInputs: [], sig: [], visits: {}, activeVisitMonth: 0 };
+    const data = { version: 2, fields: {}, checks: [], tableInputs: [], sig: [] };
 
     form.querySelectorAll('input[type="text"], input[type="date"], input[type="number"], textarea').forEach(el => {
-      if (el.closest('#visitFormContainer') || el.dataset.table) return;
+      if (el.closest('#visitFormContainer') || el.closest('#journeyProgressPanel') || el.dataset.table) return;
       const id = el.id || el.name;
       if (id) data.fields[id] = el.value;
     });
@@ -799,34 +896,17 @@
       data.sig.push(el.innerHTML);
     });
 
-    if (window.JourneyVisits) {
-      data.visits = JourneyVisits.collectAllVisits();
-      data.activeVisitMonth = JourneyVisits.getActiveMonth();
-    }
-
     return data;
   }
 
   function autoSave(){
     clearTimeout(saveTimer);
     saveTimer = setTimeout(()=>{
-      try {
-        localStorage.setItem(KEY, JSON.stringify(collectData()));
-        const s = document.getElementById('saveStatus');
-        s.textContent = '✓ Auto-saved ' + new Date().toLocaleTimeString();
-      } catch(e){}
-    }, 600);
+      try { localStorage.setItem(KEY, JSON.stringify(collectFormData())); } catch(e){}
+    }, 800);
   }
 
-  function saveData(){
-    try {
-      localStorage.setItem(KEY, JSON.stringify(collectData()));
-      const s = document.getElementById('saveStatus');
-      s.textContent = '✓ Saved ' + new Date().toLocaleTimeString();
-    } catch(e){ alert('Could not save locally.'); }
-  }
-
-  function restore(data){
+  function restoreForm(data){
     const form = document.getElementById('theForm');
 
     Object.keys(data.fields || {}).forEach(id => {
@@ -847,33 +927,16 @@
 
     const sigs = form.querySelectorAll('.sig-line');
     (data.sig || []).forEach((val, i) => { if (sigs[i]) sigs[i].innerHTML = val; });
-
-    if (window.JourneyVisits && data.visits) {
-      JourneyVisits.restoreVisits(data.visits);
-      if (typeof data.activeVisitMonth === 'number') {
-        JourneyVisits.showVisit(data.activeVisitMonth);
-      }
-    }
-  }
-
-  function loadData(){
-    try {
-      const raw = localStorage.getItem(KEY) || localStorage.getItem(KEY_LEGACY);
-      if (!raw) { document.getElementById('saveStatus').textContent = 'No saved data found.'; return; }
-      restore(JSON.parse(raw));
-      document.getElementById('saveStatus').textContent = '✓ Loaded saved data';
-    } catch(e){ alert('Could not load saved data.'); }
   }
 
   window.addEventListener('DOMContentLoaded', () => {
     if (window.JourneyVisits) JourneyVisits.init();
     try {
-      const raw = localStorage.getItem(KEY) || localStorage.getItem(KEY_LEGACY);
-      if (raw) restore(JSON.parse(raw));
+      const raw = localStorage.getItem(KEY);
+      if (raw) restoreForm(JSON.parse(raw));
     } catch(e){}
   });
 </script>
-<script src="../assets/js/patient-sync.js"></script>
 <script src="../assets/js/module-print.js"></script>
 </body>
 </html>
