@@ -6,4 +6,4 @@ Open `index.html` or deploy to GitHub Pages from the repository root.
 
 **Modules:** Initial Evaluation · Secondary Causes & Tests · Weight Trajectory Map · Psych/Behavioral Readiness · Dietary Recall · Physical Activity · 3-Year Winner Program
 
-Every module includes **Print / PDF** support.
+Every module includes **Print / PDF** support. Patient demographics auto-sync across all forms via browser storage.

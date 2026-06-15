@@ -147,10 +147,26 @@
     return view;
   }
 
+  function pushPatientToIframe(iframe) {
+    try {
+      const raw = localStorage.getItem('paniniPatientProfile_v1');
+      if (raw && iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage(
+          { type: 'panini-patient-update', data: JSON.parse(raw) },
+          '*'
+        );
+      }
+    } catch (_) {}
+  }
+
   function loadIframe(id) {
-    if (state.loaded.has(id)) return;
     const iframe = document.getElementById('frame-' + id);
+    if (state.loaded.has(id)) {
+      pushPatientToIframe(iframe);
+      return;
+    }
     const mod = MODULES.find((m) => m.id === id);
+    iframe.addEventListener('load', () => pushPatientToIframe(iframe), { once: true });
     iframe.src = moduleUrl(mod.path);
     state.loaded.add(id);
   }

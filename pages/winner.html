@@ -358,7 +358,7 @@
     <div class="grid cols-2">
       <div class="field">
         <label class="fld" for="pname">Patient Name</label>
-        <input type="text" id="pname" name="pname" placeholder="Full name">
+        <input type="text" id="pname" name="pname" data-panini="name" placeholder="Full name">
       </div>
       <div class="field">
         <label class="fld" for="startdate">Start Date</label>
@@ -370,7 +370,7 @@
       </div>
       <div class="field">
         <label class="fld" for="med">Prescribed GLP-1 Medication</label>
-        <input type="text" id="med" name="med" placeholder="e.g., Semaglutide, Tirzepatide, dose">
+        <input type="text" id="med" name="med" data-panini="glp1Med" placeholder="e.g., Semaglutide, Tirzepatide, dose">
       </div>
     </div>
 
@@ -395,37 +395,37 @@
       <tbody>
         <tr>
           <td class="metric-label">⚖️ Weight (kg / lbs)</td>
-          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics" data-panini="weight"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
         <tr>
           <td class="metric-label">📐 Body Mass Index (BMI)</td>
-          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics" data-panini="bmi" data-panini-apply-only="bmi"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
         <tr>
           <td class="metric-label">🔥 Body Fat Percentage (%)</td>
-          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics" data-panini="bodyFat"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
         <tr>
           <td class="metric-label">🎽 Waist Circumference</td>
-          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics" data-panini="waist"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
         <tr>
           <td class="metric-label">🩸 HbA1c / Fasting Glucose</td>
-          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics" data-panini="hba1c"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
         <tr>
           <td class="metric-label">💓 Blood Pressure</td>
-          <td><input type="text" data-table="metrics"></td>
+          <td><input type="text" data-table="metrics" data-panini="bp"></td>
           <td><input type="text" data-table="metrics"></td>
           <td><input type="text" data-table="metrics"></td>
         </tr>
@@ -708,6 +708,7 @@
     } catch(e){}
   });
 </script>
+<script src="../assets/js/patient-sync.js"></script>
 <script src="../assets/js/module-print.js"></script>
 </body>
 </html>

@@ -47,6 +47,10 @@
   .fld.span2 { grid-column: span 2; }
   .fld label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #6b7686; margin-bottom: 3px; }
   .fld .line { border-bottom: 1px solid #aab4c0; min-height: 22px; }
+  .fld input.pt-inp {
+    border: none; border-bottom: 1px solid #aab4c0; min-height: 22px;
+    width: 100%; font-size: 14px; background: transparent; color: #1a2330; padding: 0;
+  }
   section {
     border: 1px solid #d6dde5;
     border-radius: 6px;
@@ -119,13 +123,13 @@
 
   <!-- PATIENT -->
   <div class="pt-grid">
-    <div class="fld span2"><label>Patient Name</label><div class="line"></div></div>
-    <div class="fld"><label>MRN / ID</label><div class="line"></div></div>
-    <div class="fld"><label>Date</label><div class="line"></div></div>
-    <div class="fld"><label>Age</label><div class="line"></div></div>
-    <div class="fld"><label>Sex</label><div class="line"></div></div>
-    <div class="fld"><label>BMI (kg/m²)</label><div class="line"></div></div>
-    <div class="fld"><label>Assessor</label><div class="line"></div></div>
+    <div class="fld span2"><label>Patient Name</label><input type="text" class="pt-inp" data-panini="name"></div>
+    <div class="fld"><label>MRN / ID</label><input type="text" class="pt-inp" data-panini="mrn"></div>
+    <div class="fld"><label>Date</label><input type="text" class="pt-inp" data-panini="assessmentDate"></div>
+    <div class="fld"><label>Age</label><input type="text" class="pt-inp" data-panini="age"></div>
+    <div class="fld"><label>Sex</label><input type="text" class="pt-inp" data-panini="sex"></div>
+    <div class="fld"><label>BMI (kg/m²)</label><input type="text" class="pt-inp" data-panini="bmi" data-panini-apply-only="bmi"></div>
+    <div class="fld"><label>Assessor</label><input type="text" class="pt-inp" data-panini="assessor"></div>
   </div>
 
   <!-- 1. EVS -->
@@ -264,6 +268,7 @@
   </div>
 
 </div>
+<script src="../assets/js/patient-sync.js"></script>
 <script src="../assets/js/module-print.js"></script>
 </body>
 </html>

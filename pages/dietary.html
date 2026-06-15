@@ -190,19 +190,19 @@
       <div class="card">
         <h2><span class="icon">👤</span> Personal Information</h2>
         <div class="row">
-          <div class="field"><label class="required">Full Name</label><input name="name" placeholder="e.g. Priya Sharma" required></div>
-          <div class="field"><label class="required">Age (years)</label><input name="age" type="number" min="1" max="120" placeholder="e.g. 34" required></div>
+          <div class="field"><label class="required">Full Name</label><input name="name" data-panini="name" placeholder="e.g. Priya Sharma" required></div>
+          <div class="field"><label class="required">Age (years)</label><input name="age" data-panini="age" type="number" min="1" max="120" placeholder="e.g. 34" required></div>
           <div class="field"><label class="required">Sex</label>
-            <select name="sex" required>
+            <select name="sex" data-panini="sex" required>
               <option value="" disabled selected>Select…</option>
               <option>Female</option><option>Male</option><option>Other / Prefer not to say</option>
             </select>
           </div>
         </div>
         <div class="row">
-          <div class="field"><label>Height (cm)</label><input name="height" type="number" step="0.1" min="50" max="260" placeholder="e.g. 162"></div>
-          <div class="field"><label>Weight (kg)</label><input name="weight" type="number" step="0.1" min="20" max="350" placeholder="e.g. 58"></div>
-          <div class="field"><label>Waist Circumference (cm)</label><input name="waist" type="number" step="0.1" min="30" max="200" placeholder="Optional"></div>
+          <div class="field"><label>Height (cm)</label><input name="height" data-panini="height" type="number" step="0.1" min="50" max="260" placeholder="e.g. 162"></div>
+          <div class="field"><label>Weight (kg)</label><input name="weight" data-panini="weight" type="number" step="0.1" min="20" max="350" placeholder="e.g. 58"></div>
+          <div class="field"><label>Waist Circumference (cm)</label><input name="waist" data-panini="waist" type="number" step="0.1" min="30" max="200" placeholder="Optional"></div>
         </div>
       </div>
 
@@ -533,6 +533,7 @@
     window.scrollTo({top:0,behavior:'smooth'});
   });
 </script>
+<script src="../assets/js/patient-sync.js"></script>
 <script src="../assets/js/module-print.js"></script>
 </body>
 </html>

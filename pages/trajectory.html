@@ -294,7 +294,7 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Patient Full Name</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-user"></i></div>
-                            <input type="text" id="input-patient-name" value="Sarah Jenkins" onchange="updatePatientParams()" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
+                            <input type="text" id="input-patient-name" data-panini="name" value="Sarah Jenkins" onchange="updatePatientParams()" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
                         </div>
                     </div>
                     <!-- MRN / Identifier -->
@@ -302,7 +302,7 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Clinic ID / MRN</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-id-card"></i></div>
-                            <input type="text" id="input-patient-mrn" value="MRN-94820" onchange="updatePatientParams()" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
+                            <input type="text" id="input-patient-mrn" data-panini="mrn" value="MRN-94820" onchange="updatePatientParams()" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
                         </div>
                     </div>
                     <!-- Current Age -->
@@ -310,7 +310,7 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Current Age (Years)</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-calendar-day"></i></div>
-                            <input type="number" id="input-patient-age" value="39" min="1" max="100" onchange="updatePatientParams()" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
+                            <input type="number" id="input-patient-age" data-panini="age" value="39" min="1" max="100" onchange="updatePatientParams()" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
                         </div>
                     </div>
                     <!-- Height -->
@@ -318,7 +318,7 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Height (cm)</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-ruler-vertical"></i></div>
-                            <input type="number" id="input-patient-height" value="168" min="100" max="250" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
+                            <input type="number" id="input-patient-height" data-panini="height" value="168" min="100" max="250" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
                             <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs font-bold text-slate-400">cm</span>
                         </div>
                     </div>
@@ -327,7 +327,7 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Current Baseline Weight</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-amber-500"><i class="fa-solid fa-scale-unbalanced"></i></div>
-                            <input type="number" id="input-baseline-weight" value="100" step="0.5" min="20" max="300" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-amber-50 border border-amber-300 rounded-lg text-sm font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">
+                            <input type="number" id="input-baseline-weight" data-panini="weight" value="100" step="0.5" min="20" max="300" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-amber-50 border border-amber-300 rounded-lg text-sm font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">
                             <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs font-bold text-slate-500">kg</span>
                         </div>
                     </div>
@@ -344,7 +344,7 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Lifetime Peak Weight</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-rose-500"><i class="fa-solid fa-mountain-sun"></i></div>
-                            <input type="number" id="input-peak-weight" value="108" step="0.5" min="20" max="300" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-rose-50 border border-rose-300 rounded-lg text-sm font-bold text-rose-950 focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all">
+                            <input type="number" id="input-peak-weight" data-panini="peakWeight" value="108" step="0.5" min="20" max="300" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-rose-50 border border-rose-300 rounded-lg text-sm font-bold text-rose-950 focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all">
                             <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs font-bold text-rose-500">kg</span>
                         </div>
                     </div>
@@ -353,7 +353,7 @@
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Age at Peak Weight</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-hourglass-high"></i></div>
-                            <input type="number" id="input-peak-age" value="38" min="1" max="100" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
+                            <input type="number" id="input-peak-age" data-panini="peakAge" value="38" min="1" max="100" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
                             <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs font-bold text-slate-400">Yrs</span>
                         </div>
                     </div>
@@ -534,7 +534,7 @@
                         
                         <div class="flex items-center space-x-1.5 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-300">
                             <span class="text-xs font-bold text-slate-600 uppercase">Target:</span>
-                            <input type="number" id="input-target-tbwl" value="20" min="1" max="50" onchange="calculatePrognosis()" class="w-14 bg-white border border-slate-300 rounded text-xs font-extrabold text-emerald-600 px-1.5 py-1 text-center">
+                            <input type="number" id="input-target-tbwl" data-panini="targetTbwlPercent" value="20" min="1" max="50" onchange="calculatePrognosis()" class="w-14 bg-white border border-slate-300 rounded text-xs font-extrabold text-emerald-600 px-1.5 py-1 text-center">
                             <span class="text-xs font-bold text-slate-600">% TBWL</span>
                         </div>
                     </div>
@@ -2126,6 +2126,7 @@
             refreshEntireApp();
         }
     </script>
+    <script src="../assets/js/patient-sync.js"></script>
     <script src="../assets/js/module-print.js"></script>
 </body>
 </html>

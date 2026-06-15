@@ -207,9 +207,15 @@
 
 <!-- Patient Info -->
 <div class="patient-info">
-    <div><label>Patient Name:</label><input type="text"></div>
-    <div><label>Date of Birth / Age:</label><input type="text"></div>
-    <div><label>Date of Assessment:</label><input type="text"></div>
+    <div><label>Patient Name:</label><input type="text" data-panini="name"></div>
+    <div><label>Date of Birth:</label><input type="text" data-panini="dob" placeholder="e.g. 15/03/1985"></div>
+    <div><label>Age:</label><input type="text" data-panini="age"></div>
+    <div><label>Sex:</label><input type="text" data-panini="sex" placeholder="M / F"></div>
+    <div><label>Height (cm):</label><input type="text" data-panini="height"></div>
+    <div><label>Current Weight (kg):</label><input type="text" data-panini="weight"></div>
+    <div><label>Blood Pressure:</label><input type="text" data-panini="bp" placeholder="e.g. 128/82"></div>
+    <div><label>MRN / ID:</label><input type="text" data-panini="mrn"></div>
+    <div><label>Date of Assessment:</label><input type="text" data-panini="assessmentDate"></div>
 </div>
 
 <!-- ========== ENGLISH VERSION ========== -->
@@ -452,6 +458,7 @@
         document.getElementById('content-en').classList.add('active');
     }
 </script>
+<script src="../assets/js/patient-sync.js"></script>
 <script src="../assets/js/module-print.js"></script>
 </body>
 </html>

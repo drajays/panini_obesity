@@ -242,10 +242,12 @@
         </div>
 
         <div class="patient-info">
-            <div><label>Patient Name:</label><input type="text"></div>
-            <div><label>Date of Birth / Age:</label><input type="text"></div>
-            <div><label>Date of Assessment:</label><input type="text"></div>
-            <div><label>Clinician / Clinic:</label><input type="text"></div>
+            <div><label>Patient Name:</label><input type="text" data-panini="name"></div>
+            <div><label>Date of Birth:</label><input type="text" data-panini="dob"></div>
+            <div><label>Age:</label><input type="text" data-panini="age"></div>
+            <div><label>Date of Assessment:</label><input type="text" data-panini="assessmentDate"></div>
+            <div><label>Clinician / Clinic:</label><input type="text" data-panini="clinician"></div>
+            <div><label>Sex:</label><input type="text" data-panini="sex"></div>
         </div>
 
         <div class="instructions">
@@ -319,10 +321,12 @@
         </div>
 
         <div class="patient-info">
-            <div><label>रोगी का नाम:</label><input type="text"></div>
-            <div><label>जन्म तिथि / आयु:</label><input type="text"></div>
-            <div><label>मूल्यांकन की तिथि:</label><input type="text"></div>
-            <div><label>चिकित्सक / क्लिनिक:</label><input type="text"></div>
+            <div><label>रोगी का नाम:</label><input type="text" data-panini="name" data-panini-mirror="1"></div>
+            <div><label>जन्म तिथि:</label><input type="text" data-panini="dob" data-panini-mirror="1"></div>
+            <div><label>आयु:</label><input type="text" data-panini="age" data-panini-mirror="1"></div>
+            <div><label>मूल्यांकन की तिथि:</label><input type="text" data-panini="assessmentDate" data-panini-mirror="1"></div>
+            <div><label>चिकित्सक / क्लिनिक:</label><input type="text" data-panini="clinician" data-panini-mirror="1"></div>
+            <div><label>लिंग:</label><input type="text" data-panini="sex" data-panini-mirror="1"></div>
         </div>
 
         <div class="instructions">
@@ -569,6 +573,7 @@
         document.getElementById('page2-en').classList.add('active');
     }
 </script>
+<script src="../assets/js/patient-sync.js"></script>
 <script src="../assets/js/module-print.js"></script>
 </body>
 </html>
