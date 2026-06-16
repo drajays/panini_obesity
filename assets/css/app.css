@@ -373,6 +373,112 @@ html, body {
   .btn { padding: 8px 12px; }
 }
 
+/* ── Mandatory module indicators ──────────────────────────────── */
+.nav-req-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4ade80; flex-shrink: 0; margin-left: auto;
+  box-shadow: 0 0 4px rgba(74,222,128,.5);
+}
+.nav-mandatory { border-left: 3px solid #4ade80; padding-left: 9px; }
+
+.module-mandatory {
+  border-color: #16a34a !important;
+  border-width: 2px !important;
+  position: relative;
+}
+.module-mandatory:hover {
+  box-shadow: 0 8px 28px rgba(22,163,74,.18) !important;
+}
+.card-req-badge {
+  display: inline-block;
+  font-size: 9px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .06em; color: #15803d;
+  background: #dcfce7; border: 1px solid #86efac;
+  padding: 2px 7px; border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+/* ── Flow start row (home screen) ─────────────────────────────── */
+.flow-start-row {
+  max-width: 900px; margin: 0 auto 22px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.flow-start-label {
+  font-size: 12px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .05em; white-space: nowrap;
+}
+.flow-start-btn {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 18px; border-radius: 10px;
+  border: none; cursor: pointer; font-family: inherit;
+  font-size: 13.5px; font-weight: 700;
+  transition: transform .13s, box-shadow .13s;
+}
+.flow-start-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.12); }
+.flow-start-followup {
+  background: var(--brand); color: #fff;
+}
+.flow-start-initial {
+  background: #1e40af; color: #fff;
+}
+.flow-start-sub { font-size: 10.5px; font-weight: 400; opacity: .85; }
+
+/* workflow legend */
+.workflow-req { color: #15803d; font-weight: 700; }
+.workflow-opt { color: var(--muted); font-weight: 700; }
+
+/* ── Flow navigation bar ──────────────────────────────────────── */
+.flow-bar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 8px 16px; background: #0f172a; color: #fff;
+  border-bottom: 2px solid #334155; z-index: 29; flex-shrink: 0;
+}
+.flow-bar-left  { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.flow-bar-center{ display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; overflow: hidden; }
+.flow-bar-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+.flow-exit-btn {
+  font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px;
+  background: rgba(239,68,68,.2); color: #fca5a5; border: 1px solid rgba(239,68,68,.3);
+  cursor: pointer; white-space: nowrap;
+}
+.flow-exit-btn:hover { background: rgba(239,68,68,.35); }
+
+.flow-step-counter {
+  font-size: 11px; font-weight: 700; color: #94a3b8; white-space: nowrap;
+}
+.flow-progress-track {
+  width: 80px; height: 6px; background: #334155; border-radius: 4px; overflow: hidden;
+}
+.flow-progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--brand), #4ade80);
+  border-radius: 4px; transition: width .3s;
+}
+.flow-step-title {
+  font-size: 13px; font-weight: 700; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.flow-badge {
+  font-size: 10px; font-weight: 800; padding: 2px 8px;
+  border-radius: 4px; white-space: nowrap; flex-shrink: 0;
+}
+.flow-badge-req { background: #14532d; color: #4ade80; border: 1px solid #166534; }
+.flow-badge-opt { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+
+.flow-btn {
+  font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 7px;
+  cursor: pointer; border: 1px solid #475569; background: #1e293b;
+  color: #cbd5e1; white-space: nowrap; font-family: inherit;
+  transition: background .12s;
+}
+.flow-btn:hover:not(:disabled) { background: #334155; }
+.flow-btn:disabled { opacity: .35; cursor: default; }
+.flow-btn.flow-next {
+  background: var(--brand); border-color: var(--brand); color: #fff;
+}
+.flow-btn.flow-next:hover { background: var(--brand-dark); }
+.flow-btn.flow-skip { color: #94a3b8; }
+
 /* Print — hide app chrome */
 @media print {
   .sidebar, .topbar, .sidebar-overlay, .home-view { display: none !important; }

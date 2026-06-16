@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weight Journey Map — Panini</title>
+<script src="../assets/js/panini-data.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal:#0d9488; --teal-dark:#0f766e; --teal-light:#ccfbf1;
+  --green:#16a34a; --green-light:#dcfce7;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --rose:#e11d48;  --rose-light:#ffe4e6;
+  --blue:#2563eb;  --blue-light:#dbeafe;
+  --purple:#7c3aed;
+  --ink:#1f2937; --slate:#475569; --muted:#94a3b8;
+  --line:#e2e8f0; --bg:#f1f5f9; --card:#fff;
+  --radius:12px; --shadow:0 4px 24px rgba(15,23,42,.08);
+}
+html { scroll-behavior:smooth; }
+body {
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg); color:var(--ink);
+  font-size:13.5px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:8px; padding:10px 18px;
+  background:var(--teal-dark); color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.toolbar-brand { font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.toolbar-right  { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.pid-row { display:flex; align-items:center; gap:6px; }
+.pid-row input {
+  font-size:13px; font-weight:600; letter-spacing:.04em;
+  padding:6px 10px; border-radius:8px;
+  border:1.5px solid rgba(255,255,255,.4); background:rgba(255,255,255,.12);
+  color:#fff; width:150px; font-family:inherit;
+}
+.pid-row input::placeholder { color:rgba(255,255,255,.5); }
+.pid-row input:focus { outline:none; border-color:#fff; }
+.btn {
+  padding:6px 14px; border-radius:8px; font-size:12.5px; font-weight:600;
+  cursor:pointer; border:1.5px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.12); color:#fff; transition:background .15s;
+}
+.btn:hover { background:rgba(255,255,255,.26); }
+.btn.solid { background:#fff; color:var(--teal-dark); border-color:#fff; }
+.btn.solid:hover { background:#e2e8f0; }
+.save-status { font-size:11.5px; opacity:.85; }
+
+/* ── Body iframe mode ── */
+body.in-iframe .pid-row { display:none!important; }
+body.in-iframe .toolbar { padding:6px 14px; }
+.patient-badge-inline {
+  font-size:11.5px; font-weight:700; padding:3px 10px;
+  border-radius:6px; background:rgba(255,255,255,.2);
+  color:#fff; letter-spacing:.04em;
+}
+
+/* ── Layout ── */
+.wrap { max-width:1100px; margin:0 auto; padding:20px 16px 60px; }
+.two-col { display:grid; grid-template-columns:340px 1fr; gap:20px; }
+@media(max-width:780px){ .two-col { grid-template-columns:1fr; } }
+
+/* ── Cards ── */
+.card {
+  background:var(--card); border-radius:var(--radius);
+  padding:18px 20px; box-shadow:var(--shadow); margin-bottom:16px;
+}
+.card-title {
+  font-size:12px; font-weight:700; color:var(--teal-dark);
+  text-transform:uppercase; letter-spacing:.05em;
+  margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+
+/* ── Input grid ── */
+.field-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+.field { display:flex; flex-direction:column; gap:3px; }
+label.fld { font-size:10px; font-weight:700; color:var(--slate); text-transform:uppercase; letter-spacing:.04em; }
+input[type="text"],input[type="number"],input[type="date"],select {
+  font-family:inherit; font-size:13px; padding:7px 9px;
+  border:1.5px solid var(--line); border-radius:7px; background:#fff; color:var(--ink);
+  transition:border-color .15s;
+}
+input:focus,select:focus { outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
+
+/* ── Milestone table ── */
+.milestone-table { width:100%; border-collapse:collapse; font-size:12px; }
+.milestone-table th {
+  background:var(--teal); color:#fff; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.04em; padding:7px 8px; text-align:left;
+}
+.milestone-table td { border:1px solid var(--line); padding:5px 7px; vertical-align:middle; }
+.milestone-table tr:nth-child(even) td { background:#f8fafc; }
+.milestone-table input,.milestone-table select {
+  width:100%; font-size:11.5px; padding:4px 6px;
+  border:1.5px solid var(--line); border-radius:5px;
+}
+.del-btn {
+  padding:3px 8px; border-radius:5px; font-size:11px;
+  background:var(--rose-light); color:var(--rose);
+  border:1px solid var(--rose); cursor:pointer; font-weight:600;
+}
+.del-btn:hover { background:var(--rose); color:#fff; }
+.add-btn {
+  margin-top:10px; padding:7px 16px; border-radius:7px;
+  background:var(--teal); color:#fff; border:none; cursor:pointer;
+  font-size:12.5px; font-weight:600; font-family:inherit;
+}
+.add-btn:hover { background:var(--teal-dark); }
+
+/* ── Stats strip ── */
+.stats-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:16px; }
+@media(max-width:600px){ .stats-strip { grid-template-columns:1fr 1fr; } }
+.stat-box {
+  background:var(--card); border-radius:9px; padding:12px 14px;
+  box-shadow:var(--shadow); border-top:3px solid var(--teal); text-align:center;
+}
+.stat-box.green  { border-top-color:var(--green); }
+.stat-box.amber  { border-top-color:var(--amber); }
+.stat-box.purple { border-top-color:var(--purple); }
+.stat-num  { font-size:22px; font-weight:800; color:var(--ink); }
+.stat-lbl  { font-size:10.5px; color:var(--muted); margin-top:2px; }
+
+/* ── Chart area ── */
+.chart-container { width:100%; overflow-x:auto; }
+.chart-container svg { display:block; min-width:600px; }
+
+/* ── Projection controls ── */
+.proj-controls { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+.proj-controls label.fld { white-space:nowrap; }
+
+/* ── Legend ── */
+.legend { display:flex; gap:16px; flex-wrap:wrap; margin-top:8px; font-size:11.5px; color:var(--slate); }
+.leg-item { display:flex; align-items:center; gap:5px; }
+.leg-dot { width:10px; height:10px; border-radius:50%; }
+.leg-line { width:20px; height:3px; border-radius:2px; }
+.leg-dash { width:20px; height:0; border-top:3px dashed; }
+
+/* ── Print ── */
+@media print {
+  .toolbar,.add-btn,.del-btn,.pid-row,.btn,.proj-controls { display:none!important; }
+  body { background:#fff; }
+  .wrap { padding:0; max-width:100%; }
+  .card { box-shadow:none; border:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <div class="toolbar-brand">📈 Weight Journey Map</div>
+  <div class="toolbar-right">
+    <div class="pid-row">
+      <input type="text" id="pidInput" placeholder="WIN-XXXXXX" maxlength="16" autocomplete="off" spellcheck="false">
+      <button class="btn solid" onclick="loadPatient()">Load</button>
+    </div>
+    <button class="btn" onclick="githubLoad()" title="Load from GitHub">☁️ Load</button>
+    <button class="btn solid" onclick="githubExport()">⬇ Export</button>
+    <button class="btn" onclick="window.print()">🖨 Print</button>
+    <span class="save-status" id="saveStatus"></span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- Stats strip -->
+  <div class="stats-strip" id="statsStrip">
+    <div class="stat-box"><div class="stat-num" id="statBMI">—</div><div class="stat-lbl">Current BMI</div></div>
+    <div class="stat-box green"><div class="stat-num" id="statLoss">—</div><div class="stat-lbl">Total Lost (kg)</div></div>
+    <div class="stat-box amber"><div class="stat-num" id="statPeak">—</div><div class="stat-lbl">Peak Weight (kg)</div></div>
+    <div class="stat-box purple"><div class="stat-num" id="statProj">—</div><div class="stat-lbl">Projected 3yr (kg)</div></div>
+  </div>
+
+  <div class="two-col">
+
+    <!-- ── Left: Input panel ── -->
+    <div>
+
+      <!-- Patient basics -->
+      <div class="card">
+        <div class="card-title">👤 Patient Basics</div>
+        <div class="field-row">
+          <div class="field"><label class="fld">Height (cm)</label><input type="number" id="height" placeholder="168" min="100" max="250" oninput="render()"></div>
+          <div class="field"><label class="fld">Current Age (yrs)</label><input type="number" id="age" placeholder="38" min="1" max="100" oninput="render()"></div>
+          <div class="field"><label class="fld">Target Weight (kg)</label><input type="number" id="targetWt" placeholder="75" step="0.5" oninput="render()"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label class="fld">Program Start Date</label><input type="date" id="programStart" oninput="render()"></div>
+          <div class="field">
+            <label class="fld">Medication</label>
+            <select id="medication" onchange="render()">
+              <option value="">None / Diet only</option>
+              <option value="semaglutide">Semaglutide (Ozempic/Wegovy)</option>
+              <option value="tirzepatide">Tirzepatide (Mounjaro/Zepbound)</option>
+              <option value="liraglutide">Liraglutide (Saxenda)</option>
+              <option value="orlistat">Orlistat (Xenical)</option>
+              <option value="phentermine">Phentermine</option>
+              <option value="combo">Combination therapy</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Milestone entries -->
+      <div class="card">
+        <div class="card-title">📌 Weight Milestones (birth to present)</div>
+        <table class="milestone-table">
+          <thead>
+            <tr>
+              <th>Age (yr)</th>
+              <th>Weight (kg)</th>
+              <th>Event / Cause</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="milestoneBody"></tbody>
+        </table>
+        <button class="add-btn" onclick="addMilestone()">+ Add Milestone</button>
+      </div>
+
+      <!-- Projection controls -->
+      <div class="card">
+        <div class="card-title">🔮 3-Year Projection</div>
+        <div class="proj-controls">
+          <div class="field">
+            <label class="fld">Expected % loss/year</label>
+            <input type="number" id="projRate" value="8" min="1" max="25" step="0.5" oninput="render()">
+          </div>
+          <div class="field">
+            <label class="fld">Show projection</label>
+            <select id="projYears" onchange="render()">
+              <option value="1">1 year</option>
+              <option value="2">2 years</option>
+              <option value="3" selected>3 years</option>
+              <option value="5">5 years</option>
+            </select>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--muted)">
+          Projection rates: Diet only ~5%/yr · Semaglutide ~10–15%/yr · Tirzepatide ~15–22%/yr · Liraglutide ~6–8%/yr
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Right: Chart ── -->
+    <div>
+      <div class="card">
+        <div class="card-title">📉 Lifetime Weight Trajectory — Birth to Future</div>
+        <div class="chart-container" id="chartContainer">
+          <svg id="chartSvg" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg"></svg>
+        </div>
+        <div class="legend" id="chartLegend">
+          <div class="leg-item"><div class="leg-dot" style="background:#0d9488"></div> Actual weight</div>
+          <div class="leg-item"><div class="leg-dash" style="border-color:#2563eb"></div> GLP-1 projection</div>
+          <div class="leg-item"><div class="leg-line" style="background:#16a34a;opacity:.4;height:10px;border-radius:2px"></div> Healthy BMI zone (18.5–25)</div>
+          <div class="leg-item"><div class="leg-line" style="background:#d97706;opacity:.4;height:10px;border-radius:2px"></div> Overweight (25–30)</div>
+          <div class="leg-item"><div class="leg-line" style="background:#e11d48;opacity:.3;height:10px;border-radius:2px"></div> Obese (30+)</div>
+        </div>
+      </div>
+
+      <!-- Narrative summary -->
+      <div class="card" id="narrativeCard" style="display:none">
+        <div class="card-title">📋 Clinical Summary</div>
+        <div id="narrativeText" style="font-size:13px;color:var(--slate);line-height:1.6"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════ */
+let activeId = null;
+let record   = { meta:{}, milestones:[] };
+
+/* ══════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════ */
+function norm(id){ return PaniniData.normId(id); }
+function validId(id){ return PaniniData.validId(id); }
+function st(msg){ document.getElementById('saveStatus').textContent = msg; }
+function v(id){ return document.getElementById(id); }
+
+function saveLocal(){
+  if(!activeId) return;
+  collectMeta();
+  PaniniData.updateSection(activeId, 'weightJourney', record);
+}
+
+function collectMeta(){
+  record.meta = {
+    height:       parseFloat(v('height')?.value)||null,
+    age:          parseFloat(v('age')?.value)||null,
+    targetWt:     parseFloat(v('targetWt')?.value)||null,
+    programStart: v('programStart')?.value||null,
+    medication:   v('medication')?.value||'',
+    projRate:     parseFloat(v('projRate')?.value)||8,
+    projYears:    parseInt(v('projYears')?.value)||3,
+  };
+}
+
+/* ══════════════════════════════════════════════
+   PATIENT LOAD / SAVE
+════════════════════════════════════════════════ */
+function loadById(id){
+  const n = norm(id); if(!validId(n)) return;
+  activeId = n;
+  PaniniData.setActiveId(n);
+  if(v('pidInput')) v('pidInput').value = n;
+  const badge = document.getElementById('iframePtBadge');
+  if(badge) badge.textContent = n;
+
+  const data = PaniniData.getSection(n, 'weightJourney');
+  if(data){
+    record = data;
+    restoreMeta();
+    render();
+    st('✓ '+n);
+  } else {
+    record = { meta:{}, milestones: defaultMilestones() };
+    render();
+    st('New: '+n);
+  }
+}
+
+function loadPatient(){
+  const id = norm(v('pidInput')?.value||'');
+  if(!validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
+  loadById(id);
+}
+
+async function githubLoad(){
+  if(!activeId){ alert('Enter a Patient ID first.'); return; }
+  st('Loading from GitHub…');
+  const data = await PaniniData.fetchGithub(activeId);
+  if(data?.weightJourney){
+    record = data.weightJourney;
+    restoreMeta(); renderMilestoneTable(); render();
+    st('✓ GitHub loaded');
+  } else { st('Not found on GitHub'); }
+}
+
+function githubExport(){
+  if(!activeId){ alert('Load a patient first.'); return; }
+  saveLocal();
+  PaniniData.exportJson(activeId);
+  st('✓ JSON downloaded');
+}
+
+function restoreMeta(){
+  const m = record.meta||{};
+  if(v('height'))       v('height').value       = m.height||'';
+  if(v('age'))          v('age').value           = m.age||'';
+  if(v('targetWt'))     v('targetWt').value      = m.targetWt||'';
+  if(v('programStart')) v('programStart').value  = m.programStart||'';
+  if(v('medication'))   v('medication').value    = m.medication||'';
+  if(v('projRate'))     v('projRate').value      = m.projRate||8;
+  if(v('projYears'))    v('projYears').value     = m.projYears||3;
+  renderMilestoneTable();
+}
+
+/* ══════════════════════════════════════════════
+   MILESTONES
+════════════════════════════════════════════════ */
+function defaultMilestones(){
+  return [
+    { age:0,  wt:3,  event:'Birth weight',    type:'birth' },
+    { age:5,  wt:'', event:'Childhood',        type:'childhood' },
+    { age:13, wt:'', event:'Teen / puberty',   type:'teen' },
+    { age:20, wt:'', event:'Young adult',      type:'adult' },
+  ];
+}
+
+function addMilestone(){
+  if(!record.milestones) record.milestones = [];
+  record.milestones.push({ age:'', wt:'', event:'', type:'event' });
+  renderMilestoneTable();
+}
+
+function deleteMilestone(i){
+  record.milestones.splice(i,1);
+  renderMilestoneTable();
+  render();
+}
+
+function updateMilestone(i, field, val){
+  if(!record.milestones[i]) return;
+  record.milestones[i][field] = val;
+  render();
+  saveLocal();
+}
+
+const EVENT_TYPES = [
+  {v:'birth',      l:'Birth'},
+  {v:'childhood',  l:'Childhood'},
+  {v:'teen',       l:'Teen / puberty'},
+  {v:'adult',      l:'Young adult'},
+  {v:'pregnancy',  l:'Pregnancy'},
+  {v:'medication', l:'Started medication'},
+  {v:'surgery',    l:'Surgery / illness'},
+  {v:'stress',     l:'Stress / life event'},
+  {v:'diet',       l:'Diet programme'},
+  {v:'peak',       l:'Peak weight'},
+  {v:'nadir',      l:'Lowest adult weight'},
+  {v:'current',    l:'Current'},
+  {v:'event',      l:'Other event'},
+];
+const TYPE_COLORS = {
+  birth:'#7c3aed', childhood:'#2563eb', teen:'#0891b2',
+  adult:'#0d9488', pregnancy:'#ec4899', medication:'#16a34a',
+  surgery:'#dc2626', stress:'#d97706', diet:'#7c3aed',
+  peak:'#e11d48', nadir:'#16a34a', current:'#0d9488', event:'#64748b',
+};
+
+function renderMilestoneTable(){
+  const tbody = v('milestoneBody'); if(!tbody) return;
+  const rows  = record.milestones||[];
+  tbody.innerHTML = rows.map((m,i)=>`
+    <tr>
+      <td><input type="number" value="${m.age||''}" min="0" max="100" placeholder="age"
+          oninput="updateMilestone(${i},'age',this.value)" style="width:55px"></td>
+      <td><input type="number" value="${m.wt||''}" min="1" max="300" step="0.1" placeholder="kg"
+          oninput="updateMilestone(${i},'wt',this.value)" style="width:65px"></td>
+      <td><input type="text" value="${m.event||''}" placeholder="e.g. Pregnancy, started gym…"
+          oninput="updateMilestone(${i},'event',this.value)"></td>
+      <td><button class="del-btn" onclick="deleteMilestone(${i})">✕</button></td>
+    </tr>`).join('');
+}
+
+/* ══════════════════════════════════════════════
+   CHART RENDER
+════════════════════════════════════════════════ */
+function render(){
+  collectMeta();
+  saveLocal();
+  drawChart();
+  updateStats();
+  buildNarrative();
+}
+
+function drawChart(){
+  const svg    = v('chartSvg'); if(!svg) return;
+  const W=720, H=360, PL=52, PR=20, PT=24, PB=46;
+  const cW = W-PL-PR, cH = H-PT-PB;
+
+  const meta        = record.meta||{};
+  const heightCm    = meta.height||168;
+  const currentAge  = meta.age||40;
+  const projYears   = meta.projYears||3;
+  const projRate    = (meta.projRate||8)/100;
+  const targetWt    = meta.targetWt||null;
+  const programStart= meta.programStart||null;
+  const medication  = meta.medication||'';
+
+  // Valid milestone points
+  const pts = (record.milestones||[])
+    .map(m=>({ age:parseFloat(m.age), wt:parseFloat(m.wt), event:m.event||'', type:m.type||'event' }))
+    .filter(p=>!isNaN(p.age)&&!isNaN(p.wt)&&p.wt>0)
+    .sort((a,b)=>a.age-b.age);
+
+  const currentWt = pts.length ? pts[pts.length-1].wt : null;
+
+  // Projection points
+  const projPts = [];
+  if(currentWt && programStart){
+    const startAge = programStart ? currentAge - (new Date()-new Date(programStart))/365.25/86400000 : currentAge;
+    for(let y=0; y<=projYears; y+=0.5){
+      const factor = expectedFactor(medication, y);
+      projPts.push({ age: startAge+y, wt: currentWt*(1-projRate*factor*y) });
+    }
+  }
+
+  // Axis ranges
+  const allWts = [...pts.map(p=>p.wt), ...projPts.map(p=>p.wt), targetWt||0].filter(Boolean);
+  const allAges = [...pts.map(p=>p.age), ...projPts.map(p=>p.age)].filter(x=>!isNaN(x));
+  if(!allWts.length){ svg.innerHTML=''; return; }
+
+  const minAge = Math.max(0, Math.min(...allAges)-2);
+  const maxAge = Math.max(...allAges)+1;
+  const minWt  = Math.max(0, Math.min(...allWts)-5);
+  const maxWt  = Math.min(300, Math.max(...allWts)+10);
+
+  const xS = (age) => PL + ((age-minAge)/(maxAge-minAge))*cW;
+  const yS = (wt)  => PT + (1-(wt-minWt)/(maxWt-minWt))*cH;
+
+  // BMI zone lines → translate to weight at patient height
+  const h = heightCm/100;
+  const bmiToWt = (bmi) => bmi * h * h;
+  const zones = [
+    { bmi1:18.5, bmi2:25,  color:'#16a34a', label:'Normal BMI', alpha:.12 },
+    { bmi1:25,   bmi2:30,  color:'#d97706', label:'Overweight', alpha:.12 },
+    { bmi1:30,   bmi2:35,  color:'#f97316', label:'Obese I',    alpha:.10 },
+    { bmi1:35,   bmi2:40,  color:'#e11d48', label:'Obese II',   alpha:.10 },
+    { bmi1:40,   bmi2:maxWt/h/h+5, color:'#7c3aed', label:'Obese III', alpha:.08 },
+  ];
+
+  let html = '';
+
+  // BMI zone bands
+  zones.forEach(z=>{
+    const w1 = Math.max(minWt, bmiToWt(z.bmi1));
+    const w2 = Math.min(maxWt, bmiToWt(z.bmi2));
+    if(w1>=maxWt||w2<=minWt) return;
+    const y1 = yS(w2), y2 = yS(w1);
+    html += `<rect x="${PL}" y="${y1.toFixed(1)}" width="${cW}" height="${(y2-y1).toFixed(1)}"
+      fill="${z.color}" opacity="${z.alpha}" rx="0"/>`;
+    // BMI label on right
+    const midY = (y1+y2)/2;
+    if(midY>PT+6&&midY<PT+cH-6){
+      html += `<text x="${PL+cW-3}" y="${midY.toFixed(1)}" fill="${z.color}" font-size="8"
+        font-weight="700" text-anchor="end" dominant-baseline="middle" opacity=".7">${z.label}</text>`;
+    }
+  });
+
+  // Target weight dashed line
+  if(targetWt&&targetWt>minWt&&targetWt<maxWt){
+    const yT = yS(targetWt);
+    html += `<line x1="${PL}" y1="${yT.toFixed(1)}" x2="${PL+cW}" y2="${yT.toFixed(1)}"
+      stroke="#16a34a" stroke-width="1.5" stroke-dasharray="8,4" opacity=".6"/>`;
+    html += `<text x="${PL+4}" y="${(yT-4).toFixed(1)}" fill="#16a34a" font-size="9" font-weight="700">
+      Target ${targetWt}kg</text>`;
+  }
+
+  // Grid lines
+  const wtStep = calcStep(maxWt-minWt);
+  for(let w=Math.ceil(minWt/wtStep)*wtStep; w<=maxWt; w+=wtStep){
+    const y = yS(w);
+    html += `<line x1="${PL}" y1="${y.toFixed(1)}" x2="${PL+cW}" y2="${y.toFixed(1)}"
+      stroke="${w===0?'#1f2937':'#e2e8f0'}" stroke-width="${w===0?1:.6}"/>`;
+    html += `<text x="${(PL-4).toFixed(0)}" y="${y.toFixed(1)}" fill="#94a3b8" font-size="9"
+      text-anchor="end" dominant-baseline="middle">${w}</text>`;
+  }
+
+  const ageStep = calcStep(maxAge-minAge);
+  for(let a=Math.ceil(minAge/ageStep)*ageStep; a<=maxAge; a+=ageStep){
+    const x = xS(a);
+    html += `<line x1="${x.toFixed(1)}" y1="${PT}" x2="${x.toFixed(1)}" y2="${(PT+cH).toFixed(1)}"
+      stroke="#e2e8f0" stroke-width=".6"/>`;
+    html += `<text x="${x.toFixed(1)}" y="${(PT+cH+14).toFixed(0)}" fill="#94a3b8" font-size="9"
+      text-anchor="middle">Age ${a}</text>`;
+  }
+
+  // Axis labels
+  html += `<text x="${(PL+cW/2).toFixed(0)}" y="${(H-4)}" fill="#475569" font-size="10"
+    text-anchor="middle" font-weight="600">Age (years)</text>`;
+  html += `<text x="12" y="${(PT+cH/2).toFixed(0)}" fill="#475569" font-size="10"
+    text-anchor="middle" font-weight="600" transform="rotate(-90 12 ${(PT+cH/2).toFixed(0)})">Weight (kg)</text>`;
+
+  // Projection area fill
+  if(projPts.length>1){
+    const areaPoints = projPts.map(p=>`${xS(p.age).toFixed(1)},${yS(p.wt).toFixed(1)}`).join(' ');
+    const baseY = yS(minWt);
+    html += `<polyline points="${areaPoints}" fill="none" stroke="#2563eb" stroke-width="2.5"
+      stroke-dasharray="8,5" stroke-linejoin="round" stroke-linecap="round" opacity=".75"/>`;
+    // Shaded area under projection
+    const area = projPts.map(p=>`${xS(p.age).toFixed(1)},${yS(p.wt).toFixed(1)}`).join(' ')
+      + ` ${xS(projPts[projPts.length-1].age).toFixed(1)},${baseY.toFixed(1)}`
+      + ` ${xS(projPts[0].age).toFixed(1)},${baseY.toFixed(1)}`;
+    html += `<polygon points="${area}" fill="#2563eb" opacity=".05"/>`;
+    // End label
+    const ep = projPts[projPts.length-1];
+    html += `<circle cx="${xS(ep.age).toFixed(1)}" cy="${yS(ep.wt).toFixed(1)}" r="5"
+      fill="#2563eb" stroke="white" stroke-width="1.5"/>`;
+    html += `<text x="${(xS(ep.age)+6).toFixed(0)}" y="${(yS(ep.wt)-5).toFixed(1)}"
+      fill="#2563eb" font-size="9.5" font-weight="700">${ep.wt.toFixed(1)}kg</text>`;
+  }
+
+  // Actual trajectory line
+  if(pts.length>1){
+    const linePts = pts.map(p=>`${xS(p.age).toFixed(1)},${yS(p.wt).toFixed(1)}`).join(' ');
+    html += `<polyline points="${linePts}" fill="none" stroke="#0d9488" stroke-width="3"
+      stroke-linejoin="round" stroke-linecap="round"/>`;
+    // Filled area under curve
+    const area = pts.map(p=>`${xS(p.age).toFixed(1)},${yS(p.wt).toFixed(1)}`).join(' ')
+      + ` ${xS(pts[pts.length-1].age).toFixed(1)},${yS(minWt).toFixed(1)}`
+      + ` ${xS(pts[0].age).toFixed(1)},${yS(minWt).toFixed(1)}`;
+    html += `<polygon points="${area}" fill="#0d9488" opacity=".06"/>`;
+  }
+
+  // Data point circles + labels
+  pts.forEach((p,i)=>{
+    const cx = xS(p.age), cy = yS(p.wt);
+    const color = TYPE_COLORS[p.type]||'#0d9488';
+    html += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="6"
+      fill="${color}" stroke="white" stroke-width="2"/>`;
+    // Label (alternate above/below to avoid collision)
+    const above = i%2===0;
+    const ty = above ? cy-12 : cy+18;
+    html += `<text x="${cx.toFixed(1)}" y="${ty.toFixed(1)}" fill="${color}"
+      font-size="8.5" font-weight="700" text-anchor="middle">${p.wt}kg</text>`;
+    if(p.event){
+      html += `<text x="${cx.toFixed(1)}" y="${(ty+(above?-10:10)).toFixed(1)}" fill="#64748b"
+        font-size="7.5" text-anchor="middle">${p.event.length>14?p.event.slice(0,13)+'…':p.event}</text>`;
+    }
+  });
+
+  // Chart title
+  html += `<text x="${(PL+cW/2).toFixed(0)}" y="14" fill="#0f766e" font-size="11" font-weight="800"
+    text-anchor="middle">Lifetime Weight Trajectory — Birth to ${(currentAge+(meta.projYears||3))} yrs</text>`;
+
+  svg.innerHTML = html;
+}
+
+function calcStep(range){
+  if(range>100) return 20;
+  if(range>50)  return 10;
+  if(range>20)  return 5;
+  return 2;
+}
+
+// GLP-1 efficacy curve: faster loss early, plateau
+function expectedFactor(med, years){
+  const curves = {
+    semaglutide:  [0,0.5,0.85,1.0,1.0,1.0],
+    tirzepatide:  [0,0.55,0.9,1.0,1.0,1.0],
+    liraglutide:  [0,0.4,0.75,0.9,0.9,0.9],
+    orlistat:     [0,0.3,0.6,0.75,0.75,0.75],
+    phentermine:  [0,0.6,0.8,0.85,0.85,0.85],
+    combo:        [0,0.55,0.9,1.0,1.0,1.0],
+  };
+  const c = curves[med]||[0,0.4,0.7,0.85,0.9,0.9];
+  const idx = Math.min(Math.floor(years), c.length-1);
+  const frac = years-Math.floor(years);
+  const next = c[Math.min(idx+1, c.length-1)];
+  return c[idx]*(1-frac)+next*frac;
+}
+
+/* ══════════════════════════════════════════════
+   STATS
+════════════════════════════════════════════════ */
+function updateStats(){
+  const meta = record.meta||{};
+  const pts  = (record.milestones||[])
+    .map(m=>({ age:parseFloat(m.age), wt:parseFloat(m.wt) }))
+    .filter(p=>!isNaN(p.age)&&p.wt>0)
+    .sort((a,b)=>a.age-b.age);
+
+  const currentWt = pts.length ? pts[pts.length-1].wt : null;
+  const h = (meta.height||168)/100;
+  const bmi = currentWt ? +(currentWt/(h*h)).toFixed(1) : null;
+  const peakWt = pts.length ? Math.max(...pts.map(p=>p.wt)) : null;
+  const firstWt = pts.length ? pts[0].wt : null;
+  const totalLoss = (currentWt && firstWt) ? +(firstWt-currentWt).toFixed(1) : null;
+
+  // Projection
+  let projWt = null;
+  if(currentWt && meta.programStart){
+    const projYrs = meta.projYears||3;
+    const rate    = (meta.projRate||8)/100;
+    const factor  = expectedFactor(meta.medication||'', projYrs);
+    projWt = +(currentWt*(1-rate*factor*projYrs)).toFixed(1);
+  }
+
+  v('statBMI').textContent  = bmi||'—';
+  v('statLoss').textContent = totalLoss!=null ? (totalLoss>0?'-':'')+totalLoss : '—';
+  v('statPeak').textContent = peakWt||'—';
+  v('statProj').textContent = projWt||'—';
+}
+
+/* ══════════════════════════════════════════════
+   NARRATIVE
+════════════════════════════════════════════════ */
+function buildNarrative(){
+  const meta = record.meta||{};
+  const pts  = (record.milestones||[])
+    .map(m=>({ age:parseFloat(m.age), wt:parseFloat(m.wt), event:m.event }))
+    .filter(p=>!isNaN(p.age)&&p.wt>0)
+    .sort((a,b)=>a.age-b.age);
+
+  if(pts.length<2){ v('narrativeCard').style.display='none'; return; }
+  v('narrativeCard').style.display='';
+
+  const h        = (meta.height||168)/100;
+  const currWt   = pts[pts.length-1].wt;
+  const currBMI  = +(currWt/h/h).toFixed(1);
+  const peakWt   = Math.max(...pts.map(p=>p.wt));
+  const peakAge  = pts.find(p=>p.wt===peakWt)?.age;
+  const totalLoss= +(pts[0].wt-currWt).toFixed(1);
+  const tbwl     = +((pts[0].wt-currWt)/pts[0].wt*100).toFixed(1);
+  const projYrs  = meta.projYears||3;
+  const projRate = (meta.projRate||8)/100;
+  const projWt   = meta.programStart
+    ? +(currWt*(1-projRate*expectedFactor(meta.medication||'',projYrs)*projYrs)).toFixed(1)
+    : null;
+
+  const bmiCat = currBMI<25?'overweight range':currBMI<30?'overweight (BMI 25–30)':
+                 currBMI<35?'Obesity Class I (BMI 30–35)':
+                 currBMI<40?'Obesity Class II (BMI 35–40)':'Obesity Class III (BMI >40)';
+
+  let text = `Patient's weight journey spans from birth weight of <strong>${pts[0].wt} kg</strong>
+    to the current weight of <strong>${currWt} kg</strong> (BMI ${currBMI} — ${bmiCat}). `;
+
+  if(peakWt>currWt){
+    text += `Peak lifetime weight was <strong>${peakWt} kg</strong> at age ${peakAge||'unknown'}. `;
+  }
+  if(totalLoss>0){
+    text += `Total weight change from baseline: <strong>−${totalLoss} kg (${tbwl}% TBWL)</strong>. `;
+  }
+  if(meta.medication && meta.medication !== ''){
+    const medNames = { semaglutide:'Semaglutide', tirzepatide:'Tirzepatide', liraglutide:'Liraglutide',
+                       orlistat:'Orlistat', phentermine:'Phentermine', combo:'Combination therapy' };
+    text += `Currently on <strong>${medNames[meta.medication]||meta.medication}</strong>. `;
+  }
+  if(projWt && meta.programStart){
+    const projLoss = +(currWt-projWt).toFixed(1);
+    const projTBWL = +((currWt-projWt)/currWt*100).toFixed(1);
+    text += `<br><br>📈 <strong>3-Year Projection:</strong> With current protocol (${meta.projRate||8}%/yr),
+      expected weight at ${projYrs} year${projYrs>1?'s':''}: <strong>${projWt} kg</strong>
+      (projected loss: −${projLoss} kg, ${projTBWL}% TBWL). `;
+    if(meta.targetWt && projWt<=meta.targetWt){
+      text += `<span style="color:#16a34a;font-weight:700">✓ Target weight of ${meta.targetWt} kg is achievable within ${projYrs} years on current protocol.</span>`;
+    } else if(meta.targetWt){
+      text += `<span style="color:#d97706;font-weight:700">Target of ${meta.targetWt} kg may require intensified therapy or longer duration.</span>`;
+    }
+  }
+
+  v('narrativeText').innerHTML = text;
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  // Detect iframe
+  if(window.parent!==window){
+    document.body.classList.add('in-iframe');
+    const brand = document.querySelector('.toolbar-brand');
+    if(brand){
+      const badge = document.createElement('span');
+      badge.id = 'iframePtBadge';
+      badge.className = 'patient-badge-inline';
+      badge.textContent = '—';
+      brand.appendChild(badge);
+    }
+  }
+
+  // Register frame sync
+  PaniniData.initFrameSync(loadById);
+
+  // Restore from active patient
+  const saved = PaniniData.getActiveId();
+  if(saved && validId(saved)){ loadById(saved); return; }
+
+  // Default demo view
+  record.milestones = defaultMilestones();
+  renderMilestoneTable();
+  render();
+});
+</script>
+</body>
+</html>

@@ -15,12 +15,23 @@
         <p>Evidence-based clinical forms for chronic obesity care — fill, save &amp; print anytime.</p>
       </div>
 
+      <div class="nav-section">Quick Start</div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <button class="nav-link" id="demoBtn" type="button" onclick="loadDemoPatient()" style="background:rgba(255,255,255,.15)">
+            <span class="icon">👤</span>
+            <span>3-Year Demo Patient</span>
+            <span class="badge">WIN-DEMO01</span>
+          </button>
+        </li>
+      </ul>
+
       <div class="nav-section">Modules</div>
       <ul class="nav-list" id="navList"></ul>
 
       <div class="sidebar-footer">
         AACE · EASO · KSSO · OMA aligned<br>
-        Anonymous Patient ID · No names in data files
+        Anonymous ID only · No patient names stored
       </div>
     </aside>
 
@@ -52,25 +63,55 @@
         </div>
       </header>
 
+      <!-- Flow Navigation Bar — shown only in guided visit flow mode -->
+      <div class="flow-bar" id="flowBar" style="display:none">
+        <div class="flow-bar-left">
+          <button class="flow-exit-btn" onclick="exitFlowMode()" title="Exit flow mode">✕ Exit</button>
+          <div class="flow-step-counter" id="flowStepNum">Step 1</div>
+          <div class="flow-progress-track">
+            <div class="flow-progress-fill" id="flowBarFill" style="width:0%"></div>
+          </div>
+        </div>
+        <div class="flow-bar-center">
+          <span class="flow-step-title" id="flowStepTitle">—</span>
+          <span class="flow-badge" id="flowMandBadge"></span>
+        </div>
+        <div class="flow-bar-right">
+          <button class="flow-btn flow-prev" id="flowPrevBtn" onclick="flowPrev()" disabled>← Back</button>
+          <button class="flow-btn flow-skip" onclick="flowSkip()">Skip</button>
+          <button class="flow-btn flow-next" id="flowNextBtn" onclick="flowNext()">Done → Next</button>
+        </div>
+      </div>
+
       <main class="content" id="content">
         <div class="home-view" id="homeView">
           <div class="hero">
             <h2>Chronic Weight Management Toolkit</h2>
             <p>
-              A complete clinical workflow for obesity care — from initial bilingual evaluation
-              and secondary-cause workup through behavioral readiness, nutrition &amp; activity assessment,
-              and long-term GLP-1 program tracking.
+              A complete clinical workflow for obesity care — from initial evaluation
+              through behavioral readiness, nutrition &amp; activity assessment,
+              medication titration, and long-term GLP-1 program tracking.
             </p>
           </div>
 
+          <!-- Guided visit flow start buttons -->
+          <div class="flow-start-row">
+            <span class="flow-start-label">Start guided visit:</span>
+            <button class="flow-start-btn flow-start-followup" onclick="enterFlowMode('followup')">
+              ▶ Follow-up Visit
+              <span class="flow-start-sub">Dashboard → Medication → Coaching Card</span>
+            </button>
+            <button class="flow-start-btn flow-start-initial" onclick="enterFlowMode('initial')">
+              ▶ Initial / New Patient
+              <span class="flow-start-sub">All 13 steps · full onboarding</span>
+            </button>
+          </div>
+
           <div class="workflow">
-            <strong>Every visit — start here:</strong>
-            🏥 <strong>Visit Intelligence Dashboard</strong> (trends · Metabolic Momentum Score · red flags · coaching card) →
-            then: ① Initial Evaluation + Workup Checklist + Weight Trajectory Map →
-            ② Psych/Behavioral Readiness →
-            ③ Dietary Recall + Dietary Contract + Exercise + Yoga + Clinical Input Audit →
-            ④ 3-Year Winner Program (19 bi-monthly visit assessments).
-            Use a <strong>Patient Unique ID</strong> (no name stored) — data persists visit to visit.
+            <span class="workflow-req">■ Green border = Required</span> — complete at every visit.
+            <span class="workflow-opt">■ Gray = Optional</span> — add when time permits.
+            Use the guided flow buttons above to navigate step-by-step with
+            <strong>Back / Skip / Done+Next</strong> controls (← → keyboard shortcuts also work).
           </div>
 
           <div class="module-grid" id="moduleGrid"></div>

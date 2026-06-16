@@ -1,1 +1,40 @@
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies (if ever added)
+node_modules/
+package-lock.json
+
+# Build outputs
+dist/
+build/
+
+# Environment / secrets
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.bak
+
+# The ignore/ folder — deprecated/archived files kept locally, NOT uploaded to GitHub
+ignore/

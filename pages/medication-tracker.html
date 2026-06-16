@@ -225,6 +225,15 @@ input:focus,select:focus { outline:none; border-color:var(--teal); box-shadow:0 
 .empty-state h2 { color:var(--teal-dark); margin-bottom:8px; }
 .empty-state p  { color:var(--slate); max-width:400px; margin:0 auto; }
 
+/* ── Iframe mode — hide redundant ID row, show passive badge ── */
+body.in-iframe .pid-row { display:none!important; }
+body.in-iframe .toolbar { padding:6px 14px; }
+.patient-badge-inline {
+  font-size:11.5px; font-weight:700; padding:3px 10px;
+  border-radius:6px; background:rgba(255,255,255,.2);
+  color:#fff; letter-spacing:.04em;
+}
+
 /* ── Print ── */
 @media print {
   .toolbar,.add-row-btn,.del-btn,.drug-grid,.btn { display:none!important; }
@@ -547,16 +556,27 @@ function githubExport(){
 ════════════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded',()=>{
   renderDrugGrid();
-  // Restore last session
-  try{
-    const saved=PaniniData.getActiveId();
-    if(saved&&validId(saved)){
-      v('pidInput').value=saved; activeId=saved;
-      const rec=loadLocal(saved);
-      if(rec){ record=rec; if(rec.drug){ selectDrug(rec.drug,true); } }
+  if(v('startDate')) v('startDate').value=new Date().toISOString().split('T')[0];
+
+  // Detect iframe — hide redundant ID row, add passive patient badge
+  if(window.parent!==window){
+    document.body.classList.add('in-iframe');
+    const brand=document.querySelector('.toolbar-brand');
+    if(brand){
+      const badge=document.createElement('span');
+      badge.id='iframePtBadge';
+      badge.className='patient-badge-inline';
+      badge.textContent='—';
+      brand.appendChild(badge);
     }
-  }catch(_){}
-  v('startDate').value=new Date().toISOString().split('T')[0];
+  }
+
+  // Register frame sync — parent broadcasts ID here
+  PaniniData.initFrameSync(loadById);
+
+  // Restore last active patient from shared key
+  const saved=PaniniData.getActiveId();
+  if(saved&&validId(saved)){ loadById(saved); }
 });
 
 /* ══════════════════════════════════════════════
@@ -581,23 +601,31 @@ function selectDrug(key, silent){
 /* ══════════════════════════════════════════════
    PATIENT
 ════════════════════════════════════════════════ */
-function loadPatient(){
-  const id=norm(v('pidInput').value);
-  if(!validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
-  activeId=id;
-  PaniniData.setActiveId(id);
-  const saved=loadLocal(id);
+function loadById(id){
+  const n=norm(id); if(!validId(n)) return;
+  activeId=n;
+  PaniniData.setActiveId(n);
+  if(v('pidInput')) v('pidInput').value=n;
+  const badge=document.getElementById('iframePtBadge');
+  if(badge) badge.textContent=n;
+  const saved=loadLocal(n);
   if(saved){
     record=saved;
     if(record.drug){ selectDrug(record.drug,true); }
-    if(record.startDate) v('startDate').value=record.startDate;
-    if(record.targetDose) v('targetDose').value=record.targetDose;
+    if(record.startDate&&v('startDate')) v('startDate').value=record.startDate;
+    if(record.targetDose&&v('targetDose')) v('targetDose').value=record.targetDose;
     renderAll();
-    status('Loaded: '+id);
+    status('✓ '+n);
   } else {
     record={ drug:selectedDrug, startDate:'', targetDose:'', visits:[] };
-    status('New record for: '+id);
+    renderAll();
+    status('New record: '+n);
   }
+}
+function loadPatient(){
+  const id=norm(v('pidInput')?.value||'');
+  if(!validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
+  loadById(id);
 }
 
 function initDrug(){

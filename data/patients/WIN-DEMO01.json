@@ -1,0 +1,1070 @@
+{
+  "patientId": "WIN-DEMO01",
+  "schemaVersion": 2,
+  "updatedAt": "2026-01-15T09:00:00.000Z",
+  "_demo": true,
+  "_note": "Demo patient — 3-year semaglutide journey. No real patient data.",
+  "meta": {
+    "height": 165,
+    "targetWeight": 75,
+    "programStart": "2023-01-15",
+    "drug": "semaglutide"
+  },
+  "dashVisits": [
+    {
+      "date": "2023-01-15",
+      "weight": 102,
+      "waist": 108,
+      "bp": "148/92",
+      "dose": "Semaglutide 0.25 mg weekly",
+      "diet": 5,
+      "exercise": 3,
+      "sleep": 5,
+      "energy": 4,
+      "hba1c": 8.2,
+      "fbg": 156,
+      "ldl": 148,
+      "tg": 210,
+      "hdl": 38,
+      "alt": 62,
+      "steps": 3500,
+      "nadir": 102,
+      "nsv": [],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2023-03-15",
+      "weight": 99.5,
+      "waist": 106,
+      "bp": "146/90",
+      "dose": "Semaglutide 0.5 mg weekly",
+      "diet": 6,
+      "exercise": 4,
+      "sleep": 5,
+      "energy": 5,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 4500,
+      "nadir": 99.5,
+      "nsv": [],
+      "sideEffect": "Nausea (mild)",
+      "doseChange": "Escalated"
+    },
+    {
+      "date": "2023-05-15",
+      "weight": 97,
+      "waist": 104,
+      "bp": "142/88",
+      "dose": "Semaglutide 1.0 mg weekly",
+      "diet": 7,
+      "exercise": 5,
+      "sleep": 6,
+      "energy": 6,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 5500,
+      "nadir": 97,
+      "nsv": [],
+      "sideEffect": "Nausea (resolving)",
+      "doseChange": "Escalated"
+    },
+    {
+      "date": "2023-07-15",
+      "weight": 94.2,
+      "waist": 102,
+      "bp": "140/86",
+      "dose": "Semaglutide 1.0 mg weekly",
+      "diet": 7,
+      "exercise": 6,
+      "sleep": 6,
+      "energy": 6,
+      "hba1c": 7.4,
+      "fbg": 128,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": 52,
+      "steps": 6000,
+      "nadir": 94.2,
+      "nsv": [
+        "Amlodipine 5mg reduced — BP better controlled"
+      ],
+      "sideEffect": "Constipation",
+      "doseChange": "No — side effects (constipation)"
+    },
+    {
+      "date": "2023-09-15",
+      "weight": 91.5,
+      "waist": 100,
+      "bp": "136/84",
+      "dose": "Semaglutide 1.7 mg weekly",
+      "diet": 8,
+      "exercise": 7,
+      "sleep": 7,
+      "energy": 7,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 7000,
+      "nadir": 91.5,
+      "nsv": [],
+      "sideEffect": "None",
+      "doseChange": "Escalated"
+    },
+    {
+      "date": "2023-11-15",
+      "weight": 89.2,
+      "waist": 98,
+      "bp": "134/82",
+      "dose": "Semaglutide 1.7 mg weekly",
+      "diet": 8,
+      "exercise": 7,
+      "sleep": 7,
+      "energy": 7,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 7500,
+      "nadir": 89.2,
+      "nsv": [
+        "Knee pain improving — walking 7000 steps daily"
+      ],
+      "sideEffect": "None",
+      "doseChange": "No change"
+    },
+    {
+      "date": "2024-01-15",
+      "weight": 87.8,
+      "waist": 97,
+      "bp": "132/82",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 9,
+      "exercise": 8,
+      "sleep": 7,
+      "energy": 8,
+      "hba1c": 6.8,
+      "fbg": 112,
+      "ldl": 128,
+      "tg": 165,
+      "hdl": 44,
+      "alt": 42,
+      "steps": 8000,
+      "nadir": 87.8,
+      "nsv": [
+        "HbA1c below 7% for first time in 5 years",
+        "Amlodipine stopped completely"
+      ],
+      "sideEffect": "None",
+      "doseChange": "Escalated"
+    },
+    {
+      "date": "2024-03-15",
+      "weight": 86.5,
+      "waist": 96,
+      "bp": "130/80",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 8,
+      "exercise": 8,
+      "sleep": 8,
+      "energy": 8,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 8500,
+      "nadir": 86.5,
+      "nsv": [],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2024-05-15",
+      "weight": 85.8,
+      "waist": 95.5,
+      "bp": "130/80",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 8,
+      "exercise": 7,
+      "sleep": 7,
+      "energy": 7,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 8000,
+      "nadir": 85.8,
+      "nsv": [
+        "Metformin dose reduced from 1g to 500mg"
+      ],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2024-07-15",
+      "weight": 85.2,
+      "waist": 95,
+      "bp": "128/80",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 7,
+      "exercise": 7,
+      "sleep": 7,
+      "energy": 8,
+      "hba1c": 6.4,
+      "fbg": 104,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": 35,
+      "steps": 9000,
+      "nadir": 85.2,
+      "nsv": [],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2024-09-15",
+      "weight": 84.8,
+      "waist": 94.5,
+      "bp": "128/78",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 8,
+      "exercise": 8,
+      "sleep": 8,
+      "energy": 8,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 9500,
+      "nadir": 84.8,
+      "nsv": [
+        "No breathlessness climbing 2 flights of stairs"
+      ],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2024-11-15",
+      "weight": 84.5,
+      "waist": 94,
+      "bp": "126/78",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 8,
+      "exercise": 8,
+      "sleep": 8,
+      "energy": 8,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 10000,
+      "nadir": 84.5,
+      "nsv": [],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2025-01-15",
+      "weight": 84.2,
+      "waist": 93.8,
+      "bp": "126/78",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 8,
+      "exercise": 8,
+      "sleep": 8,
+      "energy": 8,
+      "hba1c": 6.1,
+      "fbg": 98,
+      "ldl": 118,
+      "tg": 138,
+      "hdl": 48,
+      "alt": 28,
+      "steps": 10000,
+      "nadir": 84.2,
+      "nsv": [
+        "Sleep apnea resolved — CPAP discontinued",
+        "AHI normalized on repeat sleep study"
+      ],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2025-03-15",
+      "weight": 84.8,
+      "waist": 94.2,
+      "bp": "126/78",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 7,
+      "exercise": 7,
+      "sleep": 7,
+      "energy": 7,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 9000,
+      "nadir": 84.2,
+      "nsv": [
+        "Waist reduced 15 cm — fitting pre-obesity clothes"
+      ],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2025-05-15",
+      "weight": 84.2,
+      "waist": 93.8,
+      "bp": "124/78",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 8,
+      "exercise": 8,
+      "sleep": 8,
+      "energy": 8,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 9500,
+      "nadir": 84.2,
+      "nsv": [],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2025-07-15",
+      "weight": 83.8,
+      "waist": 93.5,
+      "bp": "124/76",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 8,
+      "exercise": 8,
+      "sleep": 8,
+      "energy": 8,
+      "hba1c": 5.9,
+      "fbg": 95,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": 22,
+      "steps": 10000,
+      "nadir": 83.8,
+      "nsv": [
+        "ALT normalized — NAFLD in remission, hepatologist discharged"
+      ],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2025-09-15",
+      "weight": 83.5,
+      "waist": 93.2,
+      "bp": "122/76",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 9,
+      "exercise": 9,
+      "sleep": 8,
+      "energy": 9,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 10500,
+      "nadir": 83.5,
+      "nsv": [],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2025-11-15",
+      "weight": 83.2,
+      "waist": 93,
+      "bp": "122/76",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 9,
+      "exercise": 9,
+      "sleep": 8,
+      "energy": 9,
+      "hba1c": null,
+      "fbg": null,
+      "ldl": null,
+      "tg": null,
+      "hdl": null,
+      "alt": null,
+      "steps": 11000,
+      "nadir": 83.2,
+      "nsv": [
+        "Metformin stopped completely — euglycaemia on diet alone"
+      ],
+      "sideEffect": "None",
+      "doseChange": ""
+    },
+    {
+      "date": "2026-01-15",
+      "weight": 83,
+      "waist": 92.8,
+      "bp": "122/76",
+      "dose": "Semaglutide 2.4 mg weekly",
+      "diet": 9,
+      "exercise": 9,
+      "sleep": 8,
+      "energy": 9,
+      "hba1c": 5.8,
+      "fbg": 94,
+      "ldl": 112,
+      "tg": 128,
+      "hdl": 52,
+      "alt": 22,
+      "steps": 11000,
+      "nadir": 83,
+      "nsv": [
+        "HbA1c 5.8% — pre-diabetes range",
+        "All BP medications stopped",
+        "Lost 19 kg — 18.6% TBWL in 36 months"
+      ],
+      "sideEffect": "None",
+      "doseChange": ""
+    }
+  ],
+  "medTracker": {
+    "drug": "semaglutide",
+    "startDate": "2023-01-15",
+    "targetDose": "2.4mg weekly",
+    "visits": [
+      {
+        "date": "2023-01-15",
+        "dose": "0.25 mg",
+        "weight": "102",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "0.5 mg",
+        "notes": "Baseline. GLP-1 candidacy confirmed. T2DM, HTN, NAFLD. Started Semaglutide 0.25mg/wk. Dietician referral made."
+      },
+      {
+        "date": "2023-03-15",
+        "dose": "0.5 mg",
+        "weight": "99.5",
+        "sideEffects": "Nausea (mild)",
+        "escalated": "Yes — dose escalated",
+        "reason": "",
+        "nextPlan": "1.0 mg",
+        "notes": "GI tolerance reviewed. Mild nausea week 1–2, now resolving. Protein first strategy adopted. Escalating dose."
+      },
+      {
+        "date": "2023-05-15",
+        "dose": "1.0 mg",
+        "weight": "97",
+        "sideEffects": "Nausea (resolving)",
+        "escalated": "Yes — dose escalated",
+        "reason": "",
+        "nextPlan": "1.0 mg",
+        "notes": "Early response good — 5kg in 10 weeks. Nausea improving. Escalating to 1mg. DASI score improved."
+      },
+      {
+        "date": "2023-07-15",
+        "dose": "1.0 mg",
+        "weight": "94.2",
+        "sideEffects": "Constipation",
+        "escalated": "No — side effects (constipation)",
+        "reason": "No — side effects (constipation)",
+        "nextPlan": "1.7 mg",
+        "notes": "Constipation rated 6/10. Held dose escalation. Added fiber supplement and increased hydration target to 2.5L."
+      },
+      {
+        "date": "2023-09-15",
+        "dose": "1.7 mg",
+        "weight": "91.5",
+        "sideEffects": "None",
+        "escalated": "Yes — dose escalated",
+        "reason": "",
+        "nextPlan": "1.7 mg",
+        "notes": "GI resolved. Step count up to 7000/day. Escalating to 1.7mg. Ankle swelling absent. BP trending down."
+      },
+      {
+        "date": "2023-11-15",
+        "dose": "1.7 mg",
+        "weight": "89.2",
+        "sideEffects": "None",
+        "escalated": "No change",
+        "reason": "No change",
+        "nextPlan": "2.4 mg",
+        "notes": "Excellent 10% TBWL at 10 months. Good appetite suppression. Preparing for maintenance dose at next visit."
+      },
+      {
+        "date": "2024-01-15",
+        "dose": "2.4 mg",
+        "weight": "87.8",
+        "sideEffects": "None",
+        "escalated": "Yes — dose escalated",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Year 1 review. 14.2% TBWL. HbA1c 6.8% — below 7% for first time. Escalated to 2.4mg maintenance dose."
+      },
+      {
+        "date": "2024-03-15",
+        "dose": "2.4 mg",
+        "weight": "86.5",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Maintaining well. Added resistance training 2x/week. Sleep apnea follow-up arranged."
+      },
+      {
+        "date": "2024-05-15",
+        "dose": "2.4 mg",
+        "weight": "85.8",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Knee pain reduced — attributed to weight loss. Metformin reduced. Stable on 2.4mg."
+      },
+      {
+        "date": "2024-07-15",
+        "dose": "2.4 mg",
+        "weight": "85.2",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Year 1.5 — all metabolic markers improving. NAFLD regression on ultrasound."
+      },
+      {
+        "date": "2024-09-15",
+        "dose": "2.4 mg",
+        "weight": "84.8",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Excellent maintenance. Step goal 10,000/day consistently met. Patient reports high satisfaction."
+      },
+      {
+        "date": "2024-11-15",
+        "dose": "2.4 mg",
+        "weight": "84.5",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Slight winter activity dip. Counselled on indoor exercise options. Waist at 94cm — target <90."
+      },
+      {
+        "date": "2025-01-15",
+        "dose": "2.4 mg",
+        "weight": "84.2",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Year 2 review. CPAP discontinued — sleep study AHI <5. ALT 28 — near normal. Tremendous progress."
+      },
+      {
+        "date": "2025-03-15",
+        "dose": "2.4 mg",
+        "weight": "84.8",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Slight regain 0.6kg — attributed to travel and social eating. Reinforced protein-first rules."
+      },
+      {
+        "date": "2025-05-15",
+        "dose": "2.4 mg",
+        "weight": "84.2",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Back on track. Consistent maintenance. Waist goal in sight."
+      },
+      {
+        "date": "2025-07-15",
+        "dose": "2.4 mg",
+        "weight": "83.8",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "ALT normal (22). Hepatologist formally discharged. Metformin to be tapered."
+      },
+      {
+        "date": "2025-09-15",
+        "dose": "2.4 mg",
+        "weight": "83.5",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Metformin stopped. FBG 95 — euglycaemia maintained on diet and GLP-1 alone."
+      },
+      {
+        "date": "2025-11-15",
+        "dose": "2.4 mg",
+        "weight": "83.2",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg",
+        "notes": "Near-target maintenance. HbA1c 5.9% — non-diabetic range approaching."
+      },
+      {
+        "date": "2026-01-15",
+        "dose": "2.4 mg",
+        "weight": "83",
+        "sideEffects": "None",
+        "escalated": "—",
+        "reason": "",
+        "nextPlan": "2.4 mg — continue",
+        "notes": "Year 3 review. 19kg lost. HbA1c 5.8%. All BP meds stopped. NAFLD in remission. T2DM in clinical remission."
+      }
+    ]
+  },
+  "activeVisitMonth": 36,
+  "visits": {
+    "0": {
+      "core": {
+        "date": "2023-01-15",
+        "weight": "102",
+        "waist": "108",
+        "bp": "148/92",
+        "dose": "Semaglutide 0.25 mg weekly",
+        "dietScore": "5",
+        "exerciseScore": "3"
+      },
+      "fields": {
+        "energyLevel": "4",
+        "habitReadiness": "4",
+        "currentSteps": "3500",
+        "tbwlPercent": "0",
+        "nauseaScale": "0",
+        "proteinAdherence": "5",
+        "waterIntake": "1.5",
+        "providerNotes": "Baseline. GLP-1 candidacy confirmed. T2DM, HTN, NAFLD. Started Semaglutide 0.25mg/wk. Dietician referral made."
+      }
+    },
+    "2": {
+      "core": {
+        "date": "2023-03-15",
+        "weight": "99.5",
+        "waist": "106",
+        "bp": "146/90",
+        "dose": "Semaglutide 0.5 mg weekly",
+        "dietScore": "6",
+        "exerciseScore": "4"
+      },
+      "fields": {
+        "energyLevel": "5",
+        "habitReadiness": "4",
+        "currentSteps": "4500",
+        "tbwlPercent": "2.5",
+        "nauseaScale": "4",
+        "proteinAdherence": "6",
+        "waterIntake": "1.5",
+        "providerNotes": "GI tolerance reviewed. Mild nausea week 1–2, now resolving. Protein first strategy adopted. Escalating dose."
+      }
+    },
+    "4": {
+      "core": {
+        "date": "2023-05-15",
+        "weight": "97",
+        "waist": "104",
+        "bp": "142/88",
+        "dose": "Semaglutide 1.0 mg weekly",
+        "dietScore": "7",
+        "exerciseScore": "5"
+      },
+      "fields": {
+        "energyLevel": "6",
+        "habitReadiness": "4",
+        "currentSteps": "5500",
+        "tbwlPercent": "4.9",
+        "nauseaScale": "2",
+        "proteinAdherence": "7",
+        "waterIntake": "1.5",
+        "providerNotes": "Early response good — 5kg in 10 weeks. Nausea improving. Escalating to 1mg. DASI score improved."
+      }
+    },
+    "6": {
+      "core": {
+        "date": "2023-07-15",
+        "weight": "94.2",
+        "waist": "102",
+        "bp": "140/86",
+        "dose": "Semaglutide 1.0 mg weekly",
+        "dietScore": "7",
+        "exerciseScore": "6"
+      },
+      "fields": {
+        "energyLevel": "6",
+        "habitReadiness": "5",
+        "currentSteps": "6000",
+        "tbwlPercent": "7.6",
+        "nauseaScale": "0",
+        "proteinAdherence": "7",
+        "waterIntake": "2.0",
+        "providerNotes": "Constipation rated 6/10. Held dose escalation. Added fiber supplement and increased hydration target to 2.5L."
+      }
+    },
+    "8": {
+      "core": {
+        "date": "2023-09-15",
+        "weight": "91.5",
+        "waist": "100",
+        "bp": "136/84",
+        "dose": "Semaglutide 1.7 mg weekly",
+        "dietScore": "8",
+        "exerciseScore": "7"
+      },
+      "fields": {
+        "energyLevel": "7",
+        "habitReadiness": "5",
+        "currentSteps": "7000",
+        "tbwlPercent": "10.3",
+        "nauseaScale": "0",
+        "proteinAdherence": "8",
+        "waterIntake": "2.0",
+        "providerNotes": "GI resolved. Step count up to 7000/day. Escalating to 1.7mg. Ankle swelling absent. BP trending down."
+      }
+    },
+    "10": {
+      "core": {
+        "date": "2023-11-15",
+        "weight": "89.2",
+        "waist": "98",
+        "bp": "134/82",
+        "dose": "Semaglutide 1.7 mg weekly",
+        "dietScore": "8",
+        "exerciseScore": "7"
+      },
+      "fields": {
+        "energyLevel": "7",
+        "habitReadiness": "5",
+        "currentSteps": "7500",
+        "tbwlPercent": "12.5",
+        "nauseaScale": "0",
+        "proteinAdherence": "8",
+        "waterIntake": "2.0",
+        "providerNotes": "Excellent 10% TBWL at 10 months. Good appetite suppression. Preparing for maintenance dose at next visit."
+      }
+    },
+    "12": {
+      "core": {
+        "date": "2024-01-15",
+        "weight": "87.8",
+        "waist": "97",
+        "bp": "132/82",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "9",
+        "exerciseScore": "8"
+      },
+      "fields": {
+        "energyLevel": "8",
+        "habitReadiness": "6",
+        "currentSteps": "8000",
+        "tbwlPercent": "13.9",
+        "nauseaScale": "0",
+        "proteinAdherence": "9",
+        "waterIntake": "2.0",
+        "providerNotes": "Year 1 review. 14.2% TBWL. HbA1c 6.8% — below 7% for first time. Escalated to 2.4mg maintenance dose."
+      }
+    },
+    "14": {
+      "core": {
+        "date": "2024-03-15",
+        "weight": "86.5",
+        "waist": "96",
+        "bp": "130/80",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "8",
+        "exerciseScore": "8"
+      },
+      "fields": {
+        "energyLevel": "8",
+        "habitReadiness": "6",
+        "currentSteps": "8500",
+        "tbwlPercent": "15.2",
+        "nauseaScale": "0",
+        "proteinAdherence": "8",
+        "waterIntake": "2.0",
+        "providerNotes": "Maintaining well. Added resistance training 2x/week. Sleep apnea follow-up arranged."
+      }
+    },
+    "16": {
+      "core": {
+        "date": "2024-05-15",
+        "weight": "85.8",
+        "waist": "95.5",
+        "bp": "130/80",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "8",
+        "exerciseScore": "7"
+      },
+      "fields": {
+        "energyLevel": "7",
+        "habitReadiness": "6",
+        "currentSteps": "8000",
+        "tbwlPercent": "15.9",
+        "nauseaScale": "0",
+        "proteinAdherence": "8",
+        "waterIntake": "2.5",
+        "providerNotes": "Knee pain reduced — attributed to weight loss. Metformin reduced. Stable on 2.4mg."
+      }
+    },
+    "18": {
+      "core": {
+        "date": "2024-07-15",
+        "weight": "85.2",
+        "waist": "95",
+        "bp": "128/80",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "7",
+        "exerciseScore": "7"
+      },
+      "fields": {
+        "energyLevel": "8",
+        "habitReadiness": "7",
+        "currentSteps": "9000",
+        "tbwlPercent": "16.5",
+        "nauseaScale": "0",
+        "proteinAdherence": "7",
+        "waterIntake": "2.5",
+        "providerNotes": "Year 1.5 — all metabolic markers improving. NAFLD regression on ultrasound."
+      }
+    },
+    "20": {
+      "core": {
+        "date": "2024-09-15",
+        "weight": "84.8",
+        "waist": "94.5",
+        "bp": "128/78",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "8",
+        "exerciseScore": "8"
+      },
+      "fields": {
+        "energyLevel": "8",
+        "habitReadiness": "7",
+        "currentSteps": "9500",
+        "tbwlPercent": "16.9",
+        "nauseaScale": "0",
+        "proteinAdherence": "8",
+        "waterIntake": "2.5",
+        "providerNotes": "Excellent maintenance. Step goal 10,000/day consistently met. Patient reports high satisfaction."
+      }
+    },
+    "22": {
+      "core": {
+        "date": "2024-11-15",
+        "weight": "84.5",
+        "waist": "94",
+        "bp": "126/78",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "8",
+        "exerciseScore": "8"
+      },
+      "fields": {
+        "energyLevel": "8",
+        "habitReadiness": "7",
+        "currentSteps": "10000",
+        "tbwlPercent": "17.2",
+        "nauseaScale": "0",
+        "proteinAdherence": "8",
+        "waterIntake": "2.5",
+        "providerNotes": "Slight winter activity dip. Counselled on indoor exercise options. Waist at 94cm — target <90."
+      }
+    },
+    "24": {
+      "core": {
+        "date": "2025-01-15",
+        "weight": "84.2",
+        "waist": "93.8",
+        "bp": "126/78",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "8",
+        "exerciseScore": "8"
+      },
+      "fields": {
+        "energyLevel": "8",
+        "habitReadiness": "8",
+        "currentSteps": "10000",
+        "tbwlPercent": "17.5",
+        "nauseaScale": "0",
+        "proteinAdherence": "8",
+        "waterIntake": "2.5",
+        "providerNotes": "Year 2 review. CPAP discontinued — sleep study AHI <5. ALT 28 — near normal. Tremendous progress."
+      }
+    },
+    "26": {
+      "core": {
+        "date": "2025-03-15",
+        "weight": "84.8",
+        "waist": "94.2",
+        "bp": "126/78",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "7",
+        "exerciseScore": "7"
+      },
+      "fields": {
+        "energyLevel": "7",
+        "habitReadiness": "8",
+        "currentSteps": "9000",
+        "tbwlPercent": "16.9",
+        "nauseaScale": "0",
+        "proteinAdherence": "7",
+        "waterIntake": "2.5",
+        "providerNotes": "Slight regain 0.6kg — attributed to travel and social eating. Reinforced protein-first rules."
+      }
+    },
+    "28": {
+      "core": {
+        "date": "2025-05-15",
+        "weight": "84.2",
+        "waist": "93.8",
+        "bp": "124/78",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "8",
+        "exerciseScore": "8"
+      },
+      "fields": {
+        "energyLevel": "8",
+        "habitReadiness": "8",
+        "currentSteps": "9500",
+        "tbwlPercent": "17.5",
+        "nauseaScale": "0",
+        "proteinAdherence": "8",
+        "waterIntake": "2.5",
+        "providerNotes": "Back on track. Consistent maintenance. Waist goal in sight."
+      }
+    },
+    "30": {
+      "core": {
+        "date": "2025-07-15",
+        "weight": "83.8",
+        "waist": "93.5",
+        "bp": "124/76",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "8",
+        "exerciseScore": "8"
+      },
+      "fields": {
+        "energyLevel": "8",
+        "habitReadiness": "9",
+        "currentSteps": "10000",
+        "tbwlPercent": "17.8",
+        "nauseaScale": "0",
+        "proteinAdherence": "8",
+        "waterIntake": "2.5",
+        "providerNotes": "ALT normal (22). Hepatologist formally discharged. Metformin to be tapered."
+      }
+    },
+    "32": {
+      "core": {
+        "date": "2025-09-15",
+        "weight": "83.5",
+        "waist": "93.2",
+        "bp": "122/76",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "9",
+        "exerciseScore": "9"
+      },
+      "fields": {
+        "energyLevel": "9",
+        "habitReadiness": "9",
+        "currentSteps": "10500",
+        "tbwlPercent": "18.1",
+        "nauseaScale": "0",
+        "proteinAdherence": "9",
+        "waterIntake": "2.5",
+        "providerNotes": "Metformin stopped. FBG 95 — euglycaemia maintained on diet and GLP-1 alone."
+      }
+    },
+    "34": {
+      "core": {
+        "date": "2025-11-15",
+        "weight": "83.2",
+        "waist": "93",
+        "bp": "122/76",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "9",
+        "exerciseScore": "9"
+      },
+      "fields": {
+        "energyLevel": "9",
+        "habitReadiness": "9",
+        "currentSteps": "11000",
+        "tbwlPercent": "18.4",
+        "nauseaScale": "0",
+        "proteinAdherence": "9",
+        "waterIntake": "2.5",
+        "providerNotes": "Near-target maintenance. HbA1c 5.9% — non-diabetic range approaching."
+      }
+    },
+    "36": {
+      "core": {
+        "date": "2026-01-15",
+        "weight": "83",
+        "waist": "92.8",
+        "bp": "122/76",
+        "dose": "Semaglutide 2.4 mg weekly",
+        "dietScore": "9",
+        "exerciseScore": "9"
+      },
+      "fields": {
+        "energyLevel": "9",
+        "habitReadiness": "10",
+        "currentSteps": "11000",
+        "tbwlPercent": "18.6",
+        "nauseaScale": "0",
+        "proteinAdherence": "9",
+        "waterIntake": "2.5",
+        "providerNotes": "Year 3 review. 19kg lost. HbA1c 5.8%. All BP meds stopped. NAFLD in remission. T2DM in clinical remission."
+      }
+    }
+  },
+  "program": {
+    "startdate": "2023-01-15",
+    "enddate": "2026-01-15",
+    "med": "Semaglutide",
+    "tableInputs": [
+      "102",
+      "37.5",
+      "",
+      "108",
+      "",
+      ""
+    ],
+    "checks": []
+  }
+}

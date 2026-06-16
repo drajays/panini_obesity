@@ -254,6 +254,14 @@ input:focus,select:focus,textarea:focus {
 .v-dot.done { background:var(--teal); border-color:var(--teal); color:#fff; }
 .v-dot.current { background:var(--amber); border-color:var(--amber); color:#fff; ring:2px; }
 
+/* ── Iframe mode: hide redundant patient ID row ── */
+body.in-iframe .pid-row { display:none!important; }
+body.in-iframe .toolbar { padding:6px 14px; }
+.patient-badge-inline {
+  font-size:11.5px; font-weight:700; padding:3px 10px; border-radius:6px;
+  background:rgba(255,255,255,.2); color:#fff; letter-spacing:.04em;
+}
+
 /* ── Print ── */
 @media print {
   .toolbar,.entry-section,.flags-row,.nsv-input-row,.three-row,
@@ -571,20 +579,9 @@ function readWinnerData(id){
 
 // ── Load ────────────────────────────────────────
 function loadPatient(){
-  const raw=v('pidInput').value;
-  const id=norm(raw);
+  const id=norm(v('pidInput')?.value||'');
   if(!validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
-  activeId=id;
-  PaniniData.setActiveId(id);
-
-  const local=loadLocal(id)||{ visits:[] };
-  dashRecord={ visits: local.visits||local.dashVisits||[] };
-
-  // Merge core metrics from Winner Program (read-only, no PII)
-  mergeFromWinner(id);
-  render();
-  updateCoachLink();
-  status('Loaded: '+id);
+  loadById(id);
 }
 
 function mergeFromWinner(id){
@@ -663,20 +660,46 @@ function renderNsvPreview(){
 v('eNSVInput')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); addNSV(); }});
 
 // ── Pre-fill today ──────────────────────────────
+// ── Iframe-aware loader ─────────────────────────
+// Called any time an ID is resolved (local or from parent)
+function loadById(id){
+  const n=norm(id); if(!validId(n)) return;
+  activeId=n;
+  PaniniData.setActiveId(n);
+  if(v('pidInput')) v('pidInput').value=n;
+  const rec=loadLocal(n)||{ visits:[] };
+  dashRecord={ visits: rec.visits||rec.dashVisits||[] };
+  mergeFromWinner(n);
+  render(); updateCoachLink();
+  status('✓ '+n);
+  // Update inline badge if in iframe
+  const badge=document.getElementById('iframePtBadge');
+  if(badge) badge.textContent=n;
+}
+
 window.addEventListener('DOMContentLoaded',()=>{
   const today=new Date().toISOString().split('T')[0];
   const eDate=v('eDate'); if(eDate) eDate.value=today;
 
-  // Restore last active ID
-  try{
-    const saved=PaniniData.getActiveId();
-    if(saved&&validId(saved)){
-      v('pidInput').value=saved;
-      activeId=saved;
-      const rec=loadLocal(saved);
-      if(rec){ dashRecord={ visits: rec.visits||rec.dashVisits||[] }; mergeFromWinner(saved); render(); updateCoachLink(); status('Loaded: '+saved); return; }
+  // Detect iframe — hide redundant ID row, show passive badge
+  if(window.parent!==window){
+    document.body.classList.add('in-iframe');
+    const brand=document.querySelector('.toolbar-brand');
+    if(brand){
+      const badge=document.createElement('span');
+      badge.id='iframePtBadge';
+      badge.className='patient-badge-inline';
+      badge.textContent='—';
+      brand.appendChild(badge);
     }
-  } catch(_){}
+  }
+
+  // Register frame sync — parent broadcasts ID → auto-load
+  PaniniData.initFrameSync(loadById);
+
+  // Restore last active ID from shared key
+  const saved=PaniniData.getActiveId();
+  if(saved&&validId(saved)){ loadById(saved); return; }
 });
 
 // ── Toggle entry accordion ──────────────────────

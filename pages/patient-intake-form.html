@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Intake Form — Panini Weight Management</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal:#0d9488; --teal-dark:#0f766e; --teal-light:#ccfbf1;
+  --ink:#1f2937; --slate:#475569; --muted:#94a3b8;
+  --line:#d1d5db; --bg:#f9fafb;
+  --green:#16a34a; --green-light:#dcfce7;
+  --amber:#d97706; --amber-light:#fef3c7;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 11.5px; color: var(--ink); background: var(--bg);
+  line-height: 1.45;
+}
+
+/* ── Screen toolbar ── */
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 20px; background: var(--teal-dark); color: #fff;
+  gap: 10px; flex-wrap: wrap;
+}
+.toolbar-brand { font-size: 15px; font-weight: 700; }
+.toolbar-right { display: flex; gap: 8px; }
+.btn {
+  padding: 6px 14px; border-radius: 7px; font-size: 12px; font-weight: 700;
+  cursor: pointer; border: 1.5px solid rgba(255,255,255,.4);
+  background: rgba(255,255,255,.12); color: #fff;
+}
+.btn.solid { background: #fff; color: var(--teal-dark); border-color: #fff; }
+.btn:hover { background: rgba(255,255,255,.25); }
+.btn.solid:hover { background: #e2e8f0; }
+
+/* ── Page wrapper ── */
+.pages { max-width: 800px; margin: 24px auto; padding: 0 16px 60px; }
+.page {
+  background: #fff; border: 1px solid var(--line);
+  border-radius: 10px; margin-bottom: 28px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  overflow: hidden;
+}
+
+/* ── Page header ── */
+.page-header {
+  background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+  color: #fff; padding: 14px 22px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.page-header-left h2 { font-size: 14px; font-weight: 800; margin-bottom: 2px; }
+.page-header-left p  { font-size: 10px; opacity: .85; }
+.page-num {
+  font-size: 22px; font-weight: 900; opacity: .4; line-height: 1;
+}
+.clinic-info { text-align: right; font-size: 10px; opacity: .85; }
+
+/* ── Form body ── */
+.page-body { padding: 18px 22px; }
+
+/* ── Sections ── */
+.section { margin-bottom: 16px; }
+.section-title {
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--teal-dark); border-bottom: 2px solid var(--teal-light);
+  padding-bottom: 4px; margin-bottom: 10px;
+}
+
+/* ── Fields ── */
+.field-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+.field { display: flex; flex-direction: column; gap: 3px; }
+.field label { font-size: 10px; font-weight: 700; color: var(--slate); text-transform: uppercase; letter-spacing: .04em; }
+.field-line {
+  border: none; border-bottom: 1.5px solid var(--line);
+  background: transparent; font-family: inherit;
+  font-size: 12px; padding: 3px 2px; min-width: 100px;
+  color: var(--ink); outline: none;
+}
+.field-line:focus { border-bottom-color: var(--teal); }
+.field-line.wide  { min-width: 200px; }
+.field-line.xwide { min-width: 300px; }
+.full-line {
+  width: 100%; border: none; border-bottom: 1.5px solid var(--line);
+  background: transparent; font-family: inherit; font-size: 12px;
+  padding: 3px 2px; outline: none; color: var(--ink);
+}
+.full-line:focus { border-bottom-color: var(--teal); }
+
+/* ── Table ── */
+table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 8px; }
+th {
+  background: var(--teal); color: #fff; font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em; padding: 6px 8px; text-align: left;
+}
+td {
+  border: 1px solid var(--line); padding: 5px 7px; vertical-align: middle;
+}
+td input[type="text"], td input[type="number"], td input[type="date"] {
+  border: none; background: transparent; font-family: inherit;
+  font-size: 11px; width: 100%; outline: none; padding: 0;
+}
+tr:nth-child(even) td { background: #f9fafb; }
+.write-row td { height: 24px; }
+
+/* ── Checkboxes ── */
+.check-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 4px 12px; margin-bottom: 8px;
+}
+.check-item { display: flex; align-items: center; gap: 6px; font-size: 11.5px; }
+.check-item input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--teal); flex-shrink: 0; }
+
+/* ── Scale ── */
+.scale-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.scale-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 9px; color: var(--muted); }
+.scale-item input[type="radio"] { accent-color: var(--teal); }
+
+/* ── Textarea ── */
+.write-area {
+  width: 100%; min-height: 40px; border: 1.5px solid var(--line);
+  border-radius: 5px; font-family: inherit; font-size: 12px;
+  padding: 5px 7px; outline: none; resize: vertical; color: var(--ink);
+}
+.write-area:focus { border-color: var(--teal); }
+.write-lines { list-style: none; }
+.write-lines li {
+  border-bottom: 1.5px solid var(--line); min-height: 22px; margin-bottom: 2px;
+}
+
+/* ── Two column layout ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media(max-width:600px){ .two-col { grid-template-columns: 1fr; } }
+
+/* ── Inline note ── */
+.form-note {
+  font-size: 10px; color: var(--muted); font-style: italic;
+  margin-bottom: 6px;
+}
+
+/* ── Staff box ── */
+.staff-box {
+  background: var(--amber-light); border: 1px solid #fbbf24;
+  border-radius: 6px; padding: 10px 14px; margin-top: 10px;
+}
+.staff-box .section-title { color: var(--amber); border-bottom-color: #fbbf24; }
+
+/* ── Footer ── */
+.page-footer {
+  background: #f8fafc; border-top: 1px solid var(--line);
+  padding: 8px 22px; display: flex; justify-content: space-between;
+  font-size: 10px; color: var(--muted);
+}
+
+/* ── Print ── */
+@media print {
+  .toolbar { display: none !important; }
+  body { background: #fff; font-size: 11pt; }
+  .pages { margin: 0; padding: 0; max-width: 100%; }
+  .page {
+    page-break-after: always; break-after: page;
+    border-radius: 0; box-shadow: none; border: none;
+    margin-bottom: 0;
+  }
+  .page:last-child { page-break-after: avoid; break-after: avoid; }
+  .page-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .staff-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .field-line { border-bottom: 1.5px solid #999 !important; }
+  .full-line   { border-bottom: 1.5px solid #999 !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Screen toolbar -->
+<div class="toolbar">
+  <div class="toolbar-brand">📄 Patient Intake Form — Panini Weight Management</div>
+  <div class="toolbar-right">
+    <button class="btn" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="btn solid" onclick="window.close()">Close</button>
+  </div>
+</div>
+
+<div class="pages">
+
+<!-- ═══════════════════════════════════════════
+     PAGE 1 — Health Profile & Weight History
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>Health Profile &amp; Weight History</h2>
+      <p>To be filled by the patient · All information is confidential</p>
+    </div>
+    <div style="text-align:right">
+      <div class="page-num">1</div>
+      <div class="clinic-info">Page 1 of 4</div>
+    </div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Patient Code & Visit -->
+    <div class="section">
+      <div class="section-title">Visit Information (Staff fills)</div>
+      <div class="field-row">
+        <div class="field"><label>Patient Code</label><input class="field-line wide" type="text" placeholder="WIN-______"></div>
+        <div class="field"><label>Visit Date</label><input class="field-line" type="text" placeholder="__ / __ / ____"></div>
+        <div class="field"><label>Clinic / Hospital</label><input class="field-line wide" type="text"></div>
+      </div>
+    </div>
+
+    <!-- Basic Profile -->
+    <div class="section">
+      <div class="section-title">Basic Profile</div>
+      <div class="field-row">
+        <div class="field"><label>Age (years)</label><input class="field-line" type="text" placeholder="e.g. 42"></div>
+        <div class="field"><label>Gender</label><input class="field-line" type="text" placeholder="Male / Female / Other"></div>
+        <div class="field"><label>Height (cm or ft-in)</label><input class="field-line" type="text" placeholder="e.g. 168 cm"></div>
+        <div class="field"><label>Occupation</label><input class="field-line wide" type="text" placeholder="e.g. Teacher, Office worker…"></div>
+      </div>
+      <div class="field-row" style="margin-top:4px">
+        <div class="field"><label>City / State</label><input class="field-line wide" type="text"></div>
+        <div class="field"><label>How did you find us?</label><input class="field-line wide" type="text" placeholder="Referral, internet, friend…"></div>
+      </div>
+    </div>
+
+    <!-- Chief Complaint -->
+    <div class="section">
+      <div class="section-title">Main Reason for Visit</div>
+      <p class="form-note">In your own words, why are you here today? What is your main concern?</p>
+      <ul class="write-lines"><li></li><li></li><li></li></ul>
+    </div>
+
+    <!-- Weight History -->
+    <div class="section">
+      <div class="section-title">Weight History (as best as you can remember)</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Time period / Age</th>
+            <th>Weight (kg or lbs)</th>
+            <th>What changed? (cause of gain / loss)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="write-row"><td>Birth weight</td><td><input type="text" placeholder="kg"></td><td></td></tr>
+          <tr class="write-row"><td>Childhood (5–10 years)</td><td><input type="text"></td><td><input type="text" placeholder="normal / chubby / slim…"></td></tr>
+          <tr class="write-row"><td>Teenage (10–18 years)</td><td><input type="text"></td><td><input type="text" placeholder="puberty, stress, diet…"></td></tr>
+          <tr class="write-row"><td>Early adult (18–25 yrs)</td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr class="write-row"><td>Adult (25–40 yrs)</td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr class="write-row"><td>Heaviest ever weight — Age: ____</td><td><input type="text"></td><td><input type="text" placeholder="reason for peak weight"></td></tr>
+          <tr class="write-row"><td>Lightest as adult — Age: ____</td><td><input type="text"></td><td><input type="text" placeholder="how did you lose it?"></td></tr>
+          <tr class="write-row"><td><strong>Current weight</strong></td><td><input type="text"></td><td>Today</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Family history -->
+    <div class="section">
+      <div class="section-title">Family History</div>
+      <div class="check-grid">
+        <label class="check-item"><input type="checkbox"> Obesity (parents/siblings)</label>
+        <label class="check-item"><input type="checkbox"> Type 2 Diabetes</label>
+        <label class="check-item"><input type="checkbox"> Heart disease / stroke</label>
+        <label class="check-item"><input type="checkbox"> High blood pressure</label>
+        <label class="check-item"><input type="checkbox"> Thyroid disease</label>
+        <label class="check-item"><input type="checkbox"> Cancer</label>
+        <label class="check-item"><input type="checkbox"> None of the above</label>
+        <label class="check-item"><input type="checkbox"> Don't know</label>
+      </div>
+      <div class="field-row">
+        <div class="field" style="flex:1"><label>Other family health history</label><input class="full-line" type="text"></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span>Panini Weight Management · Confidential Patient Document</span>
+    <span>Page 1 of 4</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE 2 — Medical History & Investigations
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>Medical History, Medications &amp; Lab Results</h2>
+      <p>Check all that apply · Leave blank if unsure</p>
+    </div>
+    <div class="page-num">2</div>
+  </div>
+
+  <div class="page-body">
+
+    <!-- Current conditions -->
+    <div class="section">
+      <div class="section-title">Do you have any of these conditions? (check all that apply)</div>
+      <div class="check-grid">
+        <label class="check-item"><input type="checkbox"> Type 2 Diabetes</label>
+        <label class="check-item"><input type="checkbox"> Pre-diabetes / high sugar</label>
+        <label class="check-item"><input type="checkbox"> High blood pressure</label>
+        <label class="check-item"><input type="checkbox"> High cholesterol / lipids</label>
+        <label class="check-item"><input type="checkbox"> Thyroid disorder (hypo/hyper)</label>
+        <label class="check-item"><input type="checkbox"> PCOS / hormonal issues</label>
+        <label class="check-item"><input type="checkbox"> Sleep apnoea / snoring</label>
+        <label class="check-item"><input type="checkbox"> Fatty liver (NAFLD/MASLD)</label>
+        <label class="check-item"><input type="checkbox"> Heart disease / angina</label>
+        <label class="check-item"><input type="checkbox"> Kidney disease</label>
+        <label class="check-item"><input type="checkbox"> Gallstones / gallbladder</label>
+        <label class="check-item"><input type="checkbox"> Joint pain / osteoarthritis</label>
+        <label class="check-item"><input type="checkbox"> Depression / anxiety</label>
+        <label class="check-item"><input type="checkbox"> Binge eating / eating disorder</label>
+        <label class="check-item"><input type="checkbox"> Asthma / breathing problem</label>
+        <label class="check-item"><input type="checkbox"> Cancer (past or present)</label>
+        <label class="check-item"><input type="checkbox"> Pregnancy (currently)</label>
+        <label class="check-item"><input type="checkbox"> Menopause</label>
+      </div>
+      <div class="field-row">
+        <div class="field" style="flex:1"><label>Other diagnosed conditions</label><input class="full-line" type="text"></div>
+      </div>
+    </div>
+
+    <!-- Previous weight loss attempts -->
+    <div class="section">
+      <div class="section-title">Previous Weight Loss Attempts (check all tried)</div>
+      <div class="check-grid">
+        <label class="check-item"><input type="checkbox"> Calorie-restricted diet</label>
+        <label class="check-item"><input type="checkbox"> Low-carb / keto diet</label>
+        <label class="check-item"><input type="checkbox"> Intermittent fasting</label>
+        <label class="check-item"><input type="checkbox"> Commercial diet programme</label>
+        <label class="check-item"><input type="checkbox"> Exercise programme</label>
+        <label class="check-item"><input type="checkbox"> Dietician / nutritionist</label>
+        <label class="check-item"><input type="checkbox"> Weight loss medication</label>
+        <label class="check-item"><input type="checkbox"> Bariatric surgery</label>
+        <label class="check-item"><input type="checkbox"> GLP-1 injection (Ozempic etc.)</label>
+        <label class="check-item"><input type="checkbox"> Ayurvedic / herbal</label>
+        <label class="check-item"><input type="checkbox"> None tried yet</label>
+      </div>
+      <div class="field-row">
+        <div class="field" style="flex:1"><label>Most kg lost at one time, and how?</label><input class="full-line" type="text"></div>
+      </div>
+    </div>
+
+    <!-- Current medications -->
+    <div class="section">
+      <div class="section-title">Current Medicines (prescribed + over-the-counter)</div>
+      <p class="form-note">Include vitamins, supplements, herbal medicines, and contraceptive pills</p>
+      <table>
+        <thead>
+          <tr><th style="width:35%">Medicine Name</th><th style="width:20%">Dose / Strength</th><th style="width:20%">How often?</th><th>For which condition?</th></tr>
+        </thead>
+        <tbody>
+          <tr class="write-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr class="write-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr class="write-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr class="write-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr class="write-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+          <tr class="write-row"><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+        </tbody>
+      </table>
+      <div class="field-row">
+        <div class="field" style="flex:1"><label>Allergies to medicines / foods</label><input class="full-line" type="text" placeholder="Write NONE if no allergies"></div>
+      </div>
+    </div>
+
+    <!-- Recent tests -->
+    <div class="section">
+      <div class="section-title">Recent Test Results (if you have them — leave blank if unknown)</div>
+      <div class="field-row" style="flex-wrap:wrap">
+        <div class="field"><label>Blood Sugar (FBG)</label><input class="field-line" type="text" placeholder="mg/dL"></div>
+        <div class="field"><label>HbA1c</label><input class="field-line" type="text" placeholder="%"></div>
+        <div class="field"><label>Total Cholesterol</label><input class="field-line" type="text" placeholder="mg/dL"></div>
+        <div class="field"><label>Triglycerides</label><input class="field-line" type="text" placeholder="mg/dL"></div>
+        <div class="field"><label>TSH (thyroid)</label><input class="field-line" type="text" placeholder="mIU/L"></div>
+        <div class="field"><label>Blood Pressure</label><input class="field-line" type="text" placeholder="___/___"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Date of last blood test</label><input class="field-line" type="text" placeholder="__ / __ / ____"></div>
+        <div class="field" style="flex:1"><label>Where was the test done?</label><input class="field-line wide" type="text"></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span>Panini Weight Management · Confidential Patient Document</span>
+    <span>Page 2 of 4</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE 3 — Lifestyle & Daily Habits
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>Daily Lifestyle &amp; Habits</h2>
+      <p>Be as honest as you can — there are no right or wrong answers</p>
+    </div>
+    <div class="page-num">3</div>
+  </div>
+
+  <div class="page-body two-col">
+
+    <!-- Left column -->
+    <div>
+
+      <!-- Diet -->
+      <div class="section">
+        <div class="section-title">Eating Habits</div>
+        <div class="field-row">
+          <div class="field"><label>Meals per day</label><input class="field-line" type="text" placeholder="e.g. 3"></div>
+          <div class="field"><label>Diet type</label>
+            <select class="field-line" style="font-size:11.5px;background:transparent">
+              <option>Vegetarian</option>
+              <option>Non-vegetarian</option>
+              <option>Vegan</option>
+              <option>Eggetarian</option>
+              <option>Mixed</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="flex:1"><label>Typical breakfast</label><input class="full-line" type="text" placeholder="e.g. 2 rotis, sabzi, chai"></div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="flex:1"><label>Typical lunch</label><input class="full-line" type="text"></div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="flex:1"><label>Typical dinner</label><input class="full-line" type="text"></div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="flex:1"><label>Snacks (what &amp; how often)</label><input class="full-line" type="text"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Water / day (glasses)</label><input class="field-line" type="text" placeholder="e.g. 6"></div>
+          <div class="field"><label>Sweet drinks / day</label><input class="field-line" type="text" placeholder="e.g. 2 chai, 1 juice"></div>
+        </div>
+        <div style="margin-top:6px">
+          <div style="font-size:10px;font-weight:700;color:var(--slate);text-transform:uppercase;margin-bottom:4px">Check if you experience:</div>
+          <div class="check-grid" style="grid-template-columns:1fr 1fr">
+            <label class="check-item"><input type="checkbox"> Night eating</label>
+            <label class="check-item"><input type="checkbox"> Emotional eating</label>
+            <label class="check-item"><input type="checkbox"> Binge episodes</label>
+            <label class="check-item"><input type="checkbox"> Skip breakfast</label>
+            <label class="check-item"><input type="checkbox"> Eat when not hungry</label>
+            <label class="check-item"><input type="checkbox"> Can't stop eating</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sleep -->
+      <div class="section">
+        <div class="section-title">Sleep</div>
+        <div class="field-row">
+          <div class="field"><label>Hours/night</label><input class="field-line" type="text" placeholder="e.g. 7"></div>
+          <div class="field"><label>Bedtime</label><input class="field-line" type="text" placeholder="e.g. 11 PM"></div>
+          <div class="field"><label>Wake time</label><input class="field-line" type="text" placeholder="e.g. 6 AM"></div>
+        </div>
+        <div class="check-grid" style="grid-template-columns:1fr 1fr;margin-top:4px">
+          <label class="check-item"><input type="checkbox"> Loud snoring</label>
+          <label class="check-item"><input type="checkbox"> Wake up often</label>
+          <label class="check-item"><input type="checkbox"> Feel tired on waking</label>
+          <label class="check-item"><input type="checkbox"> Daytime sleepiness</label>
+          <label class="check-item"><input type="checkbox"> Trouble falling asleep</label>
+          <label class="check-item"><input type="checkbox"> Sleep well — no issues</label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column -->
+    <div>
+
+      <!-- Exercise -->
+      <div class="section">
+        <div class="section-title">Physical Activity</div>
+        <div class="field-row">
+          <div class="field"><label>Main job is</label>
+            <select class="field-line" style="font-size:11.5px;background:transparent">
+              <option>Mostly sitting</option>
+              <option>Mix of sitting / standing</option>
+              <option>Mostly standing / walking</option>
+              <option>Heavy physical work</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Daily steps (approx.)</label><input class="field-line" type="text" placeholder="e.g. 3000"></div>
+          <div class="field"><label>Current exercise type</label><input class="field-line" type="text" placeholder="Walk / gym / yoga…"></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Days/week</label><input class="field-line" type="text" placeholder="e.g. 3"></div>
+          <div class="field"><label>Minutes/session</label><input class="field-line" type="text" placeholder="e.g. 30 min"></div>
+        </div>
+        <div class="field-row">
+          <div class="field" style="flex:1"><label>Barriers to exercise</label><input class="full-line" type="text" placeholder="No time, joint pain, no space…"></div>
+        </div>
+      </div>
+
+      <!-- Stress & Mental Health -->
+      <div class="section">
+        <div class="section-title">Stress &amp; Mental Health</div>
+        <div style="font-size:10.5px;color:var(--slate);margin-bottom:6px">My stress level these days (circle one):</div>
+        <div class="scale-row">
+          <span style="font-size:10px;color:var(--muted)">Low</span>
+          <label class="scale-item"><input type="radio" name="stress" value="1">1</label>
+          <label class="scale-item"><input type="radio" name="stress" value="2">2</label>
+          <label class="scale-item"><input type="radio" name="stress" value="3">3</label>
+          <label class="scale-item"><input type="radio" name="stress" value="4">4</label>
+          <label class="scale-item"><input type="radio" name="stress" value="5">5</label>
+          <label class="scale-item"><input type="radio" name="stress" value="6">6</label>
+          <label class="scale-item"><input type="radio" name="stress" value="7">7</label>
+          <label class="scale-item"><input type="radio" name="stress" value="8">8</label>
+          <label class="scale-item"><input type="radio" name="stress" value="9">9</label>
+          <label class="scale-item"><input type="radio" name="stress" value="10">10</label>
+          <span style="font-size:10px;color:var(--muted)">Very high</span>
+        </div>
+        <div class="check-grid" style="grid-template-columns:1fr 1fr;margin-top:6px">
+          <label class="check-item"><input type="checkbox"> Feeling low / sad often</label>
+          <label class="check-item"><input type="checkbox"> Anxiety / worry</label>
+          <label class="check-item"><input type="checkbox"> Under psychiatric care</label>
+          <label class="check-item"><input type="checkbox"> Taking antidepressants</label>
+          <label class="check-item"><input type="checkbox"> Mood generally fine</label>
+        </div>
+      </div>
+
+      <!-- Substance use -->
+      <div class="section">
+        <div class="section-title">Substance Use</div>
+        <div class="field-row">
+          <div class="field"><label>Alcohol</label>
+            <select class="field-line" style="font-size:11.5px;background:transparent">
+              <option>None</option><option>Occasional (1–2/month)</option>
+              <option>Social (weekly)</option><option>Regular (daily)</option>
+            </select>
+          </div>
+          <div class="field"><label>Tobacco / smoking</label>
+            <select class="field-line" style="font-size:11.5px;background:transparent">
+              <option>None</option><option>Past smoker (quit)</option>
+              <option>Current smoker</option><option>Smokeless tobacco / gutka</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>Panini Weight Management · Confidential Patient Document</span>
+    <span>Page 3 of 4</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     PAGE 4 — Goals, Readiness & Staff Notes
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <div class="page-header-left">
+      <h2>Goals, Readiness &amp; Patient Notes</h2>
+      <p>Your honest answers help us plan the best programme for you</p>
+    </div>
+    <div class="page-num">4</div>
+  </div>
+
+  <div class="page-body">
+
+    <div class="two-col">
+      <!-- Left -->
+      <div>
+        <!-- Weight goals -->
+        <div class="section">
+          <div class="section-title">Your Weight Goals</div>
+          <div class="field-row">
+            <div class="field"><label>Target weight (realistic)</label><input class="field-line" type="text" placeholder="e.g. 75 kg"></div>
+            <div class="field"><label>Dream weight</label><input class="field-line" type="text" placeholder="e.g. 65 kg"></div>
+          </div>
+          <div class="field-row">
+            <div class="field" style="flex:1"><label>By when do you hope to reach your goal?</label><input class="full-line" type="text" placeholder="e.g. 1 year, 2 years…"></div>
+          </div>
+        </div>
+
+        <!-- Motivation -->
+        <div class="section">
+          <div class="section-title">Why is losing weight important to you? (check all)</div>
+          <div class="check-grid" style="grid-template-columns:1fr 1fr">
+            <label class="check-item"><input type="checkbox"> Better health / reduce disease risk</label>
+            <label class="check-item"><input type="checkbox"> Improve diabetes / BP / cholesterol</label>
+            <label class="check-item"><input type="checkbox"> Reduce joint / back pain</label>
+            <label class="check-item"><input type="checkbox"> More energy / less fatigue</label>
+            <label class="check-item"><input type="checkbox"> Look better / feel confident</label>
+            <label class="check-item"><input type="checkbox"> Fit into old clothes</label>
+            <label class="check-item"><input type="checkbox"> Family / partner request</label>
+            <label class="check-item"><input type="checkbox"> Pregnancy planning</label>
+            <label class="check-item"><input type="checkbox"> Doctor's advice</label>
+            <label class="check-item"><input type="checkbox"> Improve mobility</label>
+          </div>
+          <div class="field-row" style="margin-top:4px">
+            <div class="field" style="flex:1"><label>Most important reason (in your own words)</label>
+            <input class="full-line" type="text"></div>
+          </div>
+        </div>
+
+        <!-- Barriers -->
+        <div class="section">
+          <div class="section-title">What has stopped you from losing weight before?</div>
+          <div class="check-grid" style="grid-template-columns:1fr 1fr">
+            <label class="check-item"><input type="checkbox"> No time to exercise / cook</label>
+            <label class="check-item"><input type="checkbox"> Cravings / can't control eating</label>
+            <label class="check-item"><input type="checkbox"> Stress / emotional eating</label>
+            <label class="check-item"><input type="checkbox"> Family doesn't support</label>
+            <label class="check-item"><input type="checkbox"> Lost weight but regained</label>
+            <label class="check-item"><input type="checkbox"> Slow metabolism / thyroid</label>
+            <label class="check-item"><input type="checkbox"> Cost of healthy food / gym</label>
+            <label class="check-item"><input type="checkbox"> Injury / pain limits exercise</label>
+            <label class="check-item"><input type="checkbox"> Don't know where to start</label>
+            <label class="check-item"><input type="checkbox"> No previous attempt</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right -->
+      <div>
+        <!-- Readiness -->
+        <div class="section">
+          <div class="section-title">How Ready Are You? (circle a number)</div>
+          <p class="form-note">0 = not ready at all · 10 = fully committed and ready to start today</p>
+          <div class="scale-row">
+            <label class="scale-item"><input type="radio" name="ready" value="0">0</label>
+            <label class="scale-item"><input type="radio" name="ready" value="1">1</label>
+            <label class="scale-item"><input type="radio" name="ready" value="2">2</label>
+            <label class="scale-item"><input type="radio" name="ready" value="3">3</label>
+            <label class="scale-item"><input type="radio" name="ready" value="4">4</label>
+            <label class="scale-item"><input type="radio" name="ready" value="5">5</label>
+            <label class="scale-item"><input type="radio" name="ready" value="6">6</label>
+            <label class="scale-item"><input type="radio" name="ready" value="7">7</label>
+            <label class="scale-item"><input type="radio" name="ready" value="8">8</label>
+            <label class="scale-item"><input type="radio" name="ready" value="9">9</label>
+            <label class="scale-item"><input type="radio" name="ready" value="10">10</label>
+          </div>
+        </div>
+
+        <!-- Support -->
+        <div class="section">
+          <div class="section-title">Support System</div>
+          <div class="field-row">
+            <div class="field" style="flex:1"><label>Who at home supports your weight loss goal?</label>
+            <input class="full-line" type="text" placeholder="e.g. spouse, mother, children…"></div>
+          </div>
+          <div class="field-row">
+            <div class="field" style="flex:1"><label>Any family member who might make it harder?</label>
+            <input class="full-line" type="text"></div>
+          </div>
+        </div>
+
+        <!-- Concerns -->
+        <div class="section">
+          <div class="section-title">Questions or Concerns for Your Doctor</div>
+          <div class="form-note">Write anything you want to discuss today:</div>
+          <ul class="write-lines"><li></li><li></li><li></li><li></li></ul>
+        </div>
+
+        <!-- Additional info -->
+        <div class="section">
+          <div class="section-title">Anything else you'd like us to know?</div>
+          <ul class="write-lines"><li></li><li></li><li></li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff use only box -->
+    <div class="staff-box">
+      <div class="section-title">📋 For Clinic Staff — Data Entry</div>
+      <div class="field-row">
+        <div class="field"><label>Patient Code assigned</label><input class="field-line wide" type="text" placeholder="WIN-______"></div>
+        <div class="field"><label>Entered by</label><input class="field-line" type="text"></div>
+        <div class="field"><label>Entry date</label><input class="field-line" type="text" placeholder="__ / __ / ____"></div>
+        <div class="field"><label>Modules completed</label><input class="field-line wide" type="text" placeholder="Dashboard, Evaluation, Medication…"></div>
+      </div>
+      <div class="field-row">
+        <div class="field" style="flex:1"><label>Clinical notes / flags</label><input class="full-line" type="text"></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="page-footer">
+    <span>Panini Weight Management · Anonymous ID only · No names stored in the digital system</span>
+    <span>Page 4 of 4</span>
+  </div>
+</div>
+
+</div><!-- /pages -->
+</body>
+</html>

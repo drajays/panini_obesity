@@ -250,6 +250,15 @@ body {
 .sparkline-wrap { width:100%; overflow:hidden; }
 .sparkline-wrap svg { width:100%; height:auto; display:block; }
 
+/* ── Iframe mode ── */
+body.in-iframe .pid-row { display:none!important; }
+body.in-iframe .toolbar { padding:6px 14px; }
+.patient-badge-inline {
+  font-size:11.5px; font-weight:700; padding:3px 10px;
+  border-radius:6px; background:rgba(255,255,255,.2);
+  color:#fff; letter-spacing:.04em;
+}
+
 /* ═══════════════════════════════════════
    PRINT STYLES
 ═══════════════════════════════════════ */
@@ -410,32 +419,53 @@ let activeId=null;
 
 function st(msg){ document.getElementById('status').textContent=msg; }
 
-// Load from URL param on page load
+function loadById(id){
+  const n=PaniniData.normId(id);
+  if(!PaniniData.validId(n)) return;
+  activeId=n;
+  PaniniData.setActiveId(n);
+  const inp=document.getElementById('pidInput');
+  if(inp) inp.value=n;
+  const badge=document.getElementById('iframePtBadge');
+  if(badge) badge.textContent=n;
+  buildCard();
+  st('✓ '+n);
+}
+
+function loadCard(){
+  const raw=document.getElementById('pidInput')?.value||'';
+  const id=PaniniData.normId(raw);
+  if(!PaniniData.validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
+  loadById(id);
+}
+
+// Load on page start
 window.addEventListener('DOMContentLoaded',()=>{
+  // Detect iframe
+  if(window.parent!==window){
+    document.body.classList.add('in-iframe');
+    const brand=document.querySelector('.toolbar-brand');
+    if(brand){
+      const badge=document.createElement('span');
+      badge.id='iframePtBadge';
+      badge.className='patient-badge-inline';
+      badge.textContent='—';
+      brand.appendChild(badge);
+    }
+  }
+
+  // Register frame sync
+  PaniniData.initFrameSync(loadById);
+
+  // URL param takes priority, then shared active ID
   const params=new URLSearchParams(window.location.search);
   const urlId=params.get('id');
   if(urlId&&PaniniData.validId(PaniniData.normId(urlId))){
-    document.getElementById('pidInput').value=urlId;
-    activeId=PaniniData.normId(urlId);
-    buildCard();
-  } else {
-    const saved=PaniniData.getActiveId();
-    if(saved&&PaniniData.validId(saved)){
-      document.getElementById('pidInput').value=saved;
-      activeId=saved;
-      buildCard();
-    }
+    loadById(urlId); return;
   }
+  const saved=PaniniData.getActiveId();
+  if(saved&&PaniniData.validId(saved)){ loadById(saved); }
 });
-
-function loadCard(){
-  const raw=document.getElementById('pidInput').value;
-  const id=PaniniData.normId(raw);
-  if(!PaniniData.validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
-  activeId=id;
-  buildCard();
-  st('Loaded: '+id);
-}
 
 async function githubLoad(){
   if(!activeId){ alert('Enter a Patient ID first.'); return; }
