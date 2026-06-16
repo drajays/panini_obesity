@@ -4,6 +4,15 @@
 (function () {
   const MODULES = [
     {
+      id: 'dashboard',
+      title: 'Visit Intelligence Dashboard',
+      subtitle: 'Trends · Metabolic Momentum Score · Flags · Coaching card',
+      icon: '🏥',
+      path: 'pages/visit-dashboard.html',
+      step: 'Every Visit — Start Here',
+      desc: 'One-screen visit overview: weight & lab trends, Metabolic Momentum Score (0–100), medication progression, red flag alerts, and a printable patient coaching card.',
+    },
+    {
       id: 'evaluation',
       title: 'Initial Evaluation',
       subtitle: '30-question bilingual assessment (EN / हिंदी)',
@@ -83,6 +92,15 @@
       path: 'pages/audit.html',
       step: 'Step 3 — Multidisciplinary',
       desc: 'Model protein, exercise, medication, and follow-up adherence into an Overall Compliance Index with projected weight trajectory and metabolic prescription.',
+    },
+    {
+      id: 'medication',
+      title: 'Medication Titration Tracker',
+      subtitle: 'Dose log · Titration ladder · Dose–Weight chart · Clinical prompts',
+      icon: '💊',
+      path: 'pages/medication-tracker.html',
+      step: 'Step 4 — Ongoing Care',
+      desc: 'Visit-by-visit titration log for semaglutide, tirzepatide, liraglutide, phentermine, orlistat, bupropion-naltrexone, and topiramate. Embedded protocols, dose–weight response chart, contraindication flags, and clinical decision prompts.',
     },
     {
       id: 'winner',

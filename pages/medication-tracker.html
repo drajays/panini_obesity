@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medication Titration Tracker — Panini</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal:#0d9488; --teal-dark:#0f766e; --teal-light:#ccfbf1;
+  --green:#16a34a; --green-light:#dcfce7;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --rose:#e11d48;  --rose-light:#ffe4e6;
+  --blue:#2563eb;  --blue-light:#dbeafe;
+  --purple:#7c3aed; --purple-light:#ede9fe;
+  --ink:#1f2937; --slate:#475569; --muted:#94a3b8;
+  --line:#e2e8f0; --bg:#f1f5f9; --card:#ffffff;
+  --radius:12px; --shadow:0 4px 24px rgba(15,23,42,.08);
+}
+html { scroll-behavior:smooth; }
+body {
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg); color:var(--ink);
+  font-size:14px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:8px; padding:10px 18px;
+  background:var(--teal-dark); color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.toolbar-brand { font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.toolbar-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.pid-row { display:flex; align-items:center; gap:6px; }
+.pid-row input {
+  font-size:13px; font-weight:600; letter-spacing:.04em;
+  padding:6px 10px; border-radius:8px;
+  border:1.5px solid rgba(255,255,255,.4); background:rgba(255,255,255,.12);
+  color:#fff; width:160px; font-family:inherit;
+}
+.pid-row input::placeholder { color:rgba(255,255,255,.5); }
+.pid-row input:focus { outline:none; border-color:#fff; }
+.btn {
+  padding:6px 14px; border-radius:8px; font-size:12.5px; font-weight:600;
+  cursor:pointer; border:1.5px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.12); color:#fff; transition:background .15s;
+}
+.btn:hover { background:rgba(255,255,255,.26); }
+.btn.solid { background:#fff; color:var(--teal-dark); border-color:#fff; }
+.btn.solid:hover { background:#e2e8f0; }
+.save-status { font-size:11.5px; opacity:.85; }
+
+/* ── Layout ── */
+.wrap { max-width:1080px; margin:0 auto; padding:20px 16px 48px; }
+
+/* ── Drug Selector ── */
+.drug-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr));
+  gap:10px; margin-bottom:18px;
+}
+.drug-btn {
+  padding:12px 10px; border-radius:10px; cursor:pointer;
+  border:2px solid var(--line); background:var(--card);
+  text-align:center; transition:all .15s;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+}
+.drug-btn:hover { border-color:var(--teal); background:var(--teal-light); }
+.drug-btn.active { border-color:var(--teal); background:var(--teal); color:#fff; box-shadow:0 4px 14px rgba(13,148,136,.3); }
+.drug-icon { font-size:22px; margin-bottom:4px; }
+.drug-name { font-size:12.5px; font-weight:700; line-height:1.3; }
+.drug-brand { font-size:10.5px; opacity:.75; margin-top:2px; }
+
+/* ── Cards ── */
+.card {
+  background:var(--card); border-radius:var(--radius);
+  padding:18px 20px; box-shadow:var(--shadow); margin-bottom:16px;
+}
+.card-title {
+  font-size:13px; font-weight:700; color:var(--teal-dark);
+  text-transform:uppercase; letter-spacing:.05em;
+  margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+
+/* ── Titration ladder ── */
+.titration-ladder { display:flex; align-items:flex-end; gap:0; overflow-x:auto; padding-bottom:4px; }
+.t-step {
+  display:flex; flex-direction:column; align-items:center;
+  min-width:80px; position:relative;
+}
+.t-step:not(:last-child)::after {
+  content:'→'; position:absolute; right:-14px; top:50%;
+  transform:translateY(-50%); color:var(--muted); font-size:14px;
+}
+.t-bar-wrap { display:flex; flex-direction:column; align-items:center; width:100%; }
+.t-bar {
+  border-radius:6px 6px 0 0; width:50px;
+  background:var(--teal-light); border:2px solid var(--teal);
+  transition:all .2s; position:relative;
+}
+.t-bar.current { background:var(--teal); }
+.t-bar.done    { background:#99f6e4; border-color:#5eead4; }
+.t-bar.future  { background:#f1f5f9; border-color:var(--line); }
+.t-dose { font-size:10.5px; font-weight:700; color:var(--teal-dark); margin-top:4px; text-align:center; }
+.t-dur  { font-size:9.5px; color:var(--muted); margin-top:1px; }
+.t-label-current {
+  position:absolute; top:-22px; left:50%; transform:translateX(-50%);
+  font-size:9px; font-weight:700; color:#fff; background:var(--teal);
+  padding:2px 6px; border-radius:4px; white-space:nowrap;
+}
+
+/* ── Contraindication panel ── */
+.contra-panel {
+  border-radius:10px; padding:12px 16px; margin-bottom:14px; font-size:13px;
+}
+.contra-panel.red    { background:var(--rose-light);   border-left:4px solid var(--rose); }
+.contra-panel.amber  { background:var(--amber-light);  border-left:4px solid var(--amber); }
+.contra-panel.green  { background:var(--green-light);  border-left:4px solid var(--green); }
+.contra-panel strong { display:block; margin-bottom:4px; }
+.contra-panel ul     { padding-left:16px; margin-top:4px; }
+.contra-panel li     { font-size:12px; margin-bottom:2px; color:var(--slate); }
+
+/* ── Clinical prompt ── */
+.clinical-prompt {
+  background:var(--blue-light); border-left:4px solid var(--blue);
+  border-radius:10px; padding:14px 16px; margin-bottom:16px;
+}
+.clinical-prompt .cp-head { font-size:13px; font-weight:700; color:var(--blue); margin-bottom:6px; }
+.clinical-prompt p { font-size:13px; color:var(--ink); line-height:1.55; }
+.clinical-prompt .cp-action {
+  display:inline-block; margin-top:10px; font-size:12px; font-weight:700;
+  color:var(--blue); background:rgba(37,99,235,.1); padding:4px 12px;
+  border-radius:6px;
+}
+
+/* ── Two-col ── */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px; }
+@media(max-width:680px){ .two-col { grid-template-columns:1fr; } }
+
+/* ── Visit log table ── */
+.log-table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+th {
+  background:var(--teal); color:#fff; font-size:11px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.04em;
+  padding:9px 10px; text-align:left; white-space:nowrap;
+}
+td { border:1px solid var(--line); padding:7px 9px; vertical-align:middle; }
+tr:nth-child(even) td { background:#f8fafc; }
+tr.current-row td { background:var(--teal-light)!important; }
+td input, td select {
+  font-family:inherit; font-size:12px; padding:5px 7px;
+  border:1.5px solid var(--line); border-radius:6px; background:#fff; color:var(--ink);
+  width:100%; transition:border-color .12s;
+}
+td input:focus, td select:focus { outline:none; border-color:var(--teal); }
+td input[type="number"] { width:80px; }
+td input[type="date"]   { width:130px; }
+.escalated-yes { color:var(--green);  font-weight:700; }
+.escalated-no  { color:var(--amber); font-weight:700; }
+.del-btn {
+  padding:3px 8px; border-radius:6px; font-size:11px;
+  background:var(--rose-light); color:var(--rose);
+  border:1px solid var(--rose); cursor:pointer; font-weight:600;
+}
+.del-btn:hover { background:var(--rose); color:#fff; }
+.add-row-btn {
+  margin-top:12px; padding:8px 18px; border-radius:8px; font-size:13px; font-weight:600;
+  background:var(--teal); color:#fff; border:none; cursor:pointer; transition:background .15s;
+}
+.add-row-btn:hover { background:var(--teal-dark); }
+
+/* ── Dose-Weight chart ── */
+.chart-svg-wrap { width:100%; overflow:hidden; }
+.chart-svg-wrap svg { width:100%; height:auto; display:block; }
+.chart-legend { display:flex; gap:16px; margin-top:8px; flex-wrap:wrap; }
+.chart-legend span { font-size:11.5px; color:var(--slate); display:flex; align-items:center; gap:5px; }
+.chart-legend span::before { content:''; display:inline-block; width:14px; height:3px; border-radius:2px; }
+.leg-teal::before   { background:var(--teal); }
+.leg-purple::before { background:var(--purple); }
+
+/* ── Stats strip ── */
+.stats-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+@media(max-width:600px){ .stats-strip { grid-template-columns:1fr 1fr; } }
+.stat-box {
+  background:var(--card); border-radius:10px; padding:12px 14px;
+  box-shadow:var(--shadow); border-top:3px solid var(--teal); text-align:center;
+}
+.stat-box.amber { border-top-color:var(--amber); }
+.stat-box.green { border-top-color:var(--green); }
+.stat-box.purple{ border-top-color:var(--purple); }
+.stat-num  { font-size:22px; font-weight:800; color:var(--ink); }
+.stat-label{ font-size:11px; color:var(--muted); margin-top:2px; }
+
+/* ── Fields ── */
+.field-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+.field { display:flex; flex-direction:column; gap:4px; }
+label.fld { font-size:11px; font-weight:700; color:var(--slate); text-transform:uppercase; letter-spacing:.04em; }
+input[type="text"],input[type="date"],select {
+  font-family:inherit; font-size:13.5px; padding:8px 10px;
+  border:1.5px solid var(--line); border-radius:8px; background:#fff; color:var(--ink);
+  transition:border-color .15s;
+}
+input:focus,select:focus { outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
+
+/* ── Drug info card ── */
+.drug-info {
+  background:linear-gradient(135deg,var(--teal-dark),var(--teal));
+  color:#fff; border-radius:var(--radius); padding:16px 20px; margin-bottom:16px;
+}
+.drug-info h3 { font-size:16px; margin-bottom:4px; }
+.drug-info p  { font-size:12.5px; opacity:.9; line-height:1.5; }
+.drug-info-pills { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.drug-pill {
+  font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px;
+  background:rgba(255,255,255,.2); color:#fff;
+}
+
+/* ── Empty state ── */
+.empty-state { text-align:center; padding:48px 20px; }
+.empty-state h2 { color:var(--teal-dark); margin-bottom:8px; }
+.empty-state p  { color:var(--slate); max-width:400px; margin:0 auto; }
+
+/* ── Print ── */
+@media print {
+  .toolbar,.add-row-btn,.del-btn,.drug-grid,.btn { display:none!important; }
+  .card { box-shadow:none; border:1px solid var(--line); }
+  body  { background:#fff; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Toolbar ── -->
+<div class="toolbar">
+  <div class="toolbar-brand">💊 Medication Titration Tracker</div>
+  <div class="toolbar-right">
+    <div class="pid-row">
+      <input type="text" id="pidInput" placeholder="WIN-XXXXXX" maxlength="16" autocomplete="off" spellcheck="false">
+      <button class="btn solid" onclick="loadPatient()">Load</button>
+    </div>
+    <button class="btn" onclick="window.print()">🖨 Print</button>
+    <span class="save-status" id="saveStatus"></span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- Drug selector -->
+  <div class="card">
+    <div class="card-title">💊 Select Medication</div>
+    <div class="drug-grid" id="drugGrid"></div>
+    <div class="field-row" style="margin-top:12px;margin-bottom:0">
+      <div class="field">
+        <label class="fld">Program Start Date</label>
+        <input type="date" id="startDate">
+      </div>
+      <div class="field">
+        <label class="fld">Target / Maintenance Dose</label>
+        <input type="text" id="targetDose" placeholder="e.g. 2.4mg weekly" style="width:200px">
+      </div>
+      <div class="field" style="align-self:flex-end">
+        <button class="btn solid" style="padding:9px 18px;background:var(--teal);color:#fff;border-color:var(--teal)" onclick="initDrug()">Start / Update</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content — hidden until drug selected -->
+  <div id="mainContent" style="display:none">
+
+    <!-- Drug info banner -->
+    <div class="drug-info" id="drugInfoBanner"></div>
+
+    <!-- Contraindications -->
+    <div id="contraPanel"></div>
+
+    <!-- Clinical prompt -->
+    <div class="clinical-prompt" id="clinicalPrompt" style="display:none"></div>
+
+    <!-- Stats strip -->
+    <div class="stats-strip" id="statsStrip"></div>
+
+    <!-- Titration ladder + Dose-Weight chart -->
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">📊 Titration Ladder</div>
+        <div class="titration-ladder" id="titrationLadder"></div>
+        <p style="font-size:11px;color:var(--muted);margin-top:12px" id="ladderNote"></p>
+      </div>
+      <div class="card">
+        <div class="card-title">📈 Dose–Weight Response</div>
+        <div class="chart-svg-wrap" id="doseWeightChart"></div>
+        <div class="chart-legend">
+          <span class="leg-teal">Weight (kg)</span>
+          <span class="leg-purple">Dose (% of max)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visit log -->
+    <div class="card">
+      <div class="card-title">🗓 Visit-by-Visit Dose Log</div>
+      <div class="log-table-wrap">
+        <table id="logTable">
+          <thead>
+            <tr>
+              <th>Visit Date</th>
+              <th>Dose</th>
+              <th>Weight (kg)</th>
+              <th>Side Effects</th>
+              <th>Escalated?</th>
+              <th>Reason if Not</th>
+              <th>Next Plan</th>
+              <th>Notes</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+      <button class="add-row-btn" onclick="addRow()">+ Add Visit</button>
+    </div>
+
+  </div><!-- /mainContent -->
+
+  <!-- Empty state -->
+  <div class="empty-state" id="emptyState">
+    <div style="font-size:48px;margin-bottom:12px">💊</div>
+    <h2>Medication Titration Tracker</h2>
+    <p>Select a drug above, set the start date, and click <strong>Start / Update</strong> — then load a patient to track their dose progression visit by visit.</p>
+    <p style="margin-top:10px;font-size:12px;color:var(--muted)">Enter a Patient ID to load or continue an existing record.</p>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ══════════════════════════════════════════════
+   DRUG PROTOCOLS
+════════════════════════════════════════════════ */
+const DRUGS = {
+  semaglutide: {
+    name:'Semaglutide', brands:'Ozempic · Wegovy',
+    icon:'💉', color:'#0d9488',
+    class:'GLP-1 Receptor Agonist',
+    mechanism:'Reduces appetite via hypothalamic GLP-1 receptors; delays gastric emptying; improves insulin secretion.',
+    expectedLoss:'10–17% TBWL at 68 weeks (STEP trials)',
+    freq:'Weekly subcutaneous injection',
+    steps:[
+      {dose:'0.25 mg', dur:'4 wks', pct:10},
+      {dose:'0.5 mg',  dur:'4 wks', pct:21},
+      {dose:'1.0 mg',  dur:'4 wks', pct:42},
+      {dose:'1.7 mg',  dur:'4 wks', pct:71},
+      {dose:'2.4 mg',  dur:'Maintenance', pct:100},
+    ],
+    sideEffects:['Nausea','Vomiting','Constipation','Diarrhoea','Reflux','Headache','Fatigue'],
+    contraindications:{
+      absolute:['Personal/family history of MTC or MEN2','Pregnancy'],
+      caution:['Pancreatitis history','Gallbladder disease','Diabetic retinopathy','HR >100 bpm at rest'],
+    },
+    escalationNote:'Standard escalation every 4 weeks. If side effects persist >2 weeks at a dose, hold escalation.',
+    monitoringNote:'Monitor HR, gallbladder symptoms, signs of pancreatitis. Check retinal status in T2DM.',
+  },
+  tirzepatide: {
+    name:'Tirzepatide', brands:'Mounjaro · Zepbound',
+    icon:'🟢', color:'#059669',
+    class:'GIP + GLP-1 Dual Agonist',
+    mechanism:'Dual agonism of GIP and GLP-1 receptors — superior weight loss vs GLP-1 monotherapy.',
+    expectedLoss:'15–22% TBWL at 72 weeks (SURMOUNT trials)',
+    freq:'Weekly subcutaneous injection',
+    steps:[
+      {dose:'2.5 mg', dur:'4 wks', pct:17},
+      {dose:'5 mg',   dur:'4 wks', pct:33},
+      {dose:'7.5 mg', dur:'4 wks', pct:50},
+      {dose:'10 mg',  dur:'4 wks', pct:67},
+      {dose:'12.5 mg',dur:'4 wks', pct:83},
+      {dose:'15 mg',  dur:'Maintenance', pct:100},
+    ],
+    sideEffects:['Nausea','Vomiting','Constipation','Diarrhoea','Abdominal pain','Decreased appetite'],
+    contraindications:{
+      absolute:['Personal/family history of MTC or MEN2','Pregnancy'],
+      caution:['Pancreatitis history','Gallbladder disease','Hypoglycemia risk in T2DM on SU/insulin'],
+    },
+    escalationNote:'Escalate every 4 weeks. Up to 12 mg step if tolerating. Skip 12.5 mg and go to 15 mg if no side effects.',
+    monitoringNote:'Check gallbladder function; monitor glucose closely in T2DM (may need insulin dose reduction).',
+  },
+  liraglutide: {
+    name:'Liraglutide', brands:'Saxenda · Victoza',
+    icon:'💉', color:'#2563eb',
+    class:'GLP-1 Receptor Agonist',
+    mechanism:'Daily GLP-1 agonist. Reduces appetite, delays gastric emptying.',
+    expectedLoss:'6–8% TBWL at 56 weeks (SCALE trial)',
+    freq:'Once-daily subcutaneous injection',
+    steps:[
+      {dose:'0.6 mg/day',  dur:'1 wk', pct:20},
+      {dose:'1.2 mg/day',  dur:'1 wk', pct:40},
+      {dose:'1.8 mg/day',  dur:'1 wk', pct:60},
+      {dose:'2.4 mg/day',  dur:'1 wk', pct:80},
+      {dose:'3.0 mg/day',  dur:'Maintenance', pct:100},
+    ],
+    sideEffects:['Nausea','Vomiting','Constipation','Diarrhoea','Injection site reactions','Headache'],
+    contraindications:{
+      absolute:['Personal/family history of MTC or MEN2','Pregnancy'],
+      caution:['Pancreatitis history','Gallbladder disease','Renal impairment'],
+    },
+    escalationNote:'Weekly titration. If <5% weight loss at 16 weeks on 3.0 mg/day, consider discontinuing.',
+    monitoringNote:'Daily injection compliance is key differentiator vs weekly agents. Check adherence at every visit.',
+  },
+  phentermine: {
+    name:'Phentermine', brands:'Adipex-P · Duromine',
+    icon:'🔴', color:'#dc2626',
+    class:'Sympathomimetic Amine',
+    mechanism:'Norepinephrine release → appetite suppression. Short-term use (≤12 weeks) in most guidelines.',
+    expectedLoss:'3–7% TBWL',
+    freq:'Once daily oral',
+    steps:[
+      {dose:'15 mg/day', dur:'Wks 1–2', pct:40},
+      {dose:'30 mg/day', dur:'Wks 3–4', pct:80},
+      {dose:'37.5 mg/day',dur:'Maintenance', pct:100},
+    ],
+    sideEffects:['Insomnia','Palpitations','Dry mouth','Hypertension','Constipation','Anxiety'],
+    contraindications:{
+      absolute:['Cardiovascular disease (CAD, arrhythmia, CHF)','Uncontrolled hypertension','Hyperthyroidism','Glaucoma','MAOI use (or within 14 days)','Pregnancy'],
+      caution:['Anxiety disorders','History of substance use','Mild hypertension (monitor BP closely)'],
+    },
+    escalationNote:'Typically approved for short-term (≤12 weeks). Some guidelines allow extended use off-label with monitoring.',
+    monitoringNote:'Check BP and HR at every visit. Pulmonary hypertension — if dyspnea develops, stop immediately.',
+  },
+  orlistat: {
+    name:'Orlistat', brands:'Xenical · Alli',
+    icon:'🟡', color:'#d97706',
+    class:'Lipase Inhibitor',
+    mechanism:'Blocks pancreatic and gastric lipases → 30% dietary fat unabsorbed. Works in GI tract, not systemically.',
+    expectedLoss:'3–5% TBWL; up to 7% with strict low-fat diet',
+    freq:'120 mg TID with meals (Rx); 60 mg TID (OTC)',
+    steps:[
+      {dose:'60 mg TID',  dur:'OTC / start', pct:50},
+      {dose:'120 mg TID', dur:'Maintenance', pct:100},
+    ],
+    sideEffects:['Oily spotting','Flatus with discharge','Faecal urgency','Steatorrhoea','Fat-soluble vitamin deficiency'],
+    contraindications:{
+      absolute:['Chronic malabsorption syndrome','Cholestasis','Pregnancy'],
+      caution:['Warfarin (monitor INR closely)','Cyclosporin (separate doses by 3h)','Hypothyroidism medication (separate)'],
+    },
+    escalationNote:'Counsel on low-fat diet (<30% calories from fat). Side effects dramatically reduced with dietary compliance.',
+    monitoringNote:'Supplement fat-soluble vitamins (A, D, E, K) taken 2h apart. Monitor INR if on anticoagulants.',
+  },
+  bupropion_naltrexone: {
+    name:'Bupropion + Naltrexone', brands:'Contrave · Mysimba',
+    icon:'🔵', color:'#7c3aed',
+    class:'Dopamine/Norepinephrine Reuptake Inhibitor + Opioid Antagonist',
+    mechanism:'Bupropion activates pro-opiomelanocortin (POMC) neurons → appetite suppression. Naltrexone blocks auto-inhibitory feedback loop, potentiating effect.',
+    expectedLoss:'5–9% TBWL at 56 weeks (COR trials)',
+    freq:'Oral — twice daily (morning + evening)',
+    steps:[
+      {dose:'1 tab AM only',      dur:'Week 1', pct:25},
+      {dose:'1 tab AM + 1 PM',   dur:'Week 2', pct:50},
+      {dose:'2 tabs AM + 1 PM',  dur:'Week 3', pct:75},
+      {dose:'2 tabs AM + 2 PM',  dur:'Maintenance', pct:100},
+    ],
+    sideEffects:['Nausea','Constipation','Headache','Insomnia','Dizziness','Dry mouth','Increased BP'],
+    contraindications:{
+      absolute:['Seizure disorder (any history)','Bulimia or anorexia nervosa','MAOI use (or within 14 days)','Chronic opioid or partial agonist use','Acute opioid withdrawal','Pregnancy'],
+      caution:['Hypertension — monitor BP','Renal/hepatic impairment — dose adjust','CYP2B6 inducers/inhibitors'],
+    },
+    escalationNote:'Titrate weekly. Do NOT crush or chew tablets. Take with food to reduce nausea. If no 5% weight loss by week 16, reassess.',
+    monitoringNote:'Monitor BP and HR regularly. Black box warning: suicidality in young patients (bupropion component). Rule out opioid use before starting.',
+  },
+  topiramate_phentermine: {
+    name:'Phentermine + Topiramate', brands:'Qsymia',
+    icon:'🟣', color:'#9333ea',
+    class:'Sympathomimetic + Carbonic Anhydrase Inhibitor',
+    mechanism:'Phentermine reduces appetite; topiramate increases satiety and reduces reward from eating (mechanism not fully established).',
+    expectedLoss:'8–11% TBWL at 56 weeks (EQUIP/CONQUER)',
+    freq:'Once daily oral (AM)',
+    steps:[
+      {dose:'3.75/23 mg', dur:'2 wks', pct:25},
+      {dose:'7.5/46 mg',  dur:'12 wks (evaluate)', pct:50},
+      {dose:'11.25/69 mg',dur:'2 wks', pct:75},
+      {dose:'15/92 mg',   dur:'Maintenance', pct:100},
+    ],
+    sideEffects:['Paraesthesia','Dry mouth','Constipation','Insomnia','Cognitive dulling ("brain fog")','Kidney stones','Metabolic acidosis'],
+    contraindications:{
+      absolute:['Pregnancy (teratogenic — Category X)','Glaucoma','Hyperthyroidism'],
+      caution:['Kidney stones history','Cognitive/memory issues','Renal impairment','Metabolic acidosis','Valproate interaction'],
+    },
+    escalationNote:'Evaluate at week 12 on 7.5/46mg: if <3% weight loss, escalate. If <5% at week 28 on max dose, discontinue.',
+    monitoringNote:'Mandatory: pregnancy test before starting and monthly. Obtain serum bicarbonate (acidosis risk). Ophthalmology if visual symptoms.',
+  },
+};
+
+/* ══════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════ */
+const STORE_PREFIX='paniniMed_';
+const ID_KEY='paniniActiveMedId';
+let activeId=null, record=null, selectedDrug=null;
+
+/* ══════════════════════════════════════════════
+   UTILITIES
+════════════════════════════════════════════════ */
+function norm(id){ return String(id||'').trim().toUpperCase().replace(/[^A-Z0-9-]/g,''); }
+function validId(id){ return /^WIN-[A-Z0-9]{4,12}$/.test(id)||/^[A-Z0-9]{6,16}$/.test(id); }
+function storeKey(id){ return STORE_PREFIX+id; }
+function status(msg){ document.getElementById('saveStatus').textContent=msg; }
+function v(id){ return document.getElementById(id); }
+function saveLocal(){
+  if(!record||!activeId) return;
+  try{ localStorage.setItem(storeKey(activeId), JSON.stringify({...record,patientId:activeId,updatedAt:new Date().toISOString()})); }catch(_){}
+}
+function loadLocal(id){
+  try{ const r=localStorage.getItem(storeKey(id)); return r?JSON.parse(r):null; } catch(_){ return null; }
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  renderDrugGrid();
+  // Restore last session
+  try{
+    const saved=localStorage.getItem(ID_KEY);
+    if(saved&&validId(saved)){
+      v('pidInput').value=saved; activeId=saved;
+      const rec=loadLocal(saved);
+      if(rec){ record=rec; if(rec.drug){ selectDrug(rec.drug,true); } }
+    }
+  }catch(_){}
+  v('startDate').value=new Date().toISOString().split('T')[0];
+});
+
+/* ══════════════════════════════════════════════
+   DRUG GRID
+════════════════════════════════════════════════ */
+function renderDrugGrid(){
+  const grid=v('drugGrid');
+  grid.innerHTML=Object.entries(DRUGS).map(([key,d])=>`
+    <div class="drug-btn${selectedDrug===key?' active':''}" onclick="selectDrug('${key}')">
+      <div class="drug-icon">${d.icon}</div>
+      <div class="drug-name">${d.name}</div>
+      <div class="drug-brand">${d.brands}</div>
+    </div>`).join('');
+}
+
+function selectDrug(key, silent){
+  selectedDrug=key;
+  renderDrugGrid();
+  if(!silent) renderAll();
+}
+
+/* ══════════════════════════════════════════════
+   PATIENT
+════════════════════════════════════════════════ */
+function loadPatient(){
+  const id=norm(v('pidInput').value);
+  if(!validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
+  activeId=id;
+  try{ localStorage.setItem(ID_KEY,id); }catch(_){}
+  const saved=loadLocal(id);
+  if(saved){
+    record=saved;
+    if(record.drug){ selectDrug(record.drug,true); }
+    if(record.startDate) v('startDate').value=record.startDate;
+    if(record.targetDose) v('targetDose').value=record.targetDose;
+    renderAll();
+    status('Loaded: '+id);
+  } else {
+    record={ drug:selectedDrug, startDate:'', targetDose:'', visits:[] };
+    status('New record for: '+id);
+  }
+}
+
+function initDrug(){
+  if(!selectedDrug){ alert('Select a medication first.'); return; }
+  if(!activeId){ activeId='DEMO'; }
+  const sd=v('startDate').value;
+  const td=v('targetDose').value;
+  if(!record) record={ drug:selectedDrug, startDate:sd, targetDose:td, visits:[] };
+  else { record.drug=selectedDrug; record.startDate=sd; record.targetDose=td; }
+  saveLocal();
+  renderAll();
+  status('Updated — '+(activeId||''));
+}
+
+/* ══════════════════════════════════════════════
+   RENDER ALL
+════════════════════════════════════════════════ */
+function renderAll(){
+  if(!selectedDrug){ v('mainContent').style.display='none'; v('emptyState').style.display=''; return; }
+  v('mainContent').style.display=''; v('emptyState').style.display='none';
+  const drug=DRUGS[selectedDrug];
+  renderDrugBanner(drug);
+  renderContra(drug);
+  renderLadder(drug);
+  renderStats(drug);
+  renderClinicalPrompt(drug);
+  renderChart(drug);
+  renderLog(drug);
+}
+
+/* ── Drug banner ── */
+function renderDrugBanner(drug){
+  v('drugInfoBanner').innerHTML=`
+    <h3>${drug.icon} ${drug.name} <span style="font-size:13px;opacity:.8">— ${drug.class}</span></h3>
+    <p style="margin-top:4px">${drug.mechanism}</p>
+    <div class="drug-info-pills">
+      <span class="drug-pill">📉 ${drug.expectedLoss}</span>
+      <span class="drug-pill">🗓 ${drug.freq}</span>
+    </div>`;
+}
+
+/* ── Contraindications ── */
+function renderContra(drug){
+  const el=v('contraPanel'); if(!el) return;
+  const c=drug.contraindications;
+  el.innerHTML=`
+    <div class="contra-panel red">
+      <strong>🚫 Absolute Contraindications</strong>
+      <ul>${c.absolute.map(x=>`<li>${x}</li>`).join('')}</ul>
+    </div>
+    <div class="contra-panel amber">
+      <strong>⚠️ Use with Caution</strong>
+      <ul>${c.caution.map(x=>`<li>${x}</li>`).join('')}</ul>
+    </div>
+    <div class="contra-panel green">
+      <strong>📋 Monitoring Note</strong>
+      <p>${drug.monitoringNote}</p>
+    </div>`;
+}
+
+/* ── Titration ladder ── */
+function renderLadder(drug){
+  const el=v('titrationLadder'); const note=v('ladderNote');
+  const visits=record?.visits||[];
+  const currentDose=visits.length?visits[visits.length-1].dose:'';
+  const steps=drug.steps;
+  const maxBarH=80;
+
+  el.innerHTML=steps.map((s,i)=>{
+    const isCurrent=s.dose===currentDose;
+    const done=steps.slice(0,i).some(ss=>ss.dose===currentDose)||
+               (visits.some(v=>v.dose===s.dose)&&!isCurrent);
+    const cls=isCurrent?'current':done?'done':'future';
+    const h=Math.max(20,s.pct/100*maxBarH);
+    return `<div class="t-step">
+      <div class="t-bar-wrap">
+        <div class="t-bar ${cls}" style="height:${h}px;position:relative">
+          ${isCurrent?`<div class="t-label-current">← NOW</div>`:''}
+        </div>
+      </div>
+      <div class="t-dose">${s.dose}</div>
+      <div class="t-dur">${s.dur}</div>
+    </div>`;
+  }).join('<div style="width:28px;flex-shrink:0"></div>');
+
+  note.textContent=drug.escalationNote;
+}
+
+/* ── Stats ── */
+function renderStats(drug){
+  const el=v('statsStrip'); if(!el) return;
+  const visits=record?.visits||[];
+  const weights=visits.map(v=>parseFloat(v.weight)).filter(n=>!isNaN(n));
+  const baseline=weights[0]||null, latest=weights[weights.length-1]||null;
+  const loss=baseline&&latest?+((baseline-latest)/baseline*100).toFixed(1):null;
+  const days=record?.startDate?Math.round((new Date()-new Date(record.startDate))/86400000):null;
+  const wks=days?Math.round(days/7):null;
+  const currentDose=visits.length?visits[visits.length-1].dose:'—';
+
+  el.innerHTML=`
+    <div class="stat-box">
+      <div class="stat-num">${visits.length}</div>
+      <div class="stat-label">Visits logged</div>
+    </div>
+    <div class="stat-box ${loss>0?'green':''}">
+      <div class="stat-num">${loss!=null?loss+'%':'—'}</div>
+      <div class="stat-label">Total weight loss</div>
+    </div>
+    <div class="stat-box amber">
+      <div class="stat-num">${wks!=null?wks:''} wks</div>
+      <div class="stat-label">On medication</div>
+    </div>
+    <div class="stat-box purple">
+      <div class="stat-num" style="font-size:15px">${currentDose}</div>
+      <div class="stat-label">Current dose</div>
+    </div>`;
+}
+
+/* ── Clinical prompt ── */
+function renderClinicalPrompt(drug){
+  const el=v('clinicalPrompt'); if(!el) return;
+  const visits=record?.visits||[];
+  if(!visits.length){ el.style.display='none'; return; }
+
+  const latest=visits[visits.length-1];
+  const msgs=[];
+
+  // Stalled dose check
+  if(visits.length>=3){
+    const last3=visits.slice(-3).map(v=>v.dose);
+    if(last3.every(d=>d===last3[0])){
+      const currentStep=drug.steps.findIndex(s=>s.dose===last3[0]);
+      const nextStep=drug.steps[currentStep+1];
+      msgs.push({
+        head:'Dose escalation due',
+        body:`Patient has been on <strong>${last3[0]}</strong> for ${visits.length>=3?'3+':''} consecutive visits.`,
+        action:nextStep?`Consider escalating to ${nextStep.dose}`:'Currently at maximum dose — reassess response',
+      });
+    }
+  }
+
+  // Weight response check
+  const weights=visits.map(v=>parseFloat(v.weight)).filter(n=>!isNaN(n));
+  if(weights.length>=2){
+    const loss=(weights[0]-weights[weights.length-1])/weights[0]*100;
+    const wks=record?.startDate?Math.round((new Date()-new Date(record.startDate))/86400000/7):0;
+    if(wks>=16&&loss<5){
+      msgs.push({
+        head:'<5% weight loss at '+(wks)+' weeks',
+        body:`AACE/OMA threshold: reassess adherence, diet, and consider dose escalation or medication switch.`,
+        action:'Review medication class — dual agonist (tirzepatide) may offer superior response',
+      });
+    }
+  }
+
+  // Side effect pattern
+  const sideEffects=visits.map(v=>v.sideEffects).filter(Boolean);
+  const recentSE=sideEffects.slice(-2).filter(s=>s&&s!=='None');
+  if(recentSE.length>=2){
+    msgs.push({
+      head:'Persistent side effects noted',
+      body:`Side effects reported at last ${recentSE.length} visits. Do not escalate until resolved.`,
+      action:'Hold dose escalation — manage side effects first',
+    });
+  }
+
+  if(!msgs.length){ el.style.display='none'; return; }
+
+  el.style.display='';
+  el.innerHTML=msgs.map(m=>`
+    <div class="cp-head">🩺 Clinical Decision Prompt — ${m.head}</div>
+    <p>${m.body}</p>
+    <span class="cp-action">→ ${m.action}</span>
+  `).join('<hr style="border:none;border-top:1px solid rgba(37,99,235,.2);margin:10px 0">');
+}
+
+/* ── Dose-Weight chart ── */
+function renderChart(drug){
+  const el=v('doseWeightChart'); if(!el) return;
+  const visits=(record?.visits||[]).filter(v=>v.date);
+  if(visits.length<2){
+    el.innerHTML=`<p style="color:var(--muted);font-size:12px;padding:10px 0">Add 2+ visits to see the dose–weight response chart.</p>`;
+    return;
+  }
+
+  const W=500, H=100, padX=8, padY=10;
+  const weights=visits.map(v=>parseFloat(v.weight));
+  const dosePcts=visits.map(v=>{
+    const step=drug.steps.find(s=>s.dose===v.dose);
+    return step?step.pct:null;
+  });
+
+  const wMin=Math.min(...weights.filter(n=>!isNaN(n)));
+  const wMax=Math.max(...weights.filter(n=>!isNaN(n)));
+  const wRange=wMax-wMin||1;
+  const n=visits.length;
+
+  let wtPts='', dpPts='', dots='';
+  visits.forEach((vis,i)=>{
+    const x=padX+(i/(n-1))*( W-padX*2);
+    // Weight line
+    const wt=parseFloat(vis.weight);
+    if(!isNaN(wt)){
+      const wy=padY+((wMax-wt)/wRange)*(H-padY*2);
+      wtPts+=(wtPts?` ${x},${wy}`:`${x},${wy}`);
+      dots+=`<circle cx="${x}" cy="${wy}" r="3.5" fill="#0d9488" stroke="white" stroke-width="1.5"/>`;
+      if(i===0||i===n-1){
+        const anch=i===0?'start':'end';
+        dots+=`<text x="${x}" y="${H-3}" fill="#0d9488" font-size="9" font-weight="700" text-anchor="${anch}">${wt}</text>`;
+      }
+    }
+    // Dose line
+    const dp=dosePcts[i];
+    if(dp!=null){
+      const dy=padY+((100-dp)/100)*(H-padY*2);
+      dpPts+=(dpPts?` ${x},${dy}`:`${x},${dy}`);
+      dots+=`<circle cx="${x}" cy="${dy}" r="3" fill="#7c3aed" stroke="white" stroke-width="1.5"/>`;
+    }
+  });
+
+  el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    ${wtPts?`<polyline points="${wtPts}" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`:''}
+    ${dpPts?`<polyline points="${dpPts}" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="5,3"/>`:''}
+    ${dots}
+  </svg>`;
+}
+
+/* ── Visit log ── */
+const ESCALATION_OPTIONS=['—','Yes — dose escalated','No — side effects','No — patient declined','No — cost/access','No — at max dose'];
+
+function renderLog(drug){
+  const tbody=v('logBody'); if(!tbody) return;
+  const visits=record?.visits||[];
+  const doses=drug.steps.map(s=>s.dose);
+  const currentIdx=visits.length-1;
+
+  tbody.innerHTML=visits.map((vis,i)=>`
+    <tr class="${i===currentIdx?'current-row':''}">
+      <td><input type="date" value="${vis.date||''}" onchange="updateVisit(${i},'date',this.value)" style="width:130px"></td>
+      <td>
+        <select onchange="updateVisit(${i},'dose',this.value)" style="min-width:130px">
+          <option value="">Select dose</option>
+          ${doses.map(d=>`<option${vis.dose===d?' selected':''}>${d}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="number" value="${vis.weight||''}" step="0.1" placeholder="kg" onchange="updateVisit(${i},'weight',this.value)" style="width:70px"></td>
+      <td>
+        <select onchange="updateVisit(${i},'sideEffects',this.value)">
+          <option value="">None</option>
+          ${drug.sideEffects.map(s=>`<option${vis.sideEffects===s?' selected':''}>${s}</option>`).join('')}
+          <option${vis.sideEffects==='Multiple'?' selected':''}>Multiple</option>
+        </select>
+      </td>
+      <td>
+        <select onchange="updateVisit(${i},'escalated',this.value)">
+          ${ESCALATION_OPTIONS.map(o=>`<option${vis.escalated===o?' selected':''}>${o}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="text" value="${vis.reason||''}" placeholder="reason…" onchange="updateVisit(${i},'reason',this.value)"></td>
+      <td>
+        <select onchange="updateVisit(${i},'nextPlan',this.value)" style="min-width:120px">
+          <option value="">Next plan</option>
+          ${doses.map(d=>`<option${vis.nextPlan===d?' selected':''}>${d}</option>`).join('')}
+          <option${vis.nextPlan==='Hold'?' selected':''}>Hold</option>
+          <option${vis.nextPlan==='Discontinue'?' selected':''}>Discontinue</option>
+        </select>
+      </td>
+      <td><input type="text" value="${vis.notes||''}" placeholder="notes…" onchange="updateVisit(${i},'notes',this.value)"></td>
+      <td><button class="del-btn" onclick="deleteVisit(${i})">✕</button></td>
+    </tr>`).join('');
+}
+
+function updateVisit(idx, field, val){
+  if(!record||!record.visits[idx]) return;
+  record.visits[idx][field]=val;
+  saveLocal();
+  renderAll();
+  status('✓ Auto-saved '+new Date().toLocaleTimeString());
+}
+
+function addRow(){
+  if(!selectedDrug){ alert('Select a medication first.'); return; }
+  if(!record) record={ drug:selectedDrug, startDate:'', targetDose:'', visits:[] };
+  record.visits.push({ date:new Date().toISOString().split('T')[0], dose:'', weight:'', sideEffects:'', escalated:'', reason:'', nextPlan:'', notes:'' });
+  saveLocal();
+  renderAll();
+}
+
+function deleteVisit(idx){
+  if(!record) return;
+  record.visits.splice(idx,1);
+  saveLocal();
+  renderAll();
+}
+</script>
+</body>
+</html>

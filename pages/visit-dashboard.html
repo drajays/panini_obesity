@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visit Intelligence Dashboard — Panini</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal:#0d9488; --teal-dark:#0f766e; --teal-light:#ccfbf1;
+  --green:#16a34a; --green-light:#dcfce7;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --rose:#e11d48; --rose-light:#ffe4e6;
+  --blue:#2563eb; --blue-light:#dbeafe;
+  --ink:#1f2937; --slate:#475569; --muted:#94a3b8;
+  --line:#e2e8f0; --bg:#f1f5f9; --card:#ffffff;
+  --radius:12px; --shadow:0 4px 24px rgba(15,23,42,.08);
+}
+html { scroll-behavior:smooth; }
+body {
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg); color:var(--ink);
+  font-size:14px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  position:sticky; top:0; z-index:50;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:8px;
+  padding:10px 18px;
+  background:var(--teal-dark); color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+}
+.toolbar-brand { font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.toolbar-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.pid-row { display:flex; align-items:center; gap:6px; }
+.pid-row input {
+  font-family:inherit; font-size:13px; font-weight:600; letter-spacing:.04em;
+  padding:6px 10px; border-radius:8px;
+  border:1.5px solid rgba(255,255,255,.4); background:rgba(255,255,255,.12);
+  color:#fff; width:160px;
+}
+.pid-row input::placeholder { color:rgba(255,255,255,.55); }
+.pid-row input:focus { outline:none; border-color:#fff; background:rgba(255,255,255,.22); }
+.btn {
+  padding:6px 14px; border-radius:8px; font-size:12.5px; font-weight:600;
+  cursor:pointer; border:1.5px solid rgba(255,255,255,.45);
+  background:rgba(255,255,255,.12); color:#fff; transition:background .15s;
+}
+.btn:hover { background:rgba(255,255,255,.28); }
+.btn.solid { background:#fff; color:var(--teal-dark); border-color:#fff; }
+.btn.solid:hover { background:#e2e8f0; }
+.btn.green { background:#16a34a; border-color:#16a34a; }
+.btn.green:hover { background:#15803d; }
+.save-status { font-size:11.5px; opacity:.85; min-height:14px; }
+
+/* ── Layout ── */
+.wrap { max-width:1080px; margin:0 auto; padding:20px 16px 40px; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align:center; padding:60px 20px;
+  background:var(--card); border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.empty-state h2 { color:var(--teal-dark); margin-bottom:10px; }
+.empty-state p { color:var(--slate); max-width:420px; margin:0 auto; }
+
+/* ── KPI Row ── */
+.kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:16px; }
+@media(max-width:720px){ .kpi-row { grid-template-columns:1fr 1fr; } }
+@media(max-width:420px){ .kpi-row { grid-template-columns:1fr; } }
+
+.kpi-card {
+  background:var(--card); border-radius:var(--radius);
+  padding:16px 18px; box-shadow:var(--shadow);
+  border-top:3px solid var(--teal);
+  display:flex; flex-direction:column; gap:4px;
+}
+.kpi-card.amber { border-top-color:var(--amber); }
+.kpi-card.rose  { border-top-color:var(--rose); }
+.kpi-card.green { border-top-color:var(--green); }
+
+.kpi-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+.kpi-value { font-size:28px; font-weight:800; line-height:1.1; color:var(--ink); }
+.kpi-value.mms-red    { color:var(--rose); }
+.kpi-value.mms-amber  { color:var(--amber); }
+.kpi-value.mms-green  { color:var(--green); }
+.kpi-sub  { font-size:12px; color:var(--slate); margin-top:2px; }
+.kpi-delta { font-size:12.5px; font-weight:700; }
+.kpi-delta.up   { color:var(--rose); }
+.kpi-delta.down { color:var(--green); }
+.kpi-delta.neutral { color:var(--muted); }
+
+/* ── Mid row ── */
+.mid-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:16px; }
+@media(max-width:640px){ .mid-row { grid-template-columns:1fr; } }
+
+/* ── Chart cards ── */
+.card {
+  background:var(--card); border-radius:var(--radius);
+  padding:18px 20px; box-shadow:var(--shadow);
+}
+.card-title {
+  font-size:13px; font-weight:700; color:var(--teal-dark);
+  text-transform:uppercase; letter-spacing:.05em;
+  margin-bottom:14px; display:flex; align-items:center; gap:8px;
+}
+.chart-area { width:100%; overflow:hidden; }
+.chart-area svg { width:100%; height:auto; display:block; }
+.chart-legend { display:flex; gap:14px; margin-top:8px; flex-wrap:wrap; }
+.chart-legend span { font-size:11px; color:var(--slate); display:flex; align-items:center; gap:4px; }
+.chart-legend span::before { content:''; display:inline-block; width:12px; height:3px; border-radius:2px; }
+.leg-teal::before { background:var(--teal); }
+.leg-amber::before { background:var(--amber); }
+.leg-rose::before { background:var(--rose); }
+
+/* ── Med panel ── */
+.med-row { display:flex; flex-direction:column; gap:10px; }
+.med-entry {
+  display:grid; grid-template-columns:auto 1fr auto;
+  align-items:center; gap:10px;
+  padding:10px 12px; border-radius:10px;
+  border:1.5px solid var(--line); background:#f8fafc;
+}
+.med-dot { width:10px; height:10px; border-radius:50%; background:var(--teal); flex-shrink:0; }
+.med-dot.stalled { background:var(--amber); }
+.med-visit { font-size:11px; color:var(--muted); white-space:nowrap; }
+.med-dose { font-size:13px; font-weight:600; color:var(--ink); }
+.med-badge {
+  font-size:10px; font-weight:700; padding:2px 8px; border-radius:6px;
+  background:var(--teal-light); color:var(--teal-dark); white-space:nowrap;
+}
+.med-badge.new { background:var(--green-light); color:var(--green); }
+.med-badge.same { background:var(--amber-light); color:var(--amber); }
+
+/* ── Three-col row ── */
+.three-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:16px; }
+@media(max-width:800px){ .three-row { grid-template-columns:1fr 1fr; } }
+@media(max-width:520px){ .three-row { grid-template-columns:1fr; } }
+
+/* ── Entry form ── */
+.entry-section {
+  background:var(--card); border-radius:var(--radius);
+  box-shadow:var(--shadow); margin-bottom:16px; overflow:hidden;
+}
+.entry-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 20px; background:var(--teal-dark); color:#fff;
+  cursor:pointer; user-select:none;
+}
+.entry-header h3 { font-size:14px; font-weight:700; }
+.entry-chevron { font-size:18px; transition:transform .2s; }
+.entry-body { padding:20px; display:none; }
+.entry-body.open { display:block; }
+
+.entry-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px 16px; }
+@media(max-width:700px){ .entry-grid { grid-template-columns:1fr 1fr; } }
+.entry-grid.cols-3 { grid-template-columns:repeat(3,1fr); }
+.field { display:flex; flex-direction:column; gap:4px; }
+label.fld { font-size:11px; font-weight:700; color:var(--slate); text-transform:uppercase; letter-spacing:.04em; }
+input[type="text"],input[type="number"],input[type="date"],select,textarea {
+  font-family:inherit; font-size:13.5px; padding:8px 10px;
+  border:1.5px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); width:100%;
+  transition:border-color .15s, box-shadow .15s;
+}
+input:focus,select:focus,textarea:focus {
+  outline:none; border-color:var(--teal);
+  box-shadow:0 0 0 3px rgba(13,148,136,.12);
+}
+.scale-hint { font-size:10px; color:var(--muted); margin-top:2px; }
+.entry-actions { display:flex; gap:10px; margin-top:16px; align-items:center; }
+.btn-primary {
+  padding:9px 22px; border-radius:9px; font-size:13.5px; font-weight:700;
+  background:var(--teal); color:#fff; border:none; cursor:pointer;
+  transition:background .15s;
+}
+.btn-primary:hover { background:var(--teal-dark); }
+.section-divider { margin:16px 0; border:none; border-top:1.5px solid var(--line); }
+
+/* ── Flags ── */
+.flags-row { display:flex; flex-direction:column; gap:8px; }
+.flag-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 14px; border-radius:10px; font-size:13px;
+}
+.flag-item.red   { background:var(--rose-light); border-left:4px solid var(--rose); }
+.flag-item.amber { background:var(--amber-light); border-left:4px solid var(--amber); }
+.flag-item.green { background:var(--green-light); border-left:4px solid var(--green); }
+.flag-icon { font-size:16px; flex-shrink:0; margin-top:1px; }
+.flag-text strong { display:block; font-size:12.5px; margin-bottom:2px; }
+.flag-text span   { font-size:12px; color:var(--slate); }
+.no-flags { color:var(--muted); font-size:13px; padding:10px 0; }
+
+/* ── NSV chips ── */
+.nsv-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.nsv-chip {
+  font-size:12px; font-weight:600; padding:4px 12px; border-radius:20px;
+  background:var(--green-light); color:var(--green);
+}
+.nsv-input-row { display:flex; gap:8px; margin-top:10px; }
+.nsv-input-row input { flex:1; font-size:13px; padding:7px 10px; border:1.5px solid var(--line); border-radius:8px; }
+.nsv-input-row button {
+  padding:7px 14px; border-radius:8px; font-size:13px; font-weight:600;
+  background:var(--green); color:#fff; border:none; cursor:pointer;
+}
+
+/* ── Coaching card ── */
+.coaching-card {
+  background:var(--card); border-radius:var(--radius);
+  box-shadow:var(--shadow); overflow:hidden; margin-bottom:16px;
+}
+.coaching-header {
+  background:linear-gradient(135deg,var(--teal-dark),var(--teal));
+  color:#fff; padding:20px 24px; text-align:center;
+}
+.coaching-header h2 { font-size:18px; margin-bottom:4px; }
+.coaching-header p  { font-size:12px; opacity:.9; }
+.coaching-body { padding:20px 24px; }
+.coaching-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:16px; }
+@media(max-width:560px){ .coaching-row { grid-template-columns:1fr; } }
+.coaching-stat {
+  text-align:center; padding:14px; border-radius:10px;
+  background:var(--bg); border:1px solid var(--line);
+}
+.coaching-stat .num { font-size:26px; font-weight:800; color:var(--teal-dark); }
+.coaching-stat .lbl { font-size:11px; color:var(--muted); margin-top:2px; }
+.coaching-highlight {
+  padding:12px 16px; border-radius:10px; margin-bottom:10px; font-size:13.5px;
+}
+.coaching-highlight.win  { background:var(--green-light); border-left:4px solid var(--green); }
+.coaching-highlight.focus{ background:var(--amber-light); border-left:4px solid var(--amber); }
+.coaching-highlight.med  { background:var(--blue-light);  border-left:4px solid var(--blue); }
+.coaching-print { margin-top:14px; font-size:12px; color:var(--muted); text-align:center; }
+
+/* ── Section labels ── */
+.section-label {
+  font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--muted); margin:0 0 10px;
+  display:block;
+}
+.full-row { margin-bottom:16px; }
+
+/* ── Visit count strip ── */
+.visit-strip { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.v-dot {
+  width:30px; height:30px; border-radius:50%; display:flex; align-items:center;
+  justify-content:center; font-size:10px; font-weight:700; cursor:default;
+  border:2px solid var(--line); background:var(--bg); color:var(--muted);
+}
+.v-dot.done { background:var(--teal); border-color:var(--teal); color:#fff; }
+.v-dot.current { background:var(--amber); border-color:var(--amber); color:#fff; ring:2px; }
+
+/* ── Print ── */
+@media print {
+  .toolbar,.entry-section,.flags-row,.nsv-input-row,.three-row,
+  .btn,.btn-primary,.mid-row:not(.print-target),.kpi-row { display:none!important; }
+  .coaching-card { box-shadow:none; border:1px solid var(--line); }
+  body { background:#fff; }
+  .wrap { padding:10px; max-width:100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Toolbar ── -->
+<div class="toolbar">
+  <div class="toolbar-brand">🏥 Visit Intelligence Dashboard</div>
+  <div class="toolbar-right">
+    <div class="pid-row">
+      <input type="text" id="pidInput" placeholder="WIN-XXXXXX" maxlength="16" autocomplete="off" spellcheck="false">
+      <button class="btn solid" onclick="loadPatient()">Load</button>
+      <button class="btn" onclick="generateId()" title="Generate new ID">+ New</button>
+    </div>
+    <button class="btn" onclick="window.print()" title="Print coaching card">🖨 Print Card</button>
+    <span class="save-status" id="saveStatus"></span>
+  </div>
+</div>
+
+<!-- ── Dashboard body ── -->
+<div class="wrap" id="wrap">
+  <div class="empty-state" id="emptyState">
+    <div style="font-size:48px;margin-bottom:12px">🏥</div>
+    <h2>Visit Intelligence Dashboard</h2>
+    <p style="margin-top:8px">Enter a Patient ID above and click <strong>Load</strong> to see the full visit intelligence view — trends, scores, flags, and coaching card in one screen.</p>
+    <p style="margin-top:14px;font-size:12px;color:var(--muted)">Or click <strong>+ New</strong> to generate an ID and start a fresh patient record.</p>
+  </div>
+
+  <div id="dashMain" style="display:none">
+
+    <!-- Visit strip -->
+    <div class="visit-strip" id="visitStrip"></div>
+
+    <!-- KPI row -->
+    <div class="kpi-row" id="kpiRow"></div>
+
+    <!-- Charts + Med -->
+    <div class="mid-row" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-title">📉 Weight &amp; Waist Trend</div>
+        <div class="chart-area" id="weightChart"></div>
+        <div class="chart-legend">
+          <span class="leg-teal">Weight (kg)</span>
+          <span class="leg-amber">Waist (cm)</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">💊 Medication Progression</div>
+        <div class="med-row" id="medRow"></div>
+      </div>
+    </div>
+
+    <!-- Behavioral + Labs + Flags -->
+    <div class="three-row">
+      <div class="card">
+        <div class="card-title">🥗 Behavioral Scores</div>
+        <div class="chart-area" id="behavChart"></div>
+        <div class="chart-legend">
+          <span class="leg-teal">Diet (1–10)</span>
+          <span class="leg-rose">Exercise (1–10)</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔬 Lab Trends</div>
+        <div class="chart-area" id="labChart"></div>
+        <div class="chart-legend">
+          <span class="leg-teal">HbA1c (%)</span>
+          <span class="leg-rose">ALT (U/L ÷10)</span>
+        </div>
+        <p id="labNote" style="font-size:11px;color:var(--muted);margin-top:8px"></p>
+      </div>
+      <div class="card">
+        <div class="card-title">🚩 Red Flags</div>
+        <div class="flags-row" id="flagsRow"></div>
+      </div>
+    </div>
+
+    <!-- Today's visit entry -->
+    <div class="entry-section" id="entrySection">
+      <div class="entry-header" onclick="toggleEntry()">
+        <h3>📝 Enter Today's Visit Data</h3>
+        <span class="entry-chevron" id="entryChevron">▾</span>
+      </div>
+      <div class="entry-body open" id="entryBody">
+        <div class="entry-grid">
+          <div class="field">
+            <label class="fld">Visit Date</label>
+            <input type="date" id="eDate">
+          </div>
+          <div class="field">
+            <label class="fld">Weight (kg)</label>
+            <input type="number" id="eWeight" step="0.1" placeholder="e.g. 92.5">
+          </div>
+          <div class="field">
+            <label class="fld">Waist (cm)</label>
+            <input type="number" id="eWaist" step="0.5" placeholder="e.g. 98">
+          </div>
+          <div class="field">
+            <label class="fld">BP (mmHg)</label>
+            <input type="text" id="eBP" placeholder="e.g. 128/82">
+          </div>
+        </div>
+
+        <hr class="section-divider">
+        <span class="section-label">Medication</span>
+        <div class="entry-grid">
+          <div class="field" style="grid-column:span 2">
+            <label class="fld">Current Dose</label>
+            <input type="text" id="eDose" placeholder="e.g. Semaglutide 1.0mg weekly">
+          </div>
+          <div class="field">
+            <label class="fld">Side effects?</label>
+            <select id="eSideEffect">
+              <option value="">None</option>
+              <option>Nausea</option>
+              <option>Constipation</option>
+              <option>Reflux</option>
+              <option>Vomiting</option>
+              <option>Fatigue</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="fld">Dose Change?</label>
+            <select id="eDoseChange">
+              <option value="">No change</option>
+              <option>Escalated</option>
+              <option>Reduced (side effects)</option>
+              <option>Held this visit</option>
+            </select>
+          </div>
+        </div>
+
+        <hr class="section-divider">
+        <span class="section-label">Behavioral (1 = poor, 10 = excellent)</span>
+        <div class="entry-grid">
+          <div class="field">
+            <label class="fld">Diet Adherence</label>
+            <input type="number" id="eDiet" min="1" max="10" placeholder="1–10">
+            <span class="scale-hint">1=no adherence · 10=perfect</span>
+          </div>
+          <div class="field">
+            <label class="fld">Exercise Score</label>
+            <input type="number" id="eExercise" min="1" max="10" placeholder="1–10">
+            <span class="scale-hint">1=sedentary · 10=goal met</span>
+          </div>
+          <div class="field">
+            <label class="fld">Sleep Quality</label>
+            <input type="number" id="eSleep" min="1" max="10" placeholder="1–10">
+          </div>
+          <div class="field">
+            <label class="fld">Energy Level</label>
+            <input type="number" id="eEnergy" min="1" max="10" placeholder="1–10">
+          </div>
+        </div>
+
+        <hr class="section-divider">
+        <span class="section-label">Labs (enter what's available)</span>
+        <div class="entry-grid">
+          <div class="field">
+            <label class="fld">HbA1c (%)</label>
+            <input type="number" id="eHba1c" step="0.1" placeholder="e.g. 7.2">
+          </div>
+          <div class="field">
+            <label class="fld">Fasting Glucose</label>
+            <input type="number" id="eFBG" placeholder="mg/dL or mmol/L">
+          </div>
+          <div class="field">
+            <label class="fld">LDL (mg/dL)</label>
+            <input type="number" id="eLDL" placeholder="e.g. 120">
+          </div>
+          <div class="field">
+            <label class="fld">Triglycerides</label>
+            <input type="number" id="eTG" placeholder="e.g. 180">
+          </div>
+          <div class="field">
+            <label class="fld">HDL (mg/dL)</label>
+            <input type="number" id="eHDL" placeholder="e.g. 45">
+          </div>
+          <div class="field">
+            <label class="fld">ALT (U/L)</label>
+            <input type="number" id="eALT" placeholder="e.g. 42">
+          </div>
+          <div class="field">
+            <label class="fld">Weight Nadir (kg)</label>
+            <input type="number" id="eNadir" step="0.1" placeholder="lowest weight reached">
+          </div>
+          <div class="field">
+            <label class="fld">Steps/Day (avg)</label>
+            <input type="number" id="eSteps" placeholder="e.g. 7500">
+          </div>
+        </div>
+
+        <hr class="section-divider">
+        <span class="section-label">Non-Scale Victories — what improved this visit?</span>
+        <div class="nsv-input-row">
+          <input type="text" id="eNSVInput" placeholder="e.g. BP medication reduced, better sleep, knee pain gone…">
+          <button onclick="addNSV()">+ Add</button>
+        </div>
+        <div class="nsv-row" id="nsvPreview"></div>
+
+        <div class="entry-actions">
+          <button class="btn-primary" onclick="saveVisit()">💾 Save This Visit</button>
+          <span id="entrySaveStatus" style="font-size:12px;color:var(--slate)"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Non-scale victories (historical) -->
+    <div class="card full-row" id="nsvCard">
+      <div class="card-title">🏅 Non-Scale Victories</div>
+      <div id="nsvHistory"><span style="color:var(--muted);font-size:13px">No victories recorded yet — add them in today's visit.</span></div>
+    </div>
+
+    <!-- Patient coaching card -->
+    <div class="coaching-card" id="coachingCard">
+      <div class="coaching-header">
+        <div style="font-size:28px;margin-bottom:6px">📋</div>
+        <h2>Your Progress Report — <span id="coachDate"></span></h2>
+        <p id="coachId"></p>
+      </div>
+      <div class="coaching-body">
+        <div class="coaching-row" id="coachStats"></div>
+        <div id="coachHighlights"></div>
+        <div class="coaching-print">Generated by Panini Weight Management · AACE / EASO aligned · Confidential</div>
+      </div>
+    </div>
+
+  </div><!-- /dashMain -->
+</div><!-- /wrap -->
+
+<script>
+/* ══════════════════════════════════════════════
+   DATA STORE
+   Key: paniniDash_WIN-XXXXX  →  { height, targetWeight, visits:[] }
+   Each visit: { date, weight, waist, bp, dose, sideEffect, doseChange,
+                 diet, exercise, sleep, energy,
+                 hba1c, fbg, ldl, tg, hdl, alt, nadir, steps, nsv:[] }
+════════════════════════════════════════════════ */
+const STORE_PREFIX = 'paniniDash_';
+const ID_KEY       = 'paniniActiveDashId';
+
+let activeId   = null;
+let dashRecord = null;   // { height, targetWeight, visits:[] }
+
+// ── Utilities ──────────────────────────────────
+function norm(id){ return String(id||'').trim().toUpperCase().replace(/[^A-Z0-9-]/g,''); }
+function validId(id){ return /^WIN-[A-Z0-9]{4,12}$/.test(id)||/^[A-Z0-9]{6,16}$/.test(id); }
+function generateId(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s='WIN-'; for(let i=0;i<6;i++) s+=c[Math.floor(Math.random()*c.length)];
+  document.getElementById('pidInput').value=s;
+  activeId=s;
+  dashRecord={ height:null, targetWeight:null, visits:[] };
+  saveLocal();
+  render();
+  status('New patient ID created: '+s);
+}
+function storeKey(id){ return STORE_PREFIX+id; }
+function saveLocal(){
+  if(!dashRecord||!activeId) return;
+  try{ localStorage.setItem(storeKey(activeId), JSON.stringify({...dashRecord, patientId:activeId, updatedAt:new Date().toISOString()})); } catch(_){}
+}
+function loadLocal(id){
+  try{ const r=localStorage.getItem(storeKey(id)); return r?JSON.parse(r):null; } catch(_){ return null; }
+}
+function status(msg,el='saveStatus'){
+  const s=document.getElementById(el); if(s){ s.textContent=msg; }
+}
+function v(id){ return document.getElementById(id); }
+function num(id){ const n=parseFloat(v(id)?.value); return isNaN(n)?null:n; }
+function str(id){ return v(id)?.value?.trim()||''; }
+
+// ── Also read from Winner Program store ────────
+function readWinnerData(id){
+  try{
+    const raw=localStorage.getItem('paniniRecord_'+id);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  } catch(_){ return null; }
+}
+
+// ── Load ────────────────────────────────────────
+function loadPatient(){
+  const raw=v('pidInput').value;
+  const id=norm(raw);
+  if(!validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
+  activeId=id;
+  try{ localStorage.setItem(ID_KEY,id); } catch(_){}
+
+  const local=loadLocal(id)||{ height:null, targetWeight:null, visits:[] };
+  dashRecord=local;
+
+  // Merge core metrics from Winner Program (read-only, no PII)
+  mergeFromWinner(id);
+  render();
+  status('Loaded: '+id);
+}
+
+function mergeFromWinner(id){
+  const winner=readWinnerData(id);
+  if(!winner||!winner.visits) return;
+
+  // Build a map of existing dates in dashRecord
+  const existingDates=new Set(dashRecord.visits.map(v=>v.date));
+
+  const MONTHS=[0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36];
+  MONTHS.forEach(m=>{
+    const wv=winner.visits[m];
+    if(!wv||!wv.core) return;
+    const c=wv.core;
+    if(!c.date) return;
+    if(existingDates.has(c.date)) return; // don't overwrite dashboard entries
+    // Push a minimal entry from Winner data
+    dashRecord.visits.push({
+      date:c.date,
+      weight:parseFloat(c.weight)||null,
+      waist:parseFloat(c.waist)||null,
+      bp:c.bp||'',
+      dose:c.dose||'',
+      sideEffect:'', doseChange:'',
+      diet:parseFloat(c.dietScore)||null,
+      exercise:parseFloat(c.exerciseScore)||null,
+      sleep:null, energy:null,
+      hba1c:null, fbg:null, ldl:null, tg:null, hdl:null, alt:null, nadir:null, steps:null,
+      nsv:[], _fromWinner:true,
+    });
+  });
+  // Sort by date
+  dashRecord.visits.sort((a,b)=>a.date<b.date?-1:1);
+}
+
+// ── Save visit ──────────────────────────────────
+function saveVisit(){
+  if(!dashRecord){ alert('Load a patient first.'); return; }
+  const date=str('eDate');
+  if(!date){ alert('Enter a visit date.'); return; }
+
+  const entry={
+    date, weight:num('eWeight'), waist:num('eWaist'), bp:str('eBP'),
+    dose:str('eDose'), sideEffect:str('eSideEffect'), doseChange:str('eDoseChange'),
+    diet:num('eDiet'), exercise:num('eExercise'), sleep:num('eSleep'), energy:num('eEnergy'),
+    hba1c:num('eHba1c'), fbg:num('eFBG'), ldl:num('eLDL'), tg:num('eTG'),
+    hdl:num('eHDL'), alt:num('eALT'), nadir:num('eNadir'), steps:num('eSteps'),
+    nsv:[...nsvQueue],
+  };
+
+  // Upsert by date
+  const idx=dashRecord.visits.findIndex(v=>v.date===date);
+  if(idx>=0) dashRecord.visits[idx]={ ...dashRecord.visits[idx], ...entry };
+  else        dashRecord.visits.push(entry);
+  dashRecord.visits.sort((a,b)=>a.date<b.date?-1:1);
+
+  saveLocal();
+  nsvQueue=[];
+  render();
+  status('✓ Saved '+date,'entrySaveStatus');
+}
+
+// ── NSV queue ───────────────────────────────────
+let nsvQueue=[];
+function addNSV(){
+  const inp=v('eNSVInput');
+  const txt=inp.value.trim();
+  if(!txt) return;
+  nsvQueue.push(txt);
+  inp.value='';
+  renderNsvPreview();
+}
+function renderNsvPreview(){
+  v('nsvPreview').innerHTML=nsvQueue.map(t=>`<span class="nsv-chip">✓ ${t}</span>`).join('');
+}
+v('eNSVInput')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); addNSV(); }});
+
+// ── Pre-fill today ──────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date().toISOString().split('T')[0];
+  const eDate=v('eDate'); if(eDate) eDate.value=today;
+
+  // Restore last active ID
+  try{
+    const saved=localStorage.getItem(ID_KEY);
+    if(saved&&validId(saved)){
+      v('pidInput').value=saved;
+      activeId=saved;
+      const rec=loadLocal(saved);
+      if(rec){ dashRecord=rec; mergeFromWinner(saved); render(); status('Loaded: '+saved); return; }
+    }
+  } catch(_){}
+});
+
+// ── Toggle entry accordion ──────────────────────
+function toggleEntry(){
+  const body=v('entryBody'); const chev=v('entryChevron');
+  const open=body.classList.toggle('open');
+  chev.textContent=open?'▾':'▸';
+}
+
+// ═══════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════
+function render(){
+  if(!dashRecord){ v('emptyState').style.display=''; v('dashMain').style.display='none'; return; }
+  v('emptyState').style.display='none';
+  v('dashMain').style.display='';
+
+  const visits=dashRecord.visits.filter(v=>v.weight||v.waist||v.date);
+  renderVisitStrip(visits);
+  renderKPI(visits);
+  renderWeightChart(visits);
+  renderMedPanel(visits);
+  renderBehavChart(visits);
+  renderLabChart(visits);
+  renderFlags(visits);
+  renderNSVHistory(visits);
+  renderCoachCard(visits);
+  prefillEntryFromLatest(visits);
+}
+
+// ── Visit strip ─────────────────────────────────
+function renderVisitStrip(visits){
+  const strip=v('visitStrip');
+  if(!visits.length){ strip.innerHTML=''; return; }
+  strip.innerHTML=visits.map((vis,i)=>{
+    const cls=i===visits.length-1?'v-dot current':'v-dot done';
+    const label=vis.date?vis.date.slice(5):'?';
+    return `<div class="${cls}" title="${vis.date||'?'} — ${vis.dose||'dose?'}">${label}</div>`;
+  }).join('')+'<div class="v-dot" title="Next visit">+</div>';
+}
+
+// ── KPI ─────────────────────────────────────────
+function renderKPI(visits){
+  const row=v('kpiRow');
+  const baseline=visits[0]||{};
+  const latest=visits[visits.length-1]||{};
+  const prev=visits[visits.length-2]||{};
+
+  // 1. Weight
+  const wt=latest.weight; const wt0=baseline.weight;
+  const wtDelta=wt&&prev.weight?+(wt-prev.weight).toFixed(1):null;
+  const wtLoss=wt&&wt0?+((wt0-wt)/wt0*100).toFixed(1):null;
+
+  // 2. Metabolic Momentum Score
+  const mms=computeMMS(visits);
+
+  // 3. Visits done
+  const visitsDone=visits.length;
+
+  // 4. Waist
+  const ws=latest.waist; const ws0=baseline.waist;
+  const wsDelta=ws&&ws0?+(ws0-ws).toFixed(1):null;
+
+  row.innerHTML=`
+    ${kpiCard('Current Weight',wt?wt+' kg':'—',
+      wtLoss!=null?`${wtLoss>0?'▼':'▲'}${Math.abs(wtLoss)}% from baseline`:
+                   wtDelta!=null?`${wtDelta>0?'▲':'▼'}${Math.abs(wtDelta)} kg last visit`:'Baseline visit',
+      wtDelta!=null?(wtDelta<0?'down':'up'):'neutral', 'teal')}
+
+    ${kpiCard('Metabolic Momentum',mms+'/100',
+      mms>=65?'On track — keep going':mms>=40?'Building momentum':'Needs clinical attention',
+      null, mms>=65?'green':mms>=40?'amber':'rose', mmsColorClass(mms))}
+
+    ${kpiCard('Visits Completed',visitsDone,
+      visitsDone===1?'Baseline visit':`Over ${daysBetween(baseline.date,latest.date)} days`,
+      null,'teal')}
+
+    ${kpiCard('Waist Reduction',wsDelta!=null?wsDelta+' cm':'—',
+      ws?'Current: '+ws+' cm'+(ws0?' (baseline: '+ws0+'cm)':''):'No waist data entered',
+      null, wsDelta>0?'green':'teal')}
+  `;
+}
+
+function kpiCard(label,value,sub,deltaClass,color,valClass){
+  return `<div class="kpi-card ${color||''}">
+    <div class="kpi-label">${label}</div>
+    <div class="kpi-value ${valClass||''}">${value}</div>
+    <div class="kpi-sub ${deltaClass?'kpi-delta '+deltaClass:''}">${sub}</div>
+  </div>`;
+}
+
+function mmsColorClass(s){ return s>=65?'mms-green':s>=40?'mms-amber':'mms-red'; }
+
+function daysBetween(d1,d2){
+  if(!d1||!d2) return 0;
+  return Math.round(Math.abs(new Date(d2)-new Date(d1))/86400000);
+}
+
+// ── Metabolic Momentum Score ─────────────────────
+function computeMMS(visits){
+  if(!visits.length) return 0;
+  const baseline=visits[0]; const latest=visits[visits.length-1];
+  let score=0;
+
+  // Weight loss from baseline — 35 pts
+  if(baseline.weight&&latest.weight){
+    const loss=(baseline.weight-latest.weight)/baseline.weight*100;
+    if(loss>=15)      score+=35;
+    else if(loss>=10) score+=28;
+    else if(loss>=7)  score+=20;
+    else if(loss>=5)  score+=14;
+    else if(loss>=2)  score+=7;
+    else if(loss>0)   score+=3;
+  }
+
+  // Waist reduction — 20 pts
+  if(baseline.waist&&latest.waist){
+    const r=baseline.waist-latest.waist;
+    if(r>=15)      score+=20;
+    else if(r>=10) score+=16;
+    else if(r>=5)  score+=11;
+    else if(r>=2)  score+=6;
+    else if(r>0)   score+=2;
+  }
+
+  // Average diet score — 20 pts
+  const dScores=visits.map(v=>v.diet).filter(n=>n!=null&&n>0);
+  if(dScores.length){
+    const avg=dScores.reduce((a,b)=>a+b,0)/dScores.length;
+    score+=Math.round(avg/10*20);
+  }
+
+  // Average exercise score — 15 pts
+  const eScores=visits.map(v=>v.exercise).filter(n=>n!=null&&n>0);
+  if(eScores.length){
+    const avg=eScores.reduce((a,b)=>a+b,0)/eScores.length;
+    score+=Math.round(avg/10*15);
+  }
+
+  // Medication — 10 pts
+  const doses=visits.map(v=>v.dose).filter(Boolean);
+  if(doses.length){
+    const unique=new Set(doses);
+    score+= unique.size>1?10:5; // escalation happened vs still on first dose
+  }
+
+  return Math.min(100,Math.round(score));
+}
+
+// ── SVG sparkline ────────────────────────────────
+function sparkline(datasets, {width=500, height=90, padX=6, padY=8}={}){
+  if(!datasets||!datasets.length) return `<text x="10" y="40" fill="#94a3b8" font-size="12">No data yet</text>`;
+
+  // Find global range
+  const allVals=datasets.flatMap(d=>d.values.filter(n=>n!=null));
+  if(!allVals.length) return `<text x="10" y="40" fill="#94a3b8" font-size="12">No data yet</text>`;
+
+  let min=Math.min(...allVals), max=Math.max(...allVals);
+  const range=max-min||1;
+  const iW=width-padX*2, iH=height-padY*2;
+
+  const pts=(vals,n)=>vals.map((v,i)=>{
+    if(v==null) return null;
+    const x=padX+(i/(n-1||1))*iW;
+    const y=padY+((max-v)/range)*iH;
+    return {x,y,v};
+  });
+
+  let svg='';
+  datasets.forEach(d=>{
+    const n=Math.max(...datasets.map(dd=>dd.values.length));
+    const p=pts(d.values,n).filter(Boolean);
+    if(p.length<1) return;
+
+    // Line
+    if(p.length>=2){
+      const polyPts=p.map(pt=>`${pt.x},${pt.y}`).join(' ');
+      svg+=`<polyline points="${polyPts}" fill="none" stroke="${d.color}" stroke-width="2.2"
+        stroke-linejoin="round" stroke-linecap="round"/>`;
+    }
+    // Dots + labels
+    p.forEach((pt,i)=>{
+      svg+=`<circle cx="${pt.x}" cy="${pt.y}" r="3.5" fill="${d.color}" stroke="white" stroke-width="1.5"/>`;
+      // Only label first and last
+      if(i===0||i===p.length-1){
+        const anchor=i===0?'start':'end';
+        const labelY=pt.y<padY+16?pt.y+16:pt.y-6;
+        svg+=`<text x="${pt.x}" y="${labelY}" fill="${d.color}" font-size="9.5" font-weight="700"
+          text-anchor="${anchor}">${pt.v}</text>`;
+      }
+    });
+  });
+
+  return `<svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">${svg}</svg>`;
+}
+
+// ── Weight chart ─────────────────────────────────
+function renderWeightChart(visits){
+  const weights=visits.map(v=>v.weight);
+  const waists=visits.map(v=>v.waist);
+  const el=v('weightChart');
+  el.innerHTML=sparkline([
+    {values:weights, color:'#0d9488'},
+    {values:waists,  color:'#d97706'},
+  ]);
+}
+
+// ── Behavioral chart ─────────────────────────────
+function renderBehavChart(visits){
+  const diets=visits.map(v=>v.diet);
+  const exs=visits.map(v=>v.exercise);
+  const el=v('behavChart');
+  el.innerHTML=sparkline([
+    {values:diets, color:'#0d9488'},
+    {values:exs,   color:'#e11d48'},
+  ],{height:80});
+}
+
+// ── Lab chart ────────────────────────────────────
+function renderLabChart(visits){
+  const hba1cs=visits.map(v=>v.hba1c);
+  const alts=visits.map(v=>v.alt!=null?+(v.alt/10).toFixed(1):null);
+  const hasAny=hba1cs.some(n=>n!=null)||alts.some(n=>n!=null);
+  const el=v('labChart');
+  const note=v('labNote');
+  if(!hasAny){
+    el.innerHTML=`<p style="color:var(--muted);font-size:12px;padding:10px 0">Enter labs in the visit entry to see trends here.</p>`;
+    if(note) note.textContent='';
+    return;
+  }
+  el.innerHTML=sparkline([
+    {values:hba1cs, color:'#0d9488'},
+    {values:alts,   color:'#e11d48'},
+  ],{height:80});
+  if(note) note.textContent='ALT plotted as ÷10 for scale alignment with HbA1c.';
+}
+
+// ── Med panel ────────────────────────────────────
+function renderMedPanel(visits){
+  const el=v('medRow');
+  const withDose=visits.filter(v=>v.dose);
+  if(!withDose.length){
+    el.innerHTML=`<p style="color:var(--muted);font-size:13px">No medication data yet. Add via today's visit entry.</p>`;
+    return;
+  }
+  // Group consecutive same doses
+  const grouped=[];
+  withDose.forEach(vis=>{
+    const last=grouped[grouped.length-1];
+    if(last&&last.dose===vis.dose){ last.endDate=vis.date; last.visits++; }
+    else grouped.push({dose:vis.dose, startDate:vis.date, endDate:vis.date, visits:1});
+  });
+  el.innerHTML=grouped.slice(-5).reverse().map((g,i)=>{
+    const isCurrent=i===0;
+    const badge=isCurrent?'Current':(i===grouped.length-1?'Start':'Prev dose');
+    const badgeCls=isCurrent?'new':i===grouped.length-1?'':'same';
+    return `<div class="med-entry">
+      <div class="med-dot ${isCurrent?'':'stalled'}"></div>
+      <div>
+        <div class="med-dose">${g.dose}</div>
+        <div class="med-visit">${g.startDate}${g.endDate!==g.startDate?' → '+g.endDate:''} · ${g.visits} visit${g.visits>1?'s':''}</div>
+      </div>
+      <div class="med-badge ${badgeCls}">${badge}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Red flags ────────────────────────────────────
+function renderFlags(visits){
+  const el=v('flagsRow');
+  const flags=computeFlags(visits);
+  if(!flags.length){
+    el.innerHTML=`<div class="no-flags">✓ No red flags at this time. Keep monitoring.</div>`;
+    return;
+  }
+  el.innerHTML=flags.map(f=>`
+    <div class="flag-item ${f.level}">
+      <span class="flag-icon">${f.icon}</span>
+      <div class="flag-text"><strong>${f.title}</strong><span>${f.detail}</span></div>
+    </div>`).join('');
+}
+
+function computeFlags(visits){
+  if(visits.length<2) return [];
+  const flags=[];
+  const latest=visits[visits.length-1];
+  const baseline=visits[0];
+
+  // 1. Weight regain from nadir
+  const weights=visits.map(v=>v.weight).filter(n=>n!=null);
+  if(weights.length>=2){
+    const nadir=Math.min(...weights);
+    const cur=weights[weights.length-1];
+    const regain=cur-nadir;
+    if(regain>=3){
+      flags.push({level:'red',icon:'⚖️',title:'Weight regain from nadir',
+        detail:`Up ${regain.toFixed(1)} kg from lowest weight (${nadir} kg). Review adherence and dose.`});
+    }
+  }
+
+  // 2. Consecutive weight gain (last 2 visits)
+  if(weights.length>=3){
+    const l=weights.slice(-3);
+    if(l[2]>l[1]&&l[1]>l[0]){
+      flags.push({level:'amber',icon:'📈',title:'Weight trending up — 2 consecutive visits',
+        detail:'Check medication adherence, diet contract, and rule out dose inadequacy.'});
+    }
+  }
+
+  // 3. Dose stalled
+  const doses=visits.map(v=>v.dose).filter(Boolean);
+  if(doses.length>=3){
+    const last3=doses.slice(-3);
+    if(last3.every(d=>d===last3[0])){
+      flags.push({level:'amber',icon:'💊',title:'Dose escalation stalled ≥3 visits',
+        detail:'Consider escalating if tolerated. Review side effects and barriers.'});
+    }
+  }
+
+  // 4. Low diet score
+  const diets=visits.map(v=>v.diet).filter(n=>n!=null);
+  if(diets.length>=2){
+    const last2=diets.slice(-2);
+    if(last2.every(d=>d<5)){
+      flags.push({level:'amber',icon:'🥗',title:'Diet adherence consistently low',
+        detail:'Score <5 for 2+ visits. Re-assess dietary contract and barriers.'});
+    }
+  }
+
+  // 5. HbA1c worsening
+  const hba1cs=visits.map(v=>v.hba1c).filter(n=>n!=null);
+  if(hba1cs.length>=2){
+    const delta=hba1cs[hba1cs.length-1]-hba1cs[hba1cs.length-2];
+    if(delta>0.4){
+      flags.push({level:'red',icon:'🩸',title:'HbA1c worsening (+'+delta.toFixed(1)+'%)',
+        detail:'Despite weight management. Review anti-diabetic medication and diet.'});
+    }
+  }
+
+  // 6. ALT rising
+  const alts=visits.map(v=>v.alt).filter(n=>n!=null);
+  if(alts.length>=2){
+    const base=alts[0], cur=alts[alts.length-1];
+    if(cur>base*1.5&&cur>40){
+      flags.push({level:'red',icon:'🫀',title:'ALT rising',
+        detail:`${cur} U/L (${((cur-base)/base*100).toFixed(0)}% above baseline). Rule out medication effect or NAFLD progression.`});
+    }
+  }
+
+  // 7. No weight loss >6 months on medication
+  if(visits.length>=4&&baseline.weight&&latest.weight){
+    const loss=(baseline.weight-latest.weight)/baseline.weight*100;
+    const days=daysBetween(baseline.date,latest.date);
+    if(days>=180&&loss<5){
+      flags.push({level:'red',icon:'⚠️',title:'<5% weight loss after 6+ months',
+        detail:'AACE threshold for reassessing medication class or adding combination therapy.'});
+    }
+  }
+
+  // ✓ Good flag
+  if(!flags.length||flags.every(f=>f.level!=='red')){
+    if(weights.length>=2){
+      const loss=(baseline.weight-latest.weight)/baseline.weight*100;
+      if(loss>=5){
+        flags.push({level:'green',icon:'✅',title:'On track — ≥5% total weight loss',
+          detail:`${loss.toFixed(1)}% lost from baseline. Continue current protocol.`});
+      }
+    }
+  }
+
+  return flags;
+}
+
+// ── NSV history ──────────────────────────────────
+function renderNSVHistory(visits){
+  const el=v('nsvHistory');
+  const allNSV=visits.flatMap(vis=>(vis.nsv||[]).map(t=>({text:t,date:vis.date})));
+  if(!allNSV.length){
+    el.innerHTML=`<span style="color:var(--muted);font-size:13px">No victories recorded yet — add them in today's visit entry.</span>`;
+    return;
+  }
+  el.innerHTML=`<div class="nsv-row">${allNSV.map(n=>`<span class="nsv-chip" title="${n.date}">✓ ${n.text}</span>`).join('')}</div>`;
+}
+
+// ── Coaching card ────────────────────────────────
+function renderCoachCard(visits){
+  if(!visits.length) return;
+  const baseline=visits[0]; const latest=visits[visits.length-1];
+  const prev=visits[visits.length-2]||{};
+  const mms=computeMMS(visits);
+
+  // Date + ID
+  v('coachDate').textContent=latest.date||new Date().toLocaleDateString();
+  v('coachId').textContent='Patient: '+activeId+' · Visit '+visits.length;
+
+  // Stats
+  const wtLoss=baseline.weight&&latest.weight?((baseline.weight-latest.weight)/baseline.weight*100).toFixed(1):null;
+  const wsDelta=baseline.waist&&latest.waist?(baseline.waist-latest.waist).toFixed(1):null;
+  const prevWt=prev.weight&&latest.weight?(latest.weight-prev.weight).toFixed(1):null;
+
+  v('coachStats').innerHTML=`
+    <div class="coaching-stat">
+      <div class="num" style="color:${mmsColorClass(mms).includes('green')?'#16a34a':mmsColorClass(mms).includes('amber')?'#d97706':'#e11d48'}">${mms}</div>
+      <div class="lbl">Metabolic Momentum Score</div>
+    </div>
+    <div class="coaching-stat">
+      <div class="num">${wtLoss!=null?wtLoss+'%':'—'}</div>
+      <div class="lbl">Total Weight Lost</div>
+    </div>
+    <div class="coaching-stat">
+      <div class="num">${wsDelta!=null?wsDelta+' cm':'—'}</div>
+      <div class="lbl">Waist Reduced</div>
+    </div>
+  `;
+
+  // Highlights
+  const hlParts=[];
+
+  // Top win
+  const wins=[];
+  if(wtLoss>0) wins.push(`Lost ${wtLoss}% of starting weight`);
+  if(wsDelta>0) wins.push(`Waist reduced by ${wsDelta} cm`);
+  const allNSV=visits.flatMap(v=>v.nsv||[]);
+  if(allNSV.length) wins.push(...allNSV.slice(-2));
+  if(wins.length){
+    hlParts.push(`<div class="coaching-highlight win">
+      <strong>🏅 Your Wins</strong><br>${wins.slice(0,3).join(' · ')}
+    </div>`);
+  }
+
+  // Focus
+  const flags=computeFlags(visits);
+  const redAmber=flags.filter(f=>f.level==='red'||f.level==='amber');
+  if(redAmber.length){
+    hlParts.push(`<div class="coaching-highlight focus">
+      <strong>🎯 Focus for Next Visit</strong><br>${redAmber[0].title}: ${redAmber[0].detail}
+    </div>`);
+  } else {
+    const dietAvg=visits.map(v=>v.diet).filter(Boolean);
+    const avgD=dietAvg.length?+(dietAvg.reduce((a,b)=>a+b,0)/dietAvg.length).toFixed(1):null;
+    if(avgD&&avgD<7) hlParts.push(`<div class="coaching-highlight focus">
+      <strong>🎯 Focus for Next Visit</strong><br>Raise diet adherence score from ${avgD} towards 8+. Consider reviewing meal plan.
+    </div>`);
+  }
+
+  // Medication
+  const curDose=visits.map(v=>v.dose).filter(Boolean).pop();
+  if(curDose){
+    hlParts.push(`<div class="coaching-highlight med">
+      <strong>💊 Current Medication</strong><br>${curDose}
+    </div>`);
+  }
+
+  v('coachHighlights').innerHTML=hlParts.join('');
+}
+
+// ── Pre-fill entry from latest ───────────────────
+function prefillEntryFromLatest(visits){
+  const latest=visits[visits.length-1];
+  if(!latest) return;
+  // Only pre-fill dose (repeat info); clear clinical values for new entry
+  const eDose=v('eDose'); if(eDose&&!eDose.value) eDose.value=latest.dose||'';
+}
+
+</script>
+</body>
+</html>
