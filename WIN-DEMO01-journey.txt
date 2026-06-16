@@ -1,0 +1,437 @@
+================================================================================
+  PANINI WEIGHT MANAGEMENT — DEMO PATIENT JOURNEY
+  Patient ID : WIN-DEMO01
+  Program    : 3-Year Semaglutide Programme (Jan 2023 – Jan 2026)
+  Total Visits : 19 bi-monthly visits
+  Note       : This is a fictional demo. No real patient data.
+================================================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PATIENT CLINICAL PROFILE (at enrolment)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Height          : 165 cm
+  Starting Weight : 102 kg
+  BMI at Start    : 37.5  (Obesity Class II)
+  Waist           : 108 cm
+  Target Weight   : 75 kg  (BMI 27.6)
+  Target TBWL     : 26.5 kg  (26% TBWL)
+
+  Active Comorbidities at Enrolment:
+    • Type 2 Diabetes Mellitus (HbA1c 8.2%, FBG 156 mg/dL) — on Metformin 1g BD
+    • Hypertension (BP 148/92 mmHg) — on Amlodipine 5mg, requiring review
+    • Non-Alcoholic Fatty Liver Disease (ALT 62 U/L, confirmed on ultrasound)
+    • Obstructive Sleep Apnea (on CPAP therapy)
+    • Bilateral knee osteoarthritis — limiting exercise
+    • Dyslipidemia (LDL 148, TG 210, HDL 38 mg/dL)
+
+  Medication Plan  : Semaglutide weekly injection — starting at 0.25 mg,
+                     targeting 2.4 mg maintenance over 12 months
+  Dietician        : Protein-first strategy, 100–120g protein/day target
+  Exercise Goal    : Build from 3,500 to 10,000 steps/day over 12 months
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YEAR ONE — ACTIVE WEIGHT LOSS PHASE  (Jan 2023 – Jan 2024)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 1 — 15 Jan 2023  │  Month 0  │  Baseline / Enrolment            │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 102.0 kg    Waist: 108 cm    BP: 148/92    Steps: 3,500/day    │
+  │  Dose  : Semaglutide 0.25 mg weekly                                     │
+  │  Labs  : HbA1c 8.2%  FBG 156  LDL 148  TG 210  HDL 38  ALT 62         │
+  │  Notes : GLP-1 candidacy confirmed. T2DM on Metformin 1g BD, HTN on    │
+  │          Amlodipine 5mg, NAFLD on ultrasound, on CPAP for OSA.          │
+  │          Dietician referral made. Protein-first nutrition briefing.      │
+  │          TBWL: 0% (Baseline)                                             │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 2 — 15 Mar 2023  │  Month 2  │  First Review                    │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 99.5 kg (-2.5 kg)    Waist: 106 cm    BP: 146/90              │
+  │  Dose  : Escalated → Semaglutide 0.5 mg weekly                          │
+  │  Side Effects: Nausea (mild, weeks 1–2, now resolving)                  │
+  │  Steps: 4,500/day                                                        │
+  │  Notes : GI tolerance reviewed. Early weight loss response good.         │
+  │          Protein-first adopted — reducing carbohydrate portion.          │
+  │          Dose escalated to 0.5mg. TBWL: 2.5%                            │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 3 — 15 May 2023  │  Month 4  │  Second Review                   │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 97.0 kg (-5.0 kg)    Waist: 104 cm    BP: 142/88              │
+  │  Dose  : Escalated → Semaglutide 1.0 mg weekly                          │
+  │  Side Effects: Nausea improving                                          │
+  │  Steps: 5,500/day                                                        │
+  │  Notes : Excellent early response — 5 kg in 4 months. GI settling.      │
+  │          DASI functional score improved. Knee pain slightly better.      │
+  │          Escalated to 1.0 mg. TBWL: 4.9%                                │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 4 — 15 Jul 2023  │  Month 6  │  Mid-Year Review                 │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 94.2 kg (-7.8 kg)    Waist: 102 cm    BP: 140/86              │
+  │  Dose  : HELD at 1.0 mg (side effect: constipation)                     │
+  │  Labs  : HbA1c 7.4%  FBG 128  ALT 52                                   │
+  │  Steps: 6,000/day                                                        │
+  │  NSV  : ★ Amlodipine 5mg reduced — BP better controlled                 │
+  │  Side Effects: Constipation (rated 6/10)                                 │
+  │  Notes : HbA1c improving (8.2 → 7.4%). Dose escalation held for GI.     │
+  │          Added psyllium fibre supplement. Hydration target 2.5L/day.    │
+  │          TBWL: 7.6% — first non-scale victory with BP medication cut.    │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 5 — 15 Sep 2023  │  Month 8  │  Third Review                    │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 91.5 kg (-10.5 kg)    Waist: 100 cm    BP: 136/84             │
+  │  Dose  : Escalated → Semaglutide 1.7 mg weekly                          │
+  │  Side Effects: None                                                      │
+  │  Steps: 7,000/day                                                        │
+  │  Notes : GI fully resolved. Step count at 7,000/day. Ankle swelling      │
+  │          absent. BP trending down significantly. Escalated to 1.7mg.    │
+  │          TBWL: 10.3% — crossed 10% TBWL milestone.                      │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 6 — 15 Nov 2023  │  Month 10 │  Pre-Year Review                 │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 89.2 kg (-12.8 kg)    Waist: 98 cm    BP: 134/82              │
+  │  Dose  : Maintained at 1.7 mg (preparing for 2.4 mg maintenance)        │
+  │  Side Effects: None                                                      │
+  │  Steps: 7,500/day                                                        │
+  │  NSV  : ★ Knee pain improving — walking 7,000 steps daily                │
+  │  Notes : Excellent 12.5% TBWL at 10 months. Appetite well suppressed.   │
+  │          Preparing to escalate to maintenance dose of 2.4mg next visit. │
+  │          Knee pain better due to weight off joints — physio referral.    │
+  │          TBWL: 12.5%                                                     │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 7 — 15 Jan 2024  │  Month 12 │  ★ YEAR 1 ANNUAL REVIEW         │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 87.8 kg (-14.2 kg)    Waist: 97 cm    BP: 132/82              │
+  │  Dose  : Escalated → Semaglutide 2.4 mg weekly (MAINTENANCE DOSE)       │
+  │  Labs  : HbA1c 6.8%  FBG 112  LDL 128  TG 165  HDL 44  ALT 42         │
+  │  Steps: 8,000/day                                                        │
+  │  NSV  : ★ HbA1c below 7% for first time in 5 years                      │
+  │          ★ Amlodipine stopped completely — BP controlled on diet alone   │
+  │  Notes : Year 1 Annual Review. 14.2% TBWL achieved in 12 months.        │
+  │          HbA1c 6.8% — the first time below 7% in 5 years of T2DM.      │
+  │          Antihypertensive stopped entirely. Sleep improving (CPAP).      │
+  │          Escalated to 2.4mg maintenance dose. Resistance training        │
+  │          added 2×/week. TBWL: 13.9% (Year 1 result = 14.2 kg lost).    │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YEAR TWO — MAINTENANCE + FURTHER IMPROVEMENT  (Mar 2024 – Jan 2025)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 8 — 15 Mar 2024  │  Month 14 │  Year 2 Start                    │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 86.5 kg (-15.5 kg)    Waist: 96 cm    BP: 130/80              │
+  │  Dose  : Semaglutide 2.4 mg weekly (maintaining)                        │
+  │  Side Effects: None                                                      │
+  │  Steps: 8,500/day                                                        │
+  │  Notes : Maintaining well on 2.4mg. Added resistance training twice      │
+  │          weekly. Sleep apnea follow-up arranged — CPAP compliance good. │
+  │          Walking 8,500 steps — near 10,000 target. TBWL: 15.2%          │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 9 — 15 May 2024  │  Month 16 │  Mid-Year Review                 │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 85.8 kg (-16.2 kg)    Waist: 95.5 cm    BP: 130/80            │
+  │  Dose  : Semaglutide 2.4 mg weekly                                      │
+  │  Side Effects: None                                                      │
+  │  Steps: 8,000/day (slight dip — busy month)                              │
+  │  NSV  : ★ Metformin dose reduced from 1g to 500mg BD                    │
+  │  Notes : Knee pain significantly reduced — attributed to weight off      │
+  │          joints. Metformin halved by endocrinologist. Stable on 2.4mg.  │
+  │          TBWL: 15.9%                                                     │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 10 — 15 Jul 2024  │  Month 18 │  18-Month Review                │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 85.2 kg (-16.8 kg)    Waist: 95 cm    BP: 128/80              │
+  │  Dose  : Semaglutide 2.4 mg weekly                                      │
+  │  Labs  : HbA1c 6.4%  FBG 104  ALT 35                                   │
+  │  Side Effects: None                                                      │
+  │  Steps: 9,000/day                                                        │
+  │  Notes : All metabolic markers showing sustained improvement.            │
+  │          Hepatology ultrasound shows NAFLD regression. ALT halved        │
+  │          from baseline (62 → 35 U/L). HbA1c 6.4% — improving further.  │
+  │          TBWL: 16.5%                                                     │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 11 — 15 Sep 2024  │  Month 20 │  Late Year Review               │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 84.8 kg (-17.2 kg)    Waist: 94.5 cm    BP: 128/78            │
+  │  Dose  : Semaglutide 2.4 mg weekly                                      │
+  │  Side Effects: None                                                      │
+  │  Steps: 9,500/day — approaching target                                   │
+  │  NSV  : ★ No breathlessness climbing 2 flights of stairs                 │
+  │  Notes : Excellent maintenance. Step count approaching 10,000/day        │
+  │          consistently. Patient reports high quality of life, high         │
+  │          satisfaction with programme. TBWL: 16.9%                       │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 12 — 15 Nov 2024  │  Month 22 │  Pre-Winter Review              │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 84.5 kg (-17.5 kg)    Waist: 94 cm    BP: 126/78              │
+  │  Dose  : Semaglutide 2.4 mg weekly                                      │
+  │  Side Effects: None                                                      │
+  │  Steps: 10,000/day — target achieved!                                    │
+  │  Notes : Slight winter activity dip anticipated. Counselled on indoor    │
+  │          exercise options (treadmill, yoga, resistance bands).            │
+  │          Waist now 94 cm — target <90 cm discussed.                      │
+  │          Step goal 10,000/day consistently met. TBWL: 17.2%             │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 13 — 15 Jan 2025  │  Month 24 │  ★ YEAR 2 ANNUAL REVIEW        │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 84.2 kg (-17.8 kg)    Waist: 93.8 cm    BP: 126/78            │
+  │  Dose  : Semaglutide 2.4 mg weekly                                      │
+  │  Labs  : HbA1c 6.1%  FBG 98  LDL 118  TG 138  HDL 48  ALT 28          │
+  │  Steps: 10,000/day                                                       │
+  │  NSV  : ★ Sleep apnea resolved — CPAP discontinued after 2 years        │
+  │          ★ AHI normalised on repeat sleep study (<5 events/hr)           │
+  │  Notes : Year 2 Annual Review — landmark milestone visit.                │
+  │          CPAP formally discontinued after sleep study confirmed AHI <5. │
+  │          ALT 28 — near normal (down from 62 at baseline, -55%).          │
+  │          HbA1c 6.1% — approaching non-diabetic range.                   │
+  │          All BP medications stopped over past 12 months.                 │
+  │          Tremendous clinical and quality-of-life progress.               │
+  │          TBWL: 17.5% (Year 2 total = 17.8 kg lost in 24 months)        │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YEAR THREE — DEEP MAINTENANCE + COMORBIDITY REMISSION  (Mar 2025 – Jan 2026)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 14 — 15 Mar 2025  │  Month 26 │  Year 3 Start                   │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 84.8 kg (+0.6 kg from last visit)    Waist: 94.2 cm            │
+  │  Dose  : Semaglutide 2.4 mg weekly                                      │
+  │  Side Effects: None                                                      │
+  │  Steps: 9,000/day (temporary dip due to travel)                          │
+  │  NSV  : ★ Waist reduced 15 cm total — fitting pre-obesity clothes        │
+  │  Notes : Minor weight regain of 0.6 kg — attributed to travel and        │
+  │          social eating over festive season. Nadir still 84.2 kg.        │
+  │          Reinforced protein-first eating rules. Not clinically            │
+  │          concerning — pattern of rebound and correction expected.        │
+  │          TBWL: 16.9% (minor temporary regain, nadir maintained)          │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 15 — 15 May 2025  │  Month 28 │  Mid-Year Review                │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 84.2 kg (-17.8 kg total)    Waist: 93.8 cm    BP: 124/78      │
+  │  Dose  : Semaglutide 2.4 mg weekly                                      │
+  │  Side Effects: None                                                      │
+  │  Steps: 9,500/day                                                        │
+  │  Notes : Back on track — weight at nadir (84.2 kg). Consistent           │
+  │          maintenance. Waist goal of <90 cm within reach.                 │
+  │          TBWL: 17.5%                                                     │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 16 — 15 Jul 2025  │  Month 30 │  Mid-Year Labs Review           │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 83.8 kg (-18.2 kg)    Waist: 93.5 cm    BP: 124/76            │
+  │  Dose  : Semaglutide 2.4 mg weekly                                      │
+  │  Labs  : HbA1c 5.9%  FBG 95  ALT 22                                    │
+  │  Side Effects: None                                                      │
+  │  Steps: 10,000/day                                                       │
+  │  NSV  : ★ ALT normalised (22 U/L) — NAFLD in remission                  │
+  │          ★ Hepatologist formally discharged patient                       │
+  │  Notes : ALT now 22 — within normal limits (baseline was 62, -65%).     │
+  │          Hepatologist has formally discharged the patient — NAFLD in     │
+  │          clinical remission confirmed on ultrasound. HbA1c 5.9% —       │
+  │          approaching non-diabetic threshold of <5.7%.                   │
+  │          FBG 95 — normal fasting glucose. Metformin to be tapered.      │
+  │          TBWL: 17.8%                                                     │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 17 — 15 Sep 2025  │  Month 32 │  Late Year Review               │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 83.5 kg (-18.5 kg)    Waist: 93.2 cm    BP: 122/76            │
+  │  Dose  : Semaglutide 2.4 mg weekly                                      │
+  │  Side Effects: None                                                      │
+  │  Steps: 10,500/day — exceeding target                                    │
+  │  Notes : Metformin stopped — FBG 95 mg/dL, euglycaemia maintained on    │
+  │          diet and GLP-1 alone without oral hypoglycaemic agent.          │
+  │          An extraordinary milestone — T2DM managed without medication.  │
+  │          TBWL: 18.1%                                                     │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 18 — 15 Nov 2025  │  Month 34 │  Pre-Year 3 Final               │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 83.2 kg (-18.8 kg)    Waist: 93 cm    BP: 122/76              │
+  │  Dose  : Semaglutide 2.4 mg weekly                                      │
+  │  Side Effects: None                                                      │
+  │  Steps: 11,000/day                                                       │
+  │  NSV  : ★ Metformin stopped completely — euglycaemia on diet alone       │
+  │  Notes : Near-target weight maintenance. Continues to lose slowly.       │
+  │          Compliance consistently high — diet, exercise, medication.      │
+  │          TBWL: 18.4%                                                     │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  VISIT 19 — 15 Jan 2026  │  Month 36 │  ★★★ YEAR 3 ANNUAL REVIEW ★★★  │
+  ├──────────────────────────────────────────────────────────────────────────┤
+  │  Weight: 83.0 kg (-19.0 kg)    Waist: 92.8 cm    BP: 122/76            │
+  │  Dose  : Semaglutide 2.4 mg weekly — CONTINUING                         │
+  │  Labs  : HbA1c 5.8%  FBG 94  LDL 112  TG 128  HDL 52  ALT 22          │
+  │  Steps: 11,000/day                                                       │
+  │  NSV  : ★ HbA1c 5.8% — pre-diabetes range (was 8.2% at start)           │
+  │          ★ All BP medications stopped (was on Amlodipine 5mg)           │
+  │          ★ Lost 19 kg — 18.6% TBWL in 36 months                         │
+  │          ★ T2DM in clinical remission — off Metformin                   │
+  │          ★ NAFLD in remission — hepatologist discharged                  │
+  │          ★ Sleep apnea resolved — CPAP discontinued                      │
+  │          ★ Steps 11,000/day — well above target                          │
+  │  Notes : Year 3 Annual Review — a landmark outcome.                      │
+  │          19 kg total weight loss (18.6% TBWL) over exactly 36 months.  │
+  │          HbA1c 5.8% — in pre-diabetes range, approaching remission.     │
+  │          No antihypertensives. No Metformin. No CPAP. NAFLD resolved.   │
+  │          LDL improved from 148 → 112. TG from 210 → 128. HDL 38 → 52.  │
+  │          ALT from 62 → 22. All metabolic parameters substantially        │
+  │          improved or normalised. T2DM in clinical remission.            │
+  │          TBWL: 18.6%                                                     │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3-YEAR OUTCOME SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  WEIGHT
+  ─────────────────────────────────────────────
+  Start            : 102.0 kg  (BMI 37.5)
+  End (36 months)  :  83.0 kg  (BMI 30.5)
+  Total Lost       :  19.0 kg
+  TBWL             :  18.6%
+  Waist reduction  :  15.2 cm  (108 → 92.8 cm)
+
+  GLYCAEMIA (T2DM)
+  ─────────────────────────────────────────────
+  HbA1c start      :  8.2%   →  5.8%  (↓ 2.4 points)
+  FBG start        :  156    →  94 mg/dL
+  Metformin        :  1g BD  →  STOPPED (month 32)
+  Status           :  T2DM in CLINICAL REMISSION
+
+  BLOOD PRESSURE (Hypertension)
+  ─────────────────────────────────────────────
+  BP start         :  148/92  →  122/76 mmHg
+  Amlodipine       :  5mg daily  →  STOPPED (month 6, then fully month 12)
+  Status           :  HTN RESOLVED — off all antihypertensives
+
+  LIVER (NAFLD)
+  ─────────────────────────────────────────────
+  ALT start        :  62 U/L  →  22 U/L (↓ 65%)
+  Ultrasound       :  Fatty liver confirmed → NAFLD REMISSION confirmed
+  Hepatologist     :  DISCHARGED (month 30)
+
+  SLEEP APNEA (OSA)
+  ─────────────────────────────────────────────
+  CPAP             :  In use at start  →  DISCONTINUED (month 24)
+  AHI              :  Elevated  →  Normalised (<5 events/hr on repeat study)
+
+  LIPIDS
+  ─────────────────────────────────────────────
+  LDL              :  148  →  112 mg/dL  (↓ 24%)
+  Triglycerides    :  210  →  128 mg/dL  (↓ 39%)
+  HDL              :   38  →   52 mg/dL  (↑ 37%)
+
+  FUNCTIONAL / LIFESTYLE
+  ─────────────────────────────────────────────
+  Daily steps      :  3,500  →  11,000 (↑ 214%)
+  Knee pain        :  Severe / limiting  →  Minimal
+  Breathlessness   :  On exertion  →  None (2 flights stairs)
+  Wardrobe         :  Fitting pre-obesity clothes
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SEMAGLUTIDE DOSE ESCALATION TIMELINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Month  0  (Jan 2023) : Started  0.25 mg/week
+  Month  2  (Mar 2023) : Escalated  →  0.5 mg/week   (nausea resolved)
+  Month  4  (May 2023) : Escalated  →  1.0 mg/week
+  Month  6  (Jul 2023) : HELD at    →  1.0 mg/week   (constipation — held for 2 months)
+  Month  8  (Sep 2023) : Escalated  →  1.7 mg/week   (GI resolved)
+  Month 12  (Jan 2024) : Escalated  →  2.4 mg/week   (MAINTENANCE DOSE — YEAR 1)
+  Month 12–36          : Maintained at 2.4 mg/week throughout Year 2 and Year 3
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MEDICINES STOPPED DURING PROGRAMME
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. Amlodipine 5 mg (antihypertensive)  → reduced Month 6, stopped Month 12
+  2. Metformin 1g BD (oral hypoglycaemic) → halved Month 16, stopped Month 32
+  3. CPAP therapy (for OSA)               → discontinued Month 24 after sleep study
+  4. Hepatology outpatient follow-up      → discharged Month 30 (NAFLD in remission)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HOW TO USE THIS FILE WITH THE PANINI APP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. Open the Panini app (index.html)
+  2. Click "3-Year Demo Patient" in the sidebar — or —
+     Type WIN-DEMO01 in the Patient ID field and press Load
+  3. Navigate to any module to see the full data loaded
+  4. Visit Dashboard → shows all 19 visits, trends, metabolic momentum score
+  5. Weight Journey → shows the clinical trajectory chart with all 19 visit dots
+  6. Medication Tracker → shows full semaglutide titration history
+  7. Patient Coaching Card → auto-generates a printable progress card
+  8. Click 🖨 Print / PDF on any module to print that module's report
+
+  To register a REAL new patient:
+  1. Click "Patient Registration" in the sidebar (or start "Initial Visit" flow)
+  2. Choose "New Patient" mode
+  3. The app generates a unique WIN-XXXXXX ID — write it on the patient's paper file
+  4. Enter height, weight, medication, comorbidities — no name, no phone
+  5. Click "Register Patient" → the ID is now active across all modules
+  6. Click "Start Initial Visit Flow" to walk through all 14 steps in order
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRIVACY NOTICE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  The Panini app stores NO personally identifiable information:
+    × No patient name
+    × No date of birth  (year of birth only, optional)
+    × No phone number
+    × No email address
+    × No Aadhaar / National ID
+    × No home address
+    × No emergency contact
+
+  Only the anonymous WIN-XXXXXX code, clinical measurements, and
+  programme data are stored. The WIN-ID must be written on the
+  patient's physical file and prescription by the clinical team.
+
+================================================================================
+  End of WIN-DEMO01 Journey Document
+  Generated for: Panini Chronic Weight Management App
+  Aligned with: AACE · EASO · KSSO · OMA obesity management guidelines
+================================================================================

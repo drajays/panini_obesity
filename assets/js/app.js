@@ -6,6 +6,17 @@
   // initialOnly:true → only in the initial-visit flow (first visit)
   const MODULES = [
     {
+      id: 'registration',
+      title: 'Patient Registration',
+      subtitle: 'New patient enrolment or returning patient lookup',
+      icon: '🏥',
+      path: 'pages/registration.html',
+      step: 'Step 0 — First Stop',
+      desc: 'Register a new patient (generates anonymous WIN-ID + clinical profile) or look up a returning patient by ID. No name, phone, or address stored — only anonymous ID and clinical data.',
+      mandatory: true,
+      initialOnly: false,
+    },
+    {
       id: 'dashboard',
       title: 'Visit Intelligence Dashboard',
       subtitle: 'Trends · Metabolic Momentum Score · Flags · Coaching card',
@@ -149,13 +160,23 @@
       desc: '36-month patient journey with 19 unique bi-monthly clinical visit forms, milestone tracking, and GLP-1 program integration.',
       mandatory: false,
     },
+    {
+      id: 'print-report',
+      title: 'Fill & Print Report',
+      subtitle: 'Enter data → live chart → print clean A4 clinical report',
+      icon: '🖨',
+      path: 'pages/print-report.html',
+      step: 'Any Visit — Offline Report',
+      desc: 'Two-panel interactive report: enter patient basics + one row per visit, watch the SVG weight chart redraw live, then print a 3-page A4 clinical report (chart + visit log + coaching card). Works 100% offline — no Python, no server.',
+      mandatory: false,
+    },
   ];
 
   // ── Visit flow sequences ──────────────────────────────────────────
-  const FLOW_INITIAL  = ['intake-form','evaluation','checklist','weight-journey','psych',
+  const FLOW_INITIAL  = ['registration','intake-form','evaluation','checklist','weight-journey','psych',
                           'dietary','dietary-contract','exercise','audit',
                           'medication','dashboard','coaching','winner'];
-  const FLOW_FOLLOWUP = ['dashboard','medication','coaching'];
+  const FLOW_FOLLOWUP = ['registration','dashboard','medication','coaching'];
 
   // ── State ─────────────────────────────────────────────────────────
   const state = {
@@ -462,6 +483,12 @@
       const input = document.getElementById('globalPatientId');
       if (input) input.value = e.data.id;
       if (window.PatientStore) PatientStore.setActiveId(e.data.id, true);
+    }
+    if (e.data?.type === 'panini-set-patient-id' && e.data.id) {
+      loadGlobalPatientId(e.data.id);
+    }
+    if (e.data?.type === 'panini-navigate' && e.data.module) {
+      navigate(e.data.module);
     }
   });
   window.addEventListener('keydown', (e) => {

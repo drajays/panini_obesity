@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Registration — Panini</title>
+<script src="../assets/js/panini-data.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#0d9488;--teal-dk:#0f766e;--teal-lt:#ccfbf1;
+  --green:#16a34a;--green-lt:#dcfce7;
+  --amber:#d97706;--amber-lt:#fef3c7;
+  --blue:#2563eb;--blue-lt:#dbeafe;
+  --rose:#e11d48;--rose-lt:#ffe4e6;
+  --ink:#1f2937;--slate:#475569;--muted:#94a3b8;
+  --line:#e2e8f0;--bg:#f1f5f9;--card:#fff;
+  --r:12px;--sh:0 4px 20px rgba(15,23,42,.09)
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);color:var(--ink);font-size:13.5px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── Toolbar ── */
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;
+  justify-content:space-between;flex-wrap:wrap;gap:8px;padding:10px 18px;
+  background:var(--teal-dk);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.bar-brand{font-size:15px;font-weight:700}
+.bar-right{display:flex;align-items:center;gap:8px}
+.btn{padding:6px 14px;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;
+  transition:background .15s;font-family:inherit}
+.btn:hover{background:rgba(255,255,255,.25)}
+.btn.solid{background:#fff;color:var(--teal-dk);border-color:#fff}
+.btn.solid:hover{background:#e2e8f0}
+.save-st{font-size:11px;opacity:.8}
+body.in-iframe .bar{padding:6px 14px}
+.pt-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px;
+  background:rgba(255,255,255,.2);color:#fff;letter-spacing:.04em}
+
+/* ── Wrap ── */
+.wrap{max-width:760px;margin:0 auto;padding:28px 14px 60px}
+
+/* ── Mode toggle ── */
+.mode-toggle{display:flex;gap:0;background:var(--line);border-radius:10px;
+  padding:4px;margin-bottom:24px;width:fit-content}
+.mode-btn{padding:10px 28px;border-radius:7px;border:none;cursor:pointer;
+  font-size:13.5px;font-weight:700;font-family:inherit;color:var(--muted);
+  background:transparent;transition:all .2s}
+.mode-btn.active{background:#fff;color:var(--teal-dk);
+  box-shadow:0 2px 8px rgba(15,23,42,.1)}
+
+/* ── ID display ── */
+.id-hero{text-align:center;padding:24px 20px;background:linear-gradient(135deg,var(--teal-dk),#0f766e);
+  border-radius:14px;margin-bottom:20px;color:#fff}
+.id-hero-label{font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;opacity:.8;margin-bottom:8px}
+.id-hero-code{font-size:32px;font-weight:900;letter-spacing:.12em;
+  font-family:ui-monospace,monospace;margin-bottom:14px}
+.id-hero-note{font-size:11px;opacity:.75;max-width:380px;margin:0 auto;line-height:1.5}
+.id-hero-btns{display:flex;gap:10px;justify-content:center;margin-top:16px}
+.id-hero-btn{padding:9px 20px;border-radius:8px;border:2px solid rgba(255,255,255,.5);
+  background:rgba(255,255,255,.15);color:#fff;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:background .15s}
+.id-hero-btn:hover{background:rgba(255,255,255,.3)}
+.id-hero-btn.primary{background:#fff;color:var(--teal-dk);border-color:#fff}
+
+/* ── Returning patient search ── */
+.search-bar{display:flex;gap:8px;margin-bottom:20px}
+.search-bar input{flex:1;font-size:16px;font-weight:700;letter-spacing:.08em;
+  padding:12px 16px;border-radius:10px;border:2px solid var(--line);
+  font-family:ui-monospace,monospace;color:var(--ink);
+  transition:border-color .15s}
+.search-bar input:focus{outline:none;border-color:var(--teal)}
+.search-bar input::placeholder{color:var(--muted);font-weight:400;font-size:13px;letter-spacing:0}
+.search-btn{padding:12px 22px;border-radius:10px;background:var(--teal);
+  color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:inherit;white-space:nowrap}
+.search-btn:hover{background:var(--teal-dk)}
+
+/* ── Found patient card ── */
+.found-card{background:var(--green-lt);border:2px solid #86efac;border-radius:12px;
+  padding:16px 20px;margin-bottom:20px;display:none}
+.found-card h3{font-size:14px;font-weight:700;color:var(--green);margin-bottom:8px}
+.found-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.found-item{font-size:12px;color:var(--slate)}
+.found-item strong{display:block;color:var(--ink);font-size:13px}
+.not-found{background:var(--rose-lt);border:2px solid #fca5a5;border-radius:12px;
+  padding:14px 18px;margin-bottom:20px;display:none;font-size:13px;color:var(--rose)}
+
+/* ── Card ── */
+.card{background:var(--card);border-radius:var(--r);padding:20px 22px;
+  box-shadow:var(--sh);margin-bottom:16px}
+.card-title{font-size:11.5px;font-weight:700;color:var(--teal-dk);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px}
+
+/* ── Form ── */
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.field-grid{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:4px}
+.field.wide{grid-column:1/-1}
+label.fl{font-size:10.5px;font-weight:700;color:var(--slate);
+  text-transform:uppercase;letter-spacing:.04em}
+input[type="text"],input[type="number"],input[type="date"],select,textarea{
+  font-family:inherit;font-size:13.5px;padding:9px 11px;
+  border:2px solid var(--line);border-radius:8px;background:#fff;
+  color:var(--ink);transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);
+  box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+textarea{resize:vertical;min-height:72px}
+
+/* ── Checkboxes ── */
+.cb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 10px}
+@media(max-width:480px){.cb-grid{grid-template-columns:1fr 1fr}}
+.cb-item{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--slate);
+  cursor:pointer;padding:4px 6px;border-radius:6px;transition:background .12s}
+.cb-item:hover{background:var(--teal-lt)}
+.cb-item input[type="checkbox"]{width:15px;height:15px;accent-color:var(--teal);cursor:pointer}
+
+/* ── BMI preview ── */
+.bmi-preview{background:var(--bg);border-radius:8px;padding:12px 14px;
+  margin-top:10px;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.bmi-val{font-size:22px;font-weight:800;color:var(--ink)}
+.bmi-cat{font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px}
+
+/* ── Register button ── */
+.reg-btn{width:100%;padding:15px;border-radius:10px;border:none;
+  background:var(--teal);color:#fff;font-size:15px;font-weight:800;
+  cursor:pointer;font-family:inherit;transition:background .15s;margin-top:6px}
+.reg-btn:hover{background:var(--teal-dk)}
+.reg-btn:disabled{background:var(--muted);cursor:not-allowed}
+
+/* ── Success panel ── */
+.success-panel{display:none;text-align:center;padding:30px 20px;
+  background:linear-gradient(135deg,var(--green-lt),#d1fae5);
+  border:2px solid #86efac;border-radius:14px;margin-bottom:20px}
+.success-icon{font-size:48px;margin-bottom:12px}
+.success-id{font-size:28px;font-weight:900;letter-spacing:.1em;
+  font-family:ui-monospace,monospace;color:var(--teal-dk);margin-bottom:8px}
+.success-msg{font-size:13px;color:var(--slate);line-height:1.6;margin-bottom:18px}
+.success-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.suc-btn{padding:10px 22px;border-radius:9px;font-size:13.5px;font-weight:700;
+  cursor:pointer;font-family:inherit;border:none}
+.suc-btn.primary{background:var(--teal);color:#fff}
+.suc-btn.primary:hover{background:var(--teal-dk)}
+.suc-btn.secondary{background:#fff;color:var(--teal-dk);border:2px solid var(--teal)}
+
+/* ── Profile summary (returning) ── */
+.profile-summary{display:none}
+.profile-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.prof-btn{padding:11px 20px;border-radius:9px;font-size:13.5px;font-weight:700;
+  cursor:pointer;font-family:inherit;border:none}
+.prof-btn.primary{background:var(--teal);color:#fff}
+.prof-btn.primary:hover{background:var(--teal-dk)}
+.prof-btn.sec{background:var(--blue-lt);color:var(--blue);border:2px solid #bfdbfe}
+.prof-btn.warn{background:var(--rose-lt);color:var(--rose);border:2px solid #fca5a5}
+
+/* ── Privacy notice ── */
+.privacy-note{font-size:11px;color:var(--muted);text-align:center;
+  padding:10px;border-top:1px solid var(--line);margin-top:8px;line-height:1.6}
+.privacy-note strong{color:var(--slate)}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="bar-brand">🏥 Patient Registration — Panini</div>
+  <div class="bar-right">
+    <button class="btn" onclick="window.print()">🖨 Print Summary</button>
+    <span class="save-st" id="saveSt"></span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- Mode toggle -->
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="modeNew"    onclick="setMode('new')">🆕 New Patient</button>
+    <button class="mode-btn"        id="modeReturn" onclick="setMode('returning')">🔄 Returning Patient</button>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       NEW PATIENT
+  ══════════════════════════════════════ -->
+  <div id="newPanel">
+
+    <!-- ID hero -->
+    <div class="id-hero" id="idHero">
+      <div class="id-hero-label">Anonymous Patient ID — generated for this session</div>
+      <div class="id-hero-code" id="generatedId">WIN-——————</div>
+      <div class="id-hero-note">
+        This ID is the only identifier stored. No name, phone, email or address is ever saved.
+        Write it on the patient's file or prescription.
+      </div>
+      <div class="id-hero-btns">
+        <button class="id-hero-btn" onclick="regenerateId()">↻ New ID</button>
+        <button class="id-hero-btn primary" onclick="copyId()">📋 Copy ID</button>
+      </div>
+    </div>
+
+    <!-- Success panel (shown after registration) -->
+    <div class="success-panel" id="successPanel">
+      <div class="success-icon">✅</div>
+      <div class="success-id" id="successId"></div>
+      <div class="success-msg" id="successMsg"></div>
+      <div class="success-btns">
+        <button class="suc-btn primary" onclick="goToFlow()">▶ Start Initial Visit Flow</button>
+        <button class="suc-btn secondary" onclick="resetNew()">+ Register Another Patient</button>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div id="newForm">
+      <div class="card">
+        <div class="card-title">📐 Clinical Basics (no personal identifiers)</div>
+        <div class="field-grid">
+          <div class="field">
+            <label class="fl">Height (cm) *</label>
+            <input type="number" id="n_height" placeholder="168" min="100" max="220"
+              oninput="calcBMI()">
+          </div>
+          <div class="field">
+            <label class="fl">Current Weight (kg) *</label>
+            <input type="number" id="n_weight" placeholder="95" step="0.1" min="20" max="300"
+              oninput="calcBMI()">
+          </div>
+          <div class="field">
+            <label class="fl">Target Weight (kg)</label>
+            <input type="number" id="n_target" placeholder="75" step="0.5" min="30" max="250">
+          </div>
+          <div class="field">
+            <label class="fl">Year of Birth</label>
+            <input type="number" id="n_yob" placeholder="1985" min="1920" max="2015">
+          </div>
+          <div class="field">
+            <label class="fl">Sex (for BMI norms)</label>
+            <select id="n_sex">
+              <option value="">Select…</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="O">Other / Prefer not to say</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="fl">Program Start Date</label>
+            <input type="date" id="n_start">
+          </div>
+        </div>
+        <div class="bmi-preview" id="bmiPreview" style="display:none">
+          <span class="bmi-val" id="bmiVal">—</span>
+          <span class="bmi-cat" id="bmiCat"></span>
+          <span style="font-size:12px;color:var(--muted)" id="bmiNote"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💊 Medication Plan</div>
+        <div class="field-grid">
+          <div class="field">
+            <label class="fl">Primary Medication</label>
+            <select id="n_med">
+              <option value="">None / Diet + Exercise only</option>
+              <option value="semaglutide">Semaglutide (Ozempic / Wegovy)</option>
+              <option value="tirzepatide">Tirzepatide (Mounjaro / Zepbound)</option>
+              <option value="liraglutide">Liraglutide (Saxenda)</option>
+              <option value="orlistat">Orlistat (Xenical)</option>
+              <option value="phentermine">Phentermine</option>
+              <option value="bupropion-naltrexone">Bupropion-Naltrexone (Contrave)</option>
+              <option value="topiramate">Topiramate</option>
+              <option value="combo">Combination</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="fl">Starting Dose</label>
+            <input type="text" id="n_dose" placeholder="e.g. 0.25mg/wk">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏥 Active Comorbidities (tick all that apply)</div>
+        <div class="cb-grid">
+          <label class="cb-item"><input type="checkbox" value="T2DM"> Type 2 Diabetes</label>
+          <label class="cb-item"><input type="checkbox" value="HTN"> Hypertension</label>
+          <label class="cb-item"><input type="checkbox" value="NAFLD"> Fatty Liver (NAFLD)</label>
+          <label class="cb-item"><input type="checkbox" value="OSA"> Sleep Apnea (OSA)</label>
+          <label class="cb-item"><input type="checkbox" value="PCOS"> PCOS</label>
+          <label class="cb-item"><input type="checkbox" value="Dyslipidemia"> Dyslipidemia</label>
+          <label class="cb-item"><input type="checkbox" value="OA"> Osteoarthritis</label>
+          <label class="cb-item"><input type="checkbox" value="GERD"> GERD / Reflux</label>
+          <label class="cb-item"><input type="checkbox" value="Depression"> Depression</label>
+          <label class="cb-item"><input type="checkbox" value="Hypothyroid"> Hypothyroidism</label>
+          <label class="cb-item"><input type="checkbox" value="CAD"> Heart Disease</label>
+          <label class="cb-item"><input type="checkbox" value="Other"> Other</label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📝 First Visit Clinical Note (optional)</div>
+        <div class="field">
+          <label class="fl">Brief clinical impression / reason for referral</label>
+          <textarea id="n_notes" placeholder="e.g. Referred by cardiologist. BMI 37, T2DM on Metformin, HTN on Amlodipine. Prior attempts at weight loss unsuccessful. Motivated for GLP-1 therapy…"></textarea>
+        </div>
+        <div class="field" style="margin-top:10px">
+          <label class="fl">Physician / Clinic Code (optional)</label>
+          <input type="text" id="n_phys" placeholder="e.g. DR-AJS / CLINIC-01">
+        </div>
+      </div>
+
+      <div class="privacy-note">
+        <strong>Privacy:</strong> No name · No phone · No email · No address · No Aadhaar/ID number stored.
+        Only the anonymous WIN-ID, clinical measurements, and program data are saved to this device.
+      </div>
+
+      <button class="reg-btn" id="regBtn" onclick="registerNew()">
+        ✅ Register Patient &amp; Assign ID
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       RETURNING PATIENT
+  ══════════════════════════════════════ -->
+  <div id="returnPanel" style="display:none">
+
+    <div class="search-bar">
+      <input type="text" id="r_pid" placeholder="Enter patient WIN-ID  (e.g. WIN-A4X291)"
+        maxlength="16" autocomplete="off" spellcheck="false"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter')lookupPatient()">
+      <button class="search-btn" onclick="lookupPatient()">🔍 Load Patient</button>
+    </div>
+
+    <div class="not-found" id="notFound">
+      ❌ Patient ID not found on this device. Check the ID or register as a new patient.
+    </div>
+
+    <div class="found-card" id="foundCard">
+      <h3>✅ Patient Found</h3>
+      <div class="found-grid" id="foundGrid"></div>
+      <div class="profile-actions">
+        <button class="prof-btn primary" onclick="continuePatient()">▶ Continue to Visit</button>
+        <button class="prof-btn sec"     onclick="startFollowupFlow()">📋 Follow-up Visit Flow</button>
+        <button class="prof-btn sec"     onclick="openJourney()">📈 Weight Journey</button>
+      </div>
+    </div>
+
+    <!-- Demo shortcut -->
+    <div class="card" style="border:2px dashed var(--amber);background:var(--amber-lt)">
+      <div class="card-title" style="color:var(--amber)">👤 Demo Patient — 3-Year Journey</div>
+      <p style="font-size:13px;color:var(--slate);margin-bottom:14px">
+        Load the built-in demo patient <strong>WIN-DEMO01</strong> to see a complete
+        semaglutide journey — 19 visits, 3 years, 19 kg lost, T2DM remission.
+      </p>
+      <button class="prof-btn primary" style="background:var(--amber)"
+        onclick="loadDemo()">👤 Load WIN-DEMO01 Demo</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   STATE
+═══════════════════════════════════ */
+let mode = 'new';
+let currentId = null;
+
+/* ═══════════════════════════════════
+   MODE TOGGLE
+═══════════════════════════════════ */
+function setMode(m){
+  mode = m;
+  document.getElementById('modeNew').classList.toggle('active', m==='new');
+  document.getElementById('modeReturn').classList.toggle('active', m==='returning');
+  document.getElementById('newPanel').style.display    = m==='new'       ? '' : 'none';
+  document.getElementById('returnPanel').style.display = m==='returning' ? '' : 'none';
+}
+
+/* ═══════════════════════════════════
+   ID GENERATION
+═══════════════════════════════════ */
+function generateId(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let id='WIN-';
+  for(let i=0;i<6;i++) id+=chars[Math.floor(Math.random()*chars.length)];
+  return id;
+}
+function regenerateId(){
+  const id=generateId();
+  currentId=id;
+  document.getElementById('generatedId').textContent=id;
+  st('');
+}
+function copyId(){
+  const id=document.getElementById('generatedId').textContent;
+  if(navigator.clipboard) navigator.clipboard.writeText(id);
+  else{ const t=document.createElement('input');t.value=id;
+    document.body.appendChild(t);t.select();document.execCommand('copy');
+    document.body.removeChild(t); }
+  st('Copied: '+id);
+}
+
+/* ═══════════════════════════════════
+   BMI CALC
+═══════════════════════════════════ */
+function calcBMI(){
+  const h=parseFloat(document.getElementById('n_height').value);
+  const w=parseFloat(document.getElementById('n_weight').value);
+  const prev=document.getElementById('bmiPreview');
+  if(!h||!w){ prev.style.display='none'; return; }
+  const bmi=+(w/((h/100)**2)).toFixed(1);
+  let cat='',bg='',color='',note='';
+  if(bmi<18.5){ cat='Underweight';bg='#dbeafe';color='#2563eb';note='BMI < 18.5' }
+  else if(bmi<25){ cat='Normal Weight';bg='#dcfce7';color='#16a34a';note='BMI 18.5–24.9' }
+  else if(bmi<27.5){ cat='Overweight';bg='#fef3c7';color='#d97706';note='BMI 25–27.4 · Asian cut-off overweight' }
+  else if(bmi<30){ cat='Overweight';bg='#fef3c7';color='#d97706';note='BMI 27.5–29.9' }
+  else if(bmi<35){ cat='Obesity Class I';bg='#fee2e2';color='#e11d48';note='BMI 30–34.9' }
+  else if(bmi<40){ cat='Obesity Class II';bg='#ffe0ef';color='#9d174d';note='BMI 35–39.9' }
+  else{ cat='Obesity Class III';bg='#f3e8ff';color='#7c3aed';note='BMI ≥ 40' }
+  document.getElementById('bmiVal').textContent=bmi;
+  const catEl=document.getElementById('bmiCat');
+  catEl.textContent=cat; catEl.style.background=bg; catEl.style.color=color;
+  document.getElementById('bmiNote').textContent=note;
+  prev.style.display='flex';
+}
+
+/* ═══════════════════════════════════
+   REGISTER NEW
+═══════════════════════════════════ */
+function registerNew(){
+  const id=currentId||document.getElementById('generatedId').textContent;
+  if(!id||!id.startsWith('WIN-')){ alert('Generate a patient ID first.'); return; }
+
+  const h   = parseFloat(document.getElementById('n_height').value)||null;
+  const w   = parseFloat(document.getElementById('n_weight').value)||null;
+  const tgt = parseFloat(document.getElementById('n_target').value)||null;
+  const yob = parseInt(document.getElementById('n_yob').value)||null;
+  const sex = document.getElementById('n_sex').value||'';
+  const start = document.getElementById('n_start').value||new Date().toISOString().split('T')[0];
+  const med  = document.getElementById('n_med').value||'';
+  const dose = document.getElementById('n_dose').value||'';
+  const notes= document.getElementById('n_notes').value||'';
+  const phys = document.getElementById('n_phys').value||'';
+
+  const comorbs = [];
+  document.querySelectorAll('.cb-item input[type="checkbox"]:checked').forEach(cb=>comorbs.push(cb.value));
+
+  const bmi = (h&&w) ? +(w/((h/100)**2)).toFixed(1) : null;
+
+  const profile = {
+    meta: { height:h, targetWeight:tgt, yearOfBirth:yob, sex, programStart:start,
+            drug:med, startDose:dose, physician:phys },
+    comorbidities: comorbs,
+    firstVisit: {
+      date: start, weight: w, bmi, notes,
+      dose: dose||med
+    },
+    registeredAt: new Date().toISOString(),
+    schemaVersion: 2
+  };
+
+  PaniniData.updateSection(id,'registration', profile);
+  PaniniData.setActiveId(id);
+
+  // Notify parent frame
+  try{
+    if(window.parent!==window){
+      window.parent.postMessage({type:'panini-set-patient-id',id},'*');
+    }
+  }catch(_){}
+
+  // Show success
+  document.getElementById('newForm').style.display='none';
+  document.getElementById('idHero').style.display='none';
+  const sp=document.getElementById('successPanel');
+  sp.style.display='block';
+  document.getElementById('successId').textContent=id;
+
+  const bmiCatMap=(b)=>!b?'':b<25?'Normal':b<30?'Overweight':b<35?'Obesity I':b<40?'Obesity II':'Obesity III';
+  const medLabel={semaglutide:'Semaglutide',tirzepatide:'Tirzepatide',
+    liraglutide:'Liraglutide',orlistat:'Orlistat',phentermine:'Phentermine',
+    'bupropion-naltrexone':'Bupropion-Naltrexone',topiramate:'Topiramate',combo:'Combination'}[med]||'Diet & Exercise';
+
+  document.getElementById('successMsg').innerHTML =
+    `Patient registered successfully.<br>
+    <strong>Height:</strong> ${h||'—'} cm &nbsp;|&nbsp;
+    <strong>Weight:</strong> ${w||'—'} kg &nbsp;|&nbsp;
+    <strong>BMI:</strong> ${bmi||'—'} (${bmiCatMap(bmi)})<br>
+    ${tgt?`<strong>Target:</strong> ${tgt} kg &nbsp;|&nbsp;`:''}
+    <strong>Medication:</strong> ${medLabel}<br>
+    ${comorbs.length?`<strong>Comorbidities:</strong> ${comorbs.join(', ')}`:''}
+    <br><br>
+    ⚠️ Write the ID <strong style="font-family:monospace;font-size:15px">${id}</strong>
+    on the patient's paper file. It cannot be recovered without it.`;
+
+  currentId=id;
+  st('✓ Patient '+id+' registered');
+}
+
+function resetNew(){
+  document.getElementById('newForm').style.display='';
+  document.getElementById('idHero').style.display='';
+  document.getElementById('successPanel').style.display='none';
+  regenerateId();
+  // clear form
+  ['n_height','n_weight','n_target','n_yob','n_start','n_dose','n_notes','n_phys']
+    .forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('n_sex').value='';
+  document.getElementById('n_med').value='';
+  document.querySelectorAll('.cb-item input[type="checkbox"]').forEach(cb=>cb.checked=false);
+  document.getElementById('bmiPreview').style.display='none';
+  st('');
+}
+
+function goToFlow(){
+  if(!currentId) return;
+  try{
+    if(window.parent!==window && typeof window.parent.enterFlowMode==='function'){
+      window.parent.enterFlowMode('initial');
+    } else { alert('Patient '+currentId+' registered. Click "Initial / New Patient" flow from the home screen.'); }
+  }catch(_){
+    alert('Patient '+currentId+' registered. Click "Initial / New Patient" flow from the home screen.');
+  }
+}
+
+/* ═══════════════════════════════════
+   RETURNING PATIENT
+═══════════════════════════════════ */
+function lookupPatient(){
+  const raw=document.getElementById('r_pid').value.trim().toUpperCase();
+  const id=PaniniData.normId(raw);
+  document.getElementById('notFound').style.display='none';
+  document.getElementById('foundCard').style.display='none';
+
+  if(!PaniniData.validId(id)){ alert('Invalid ID format. Must be WIN-XXXXXX.'); return; }
+
+  const data = PaniniData.load(id);
+  if(!data){ document.getElementById('notFound').style.display=''; return; }
+
+  currentId=id;
+  PaniniData.setActiveId(id);
+  try{if(window.parent!==window) window.parent.postMessage({type:'panini-set-patient-id',id},'*');}catch(_){}
+
+  // Populate found card
+  const reg  = data.registration||{};
+  const meta = reg.meta || data.meta || {};
+  const visits= data.dashVisits||[];
+  const lastV = visits[visits.length-1]||{};
+  const startV= visits[0]||{};
+  const h=(meta.height||165)/100;
+
+  const tbwl= startV.weight && lastV.weight
+    ? +(((startV.weight-lastV.weight)/startV.weight)*100).toFixed(1) : null;
+  const bmi = lastV.weight ? +(lastV.weight/h/h).toFixed(1) : null;
+
+  document.getElementById('foundGrid').innerHTML = [
+    {l:'Patient ID',v:`<strong style="font-family:monospace;color:var(--teal-dk)">${id}</strong>`},
+    {l:'Program Start',v:fmtDate(meta.programStart||startV.date)},
+    {l:'Total Visits',v:`<strong>${visits.length}</strong>`},
+    {l:'Start Weight',v:startV.weight?`<strong>${startV.weight} kg</strong>`:'—'},
+    {l:'Current Weight',v:lastV.weight?`<strong>${lastV.weight} kg</strong>`:'—'},
+    {l:'TBWL',v:tbwl!=null?`<strong style="color:var(--green)">-${tbwl}%</strong>`:'—'},
+    {l:'BMI (current)',v:bmi?`<strong>${bmi}</strong>`:'—'},
+    {l:'Medication',v:meta.drug||data.medTracker?.drug||'—'},
+    {l:'Last Visit',v:fmtDate(lastV.date)},
+  ].map(r=>`<div class="found-item">${r.l}<strong>${r.v}</strong></div>`).join('');
+
+  document.getElementById('foundCard').style.display='';
+  st('✓ '+id+' loaded');
+}
+
+function continuePatient(){
+  if(!currentId) return;
+  try{
+    if(window.parent!==window){
+      window.parent.postMessage({type:'panini-set-patient-id',id:currentId},'*');
+      window.parent.postMessage({type:'panini-navigate',module:'dashboard'},'*');
+    }
+  }catch(_){}
+  st('→ Continuing as '+currentId);
+}
+
+function startFollowupFlow(){
+  try{
+    if(window.parent!==window && typeof window.parent.enterFlowMode==='function'){
+      window.parent.enterFlowMode('followup');
+    } else { alert('Click "Follow-up Visit" flow from the home screen with '+currentId+' loaded.'); }
+  }catch(_){ alert('Load patient '+currentId+' then start Follow-up Visit flow.'); }
+}
+
+function openJourney(){
+  try{
+    if(window.parent!==window){
+      window.parent.postMessage({type:'panini-navigate',module:'weight-journey'},'*');
+    }
+  }catch(_){}
+}
+
+function loadDemo(){
+  document.getElementById('r_pid').value='WIN-DEMO01';
+  lookupPatient();
+}
+
+/* ═══════════════════════════════════
+   UTILS
+═══════════════════════════════════ */
+function st(msg){ document.getElementById('saveSt').textContent=msg; }
+function fmtDate(d){
+  if(!d) return '—';
+  const dt=new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  if(window.parent!==window) document.body.classList.add('in-iframe');
+  regenerateId();
+  document.getElementById('n_start').value=new Date().toISOString().split('T')[0];
+});
+</script>
+</body>
+</html>

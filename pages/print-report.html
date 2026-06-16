@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Panini — Fill & Print Report</title>
+<script src="../assets/js/panini-data.js"></script>
+<style>
+/* ─── Reset & vars ─────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --t:#0d9488;--td:#0f766e;--tl:#ccfbf1;
+  --g:#16a34a;--gl:#dcfce7;
+  --a:#d97706;--al:#fef3c7;
+  --b:#2563eb;--bl:#dbeafe;
+  --p:#7c3aed;--pl:#ede9fe;
+  --r:#e11d48;--rl:#ffe4e6;
+  --ink:#1f2937;--sl:#475569;--mu:#94a3b8;
+  --ln:#e2e8f0;--bg:#f1f5f9;--cd:#fff;
+  --sh:0 2px 12px rgba(15,23,42,.08)
+}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:13px;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+
+/* ─── Screen layout ─────────────────────────────────────────── */
+.app{display:flex;flex-direction:column;height:100vh}
+
+/* topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  padding:9px 16px;background:var(--td);color:#fff;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.topbar-brand{font-size:14px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tbtn{padding:6px 13px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;
+  font-family:inherit;transition:background .15s}
+.tbtn:hover{background:rgba(255,255,255,.25)}
+.tbtn.solid{background:#fff;color:var(--td);border-color:#fff}
+.tbtn.solid:hover{background:#e2e8f0}
+.tbtn.green{background:#16a34a;color:#fff;border-color:#16a34a}
+.tbtn.demo{background:rgba(251,191,36,.25);color:#fde68a;border-color:rgba(251,191,36,.4)}
+.pid-row{display:flex;align-items:center;gap:5px}
+.pid-row input{font-size:12px;font-weight:700;letter-spacing:.05em;padding:5px 9px;
+  border-radius:7px;border:1.5px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.12);color:#fff;width:140px;font-family:inherit}
+.pid-row input::placeholder{color:rgba(255,255,255,.45)}
+.pid-row input:focus{outline:none;border-color:#fff}
+.st{font-size:11px;opacity:.8}
+body.in-iframe .pid-row{display:none!important}
+
+/* main two-col */
+.main{display:flex;flex:1;overflow:hidden}
+
+/* ─── Left panel ────────────────────────────────────────────── */
+.left{width:340px;min-width:280px;background:var(--cd);overflow-y:auto;
+  border-right:1px solid var(--ln);flex-shrink:0;padding:14px 14px 60px}
+@media(max-width:700px){.left{width:100%;border-right:none;overflow-y:visible}}
+
+/* ─── Right panel ───────────────────────────────────────────── */
+.right{flex:1;overflow-y:auto;padding:16px 16px 60px;min-width:0}
+
+/* ─── Form elements ─────────────────────────────────────────── */
+.sec-hdr{font-size:10px;font-weight:700;color:var(--td);text-transform:uppercase;
+  letter-spacing:.06em;padding:6px 0 4px;border-bottom:2px solid var(--tl);
+  margin-bottom:10px;margin-top:16px;display:flex;align-items:center;gap:6px}
+.sec-hdr:first-of-type{margin-top:0}
+.fg{display:flex;flex-direction:column;gap:3px;margin-bottom:9px}
+.fg label{font-size:9.5px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.04em}
+.fg input,.fg select,.fg textarea{font-family:inherit;font-size:12.5px;padding:7px 9px;
+  border:1.5px solid var(--ln);border-radius:7px;background:#fff;color:var(--ink);
+  transition:border-color .15s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--t);
+  box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+.fg textarea{resize:vertical;min-height:52px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* ─── Visit table ───────────────────────────────────────────── */
+.vt-wrap{overflow-x:auto;margin-bottom:10px}
+.vt{width:100%;border-collapse:collapse;font-size:11px}
+.vt th{background:var(--td);color:#fff;font-size:9px;font-weight:700;text-transform:uppercase;
+  padding:5px 4px;white-space:nowrap;letter-spacing:.04em;text-align:left}
+.vt td{border:1px solid var(--ln);padding:2px 2px;vertical-align:middle}
+.vt tr:nth-child(even) td{background:#f8fafc}
+.vt input,.vt select{width:100%;font-size:11px;padding:4px 4px;border:none;background:transparent;
+  font-family:inherit;color:var(--ink)}
+.vt input:focus,.vt select:focus{outline:none;background:var(--tl)}
+.del-row{padding:3px 6px;border-radius:4px;font-size:10px;background:var(--rl);color:var(--r);
+  border:none;cursor:pointer;font-weight:700}
+.del-row:hover{background:var(--r);color:#fff}
+.add-row-btn{padding:7px 14px;border-radius:7px;background:var(--t);color:#fff;border:none;
+  font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px}
+.add-row-btn:hover{background:var(--td)}
+
+/* ─── Right panel cards ─────────────────────────────────────── */
+.card{background:var(--cd);border-radius:10px;padding:14px 16px;
+  box-shadow:var(--sh);margin-bottom:14px}
+.card-title{font-size:10px;font-weight:700;color:var(--td);text-transform:uppercase;
+  letter-spacing:.05em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+/* KPI strip */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.kpi{background:var(--cd);border-radius:8px;padding:10px 10px;box-shadow:var(--sh);
+  border-top:3px solid var(--t);text-align:center}
+.kpi.g{border-top-color:var(--g)}.kpi.b{border-top-color:var(--b)}
+.kpi.a{border-top-color:var(--a)}.kpi.p{border-top-color:var(--p)}
+.kv{font-size:18px;font-weight:800;color:var(--ink)}.kl{font-size:9px;color:var(--mu);margin-top:1px}
+
+/* Legend */
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:10.5px;color:var(--sl)}
+.leg{display:flex;align-items:center;gap:4px}
+.leg-c{width:10px;height:10px;border-radius:50%}
+.leg-l{width:18px;height:3px;border-radius:2px}
+.leg-d{width:18px;height:0;border-top:2.5px dashed}
+
+/* ─── Print mode ─────────────────────────────────────────────── */
+@media print{
+  @page{size:A4 portrait;margin:10mm 12mm 10mm 12mm}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  .app{display:block;height:auto}
+  .topbar{display:none!important}
+  .left{display:none!important}
+  .main{display:block}
+  .right{overflow:visible;padding:0;margin:0}
+  .no-print{display:none!important}
+  .card{box-shadow:none;border:1px solid var(--ln);page-break-inside:avoid;margin-bottom:10px}
+  .pg-break{page-break-before:always}
+  .kpi-row{grid-template-columns:repeat(5,1fr)}
+  .kv{font-size:16px}
+  .print-header{display:block!important}
+  #visitLogCard{page-break-before:always}
+  #coachingCard{page-break-before:always}
+}
+.print-header{display:none;margin-bottom:12px}
+.print-header h2{font-size:16px;font-weight:800;color:var(--td)}
+.print-header p{font-size:10px;color:var(--sl);margin-top:2px}
+
+/* ─── Visit log table (right panel) ─────────────────────────── */
+.vlog{width:100%;border-collapse:collapse;font-size:10.5px}
+.vlog th{background:var(--td);color:#fff;font-size:9px;font-weight:700;text-transform:uppercase;
+  padding:5px 6px;white-space:nowrap;letter-spacing:.04em}
+.vlog td{border:1px solid var(--ln);padding:5px 6px;vertical-align:top}
+.vlog tr:nth-child(even) td{background:#f8fafc}
+.tbwl-badge{display:inline-block;font-size:9px;font-weight:800;padding:1px 5px;
+  border-radius:3px;background:var(--gl);color:var(--g)}
+.tbwl-neg{background:var(--rl);color:var(--r)}
+.dose-tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;
+  border-radius:3px;background:var(--tl);color:var(--td)}
+.esc-tag{background:var(--gl);color:var(--g)}
+.nsv-line{color:var(--g);font-size:9.5px;font-weight:600}
+
+/* ─── Coaching card ──────────────────────────────────────────── */
+.coach-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media print{.coach-grid{grid-template-columns:1fr 1fr}}
+.coach-box{border-radius:8px;padding:12px 14px}
+.coach-box.wins{background:var(--gl);border:1px solid #86efac}
+.coach-box.focus{background:var(--bl);border:1px solid #bfdbfe}
+.coach-box h4{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  margin-bottom:8px}
+.coach-box.wins h4{color:var(--g)}
+.coach-box.focus h4{color:var(--b)}
+.win-item{font-size:10.5px;padding:2.5px 0;color:var(--sl)}
+.win-item.checked{color:var(--g);font-weight:600}
+.focus-item{display:flex;justify-content:space-between;
+  font-size:10.5px;padding:3px 0;border-bottom:1px solid rgba(37,99,235,.15);color:var(--sl)}
+.focus-item strong{color:var(--b);font-size:10px}
+.focus-item span{font-weight:700;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ── Topbar ─────────────────────────────────────────────── -->
+<div class="topbar">
+  <div class="topbar-brand">📋 Panini — Fill & Print Report</div>
+  <div class="topbar-right">
+    <div class="pid-row">
+      <input type="text" id="pidInput" placeholder="WIN-XXXXXX" maxlength="16" autocomplete="off" spellcheck="false">
+      <button class="tbtn solid" onclick="loadPatient()">Load</button>
+    </div>
+    <button class="tbtn demo" onclick="loadDemo()">👤 Demo</button>
+    <button class="tbtn" onclick="clearAll()">🗑 Clear</button>
+    <button class="tbtn green" onclick="window.print()">🖨 Print / PDF</button>
+    <span class="st" id="st"></span>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══════════════════════════════════════════════════════════
+     LEFT — DATA ENTRY PANEL
+══════════════════════════════════════════════════════════ -->
+<div class="left no-print">
+
+  <div class="sec-hdr">🏥 Patient Details</div>
+  <div class="fg"><label>Patient ID (WIN-)</label>
+    <input id="f_pid" placeholder="WIN-A4X291" oninput="sync('f_pid')"></div>
+  <div class="row2">
+    <div class="fg"><label>Height (cm)</label>
+      <input type="number" id="f_height" placeholder="165" min="100" max="220" oninput="render()"></div>
+    <div class="fg"><label>Target Weight (kg)</label>
+      <input type="number" id="f_target" placeholder="75" step="0.5" oninput="render()"></div>
+  </div>
+  <div class="row2">
+    <div class="fg"><label>Program Start Date</label>
+      <input type="date" id="f_start" oninput="render()"></div>
+    <div class="fg"><label>Sex</label>
+      <select id="f_sex" onchange="render()">
+        <option value="">—</option>
+        <option value="M">Male</option>
+        <option value="F">Female</option>
+      </select>
+    </div>
+  </div>
+  <div class="fg"><label>Medication</label>
+    <select id="f_med" onchange="render()">
+      <option value="">None / Diet + Exercise</option>
+      <option value="semaglutide">Semaglutide (Ozempic/Wegovy)</option>
+      <option value="tirzepatide">Tirzepatide (Mounjaro/Zepbound)</option>
+      <option value="liraglutide">Liraglutide (Saxenda)</option>
+      <option value="orlistat">Orlistat</option>
+      <option value="phentermine">Phentermine</option>
+      <option value="combo">Combination</option>
+    </select>
+  </div>
+  <div class="fg"><label>Comorbidities</label>
+    <input id="f_comorb" placeholder="T2DM, HTN, NAFLD, OSA…" oninput="render()"></div>
+  <div class="fg"><label>Physician / Clinic</label>
+    <input id="f_phys" placeholder="Dr. ___ · Clinic Code" oninput="render()"></div>
+
+  <div class="sec-hdr">📌 Visit Data — one row per visit</div>
+  <div style="font-size:10px;color:var(--mu);margin-bottom:8px">
+    Enter date + weight at minimum. All other fields optional. Chart updates live.
+  </div>
+  <div class="vt-wrap">
+    <table class="vt" id="visitInputTable">
+      <thead><tr>
+        <th>Date</th><th>Wt kg</th><th>Waist</th><th>BP</th>
+        <th>Dose</th><th>NSV / Key Win</th><th></th>
+      </tr></thead>
+      <tbody id="visitInputBody"></tbody>
+    </table>
+  </div>
+  <button class="add-row-btn" onclick="addRow()">+ Add Visit</button>
+
+  <div class="sec-hdr">🎯 Coaching Card — Latest Visit</div>
+  <div class="fg"><label>Wins this visit (comma-separated)</label>
+    <textarea id="f_wins" placeholder="BP medication reduced, Clothes fitting better, 10,000 steps achieved…" oninput="render()"></textarea></div>
+  <div class="fg"><label>Next visit focus goals</label>
+    <textarea id="f_focus" placeholder="Protein 100g/day, Water 2.5L/day, Walk 10,000 steps, Resistance training 2×/week…" oninput="render()"></textarea></div>
+  <div class="row2">
+    <div class="fg"><label>Next Appointment</label>
+      <input type="date" id="f_next" oninput="render()"></div>
+    <div class="fg"><label>Next Dose Plan</label>
+      <input id="f_ndose" placeholder="e.g. 1.0mg/wk" oninput="render()"></div>
+  </div>
+  <div class="fg"><label>Physician Note</label>
+    <textarea id="f_note" placeholder="Clinical observations for this visit…" oninput="render()"></textarea></div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     RIGHT — LIVE PREVIEW + PRINT OUTPUT
+══════════════════════════════════════════════════════════ -->
+<div class="right" id="rightPanel">
+
+  <!-- Print header (hidden on screen) -->
+  <div class="print-header">
+    <h2>⚖ Panini Weight Management — Clinical Visit Report</h2>
+    <p id="printMeta"></p>
+  </div>
+
+  <!-- KPI row -->
+  <div class="kpi-row" id="kpiRow">
+    <div class="kpi">   <div class="kv" id="k0">—</div><div class="kl">Start Wt (kg)</div></div>
+    <div class="kpi g"> <div class="kv" id="k1">—</div><div class="kl">Current Wt (kg)</div></div>
+    <div class="kpi g"> <div class="kv" id="k2">—</div><div class="kl">Lost (kg)</div></div>
+    <div class="kpi b"> <div class="kv" id="k3">—</div><div class="kl">TBWL %</div></div>
+    <div class="kpi a"> <div class="kv" id="k4">—</div><div class="kl">BMI (current)</div></div>
+  </div>
+
+  <!-- Chart card -->
+  <div class="card">
+    <div class="card-title">📉 Weight Journey — Every Visit Plotted</div>
+    <div id="chartWrap" style="overflow-x:auto">
+      <svg id="chart" viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg"
+           style="display:block;min-width:480px;width:100%"></svg>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-c" style="background:#0d9488"></div>Actual weight</div>
+      <div class="leg"><div class="leg-d" style="border-color:#2563eb"></div>Projection (12 mo)</div>
+      <div class="leg"><div class="leg-l" style="background:#16a34a;opacity:.4;height:10px"></div>Healthy BMI</div>
+      <div class="leg"><div class="leg-l" style="background:#d97706;opacity:.4;height:10px"></div>Overweight</div>
+      <div class="leg"><div class="leg-l" style="background:#e11d48;opacity:.3;height:10px"></div>Obese</div>
+    </div>
+  </div>
+
+  <!-- Visit log (page 2 in print) -->
+  <div class="card" id="visitLogCard" style="display:none">
+    <div class="card-title">📋 Visit Progress Log</div>
+    <div style="overflow-x:auto">
+      <table class="vlog" id="visitLogTable">
+        <thead><tr>
+          <th>#</th><th>Date</th><th>Mo</th><th>Weight (kg)</th>
+          <th>TBWL %</th><th>Waist (cm)</th><th>BP</th>
+          <th>Dose / Medication</th><th>NSV / Key Win</th>
+        </tr></thead>
+        <tbody id="visitLogBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Coaching card (page 3 in print) -->
+  <div class="card" id="coachingCard" style="display:none">
+    <div class="card-title">🃏 Patient Coaching Card — Latest Visit</div>
+
+    <!-- Stats row -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px" id="coachStats"></div>
+
+    <div class="coach-grid">
+      <div class="coach-box wins">
+        <h4>⭐ My Wins This Visit</h4>
+        <div id="winsList"></div>
+      </div>
+      <div class="coach-box focus">
+        <h4>🎯 My Focus for Next Visit</h4>
+        <div id="focusList"></div>
+      </div>
+    </div>
+
+    <!-- Medication / next appointment strip -->
+    <div style="margin-top:12px;background:var(--al);border:1px solid #fcd34d;
+                border-radius:8px;padding:10px 14px;display:grid;
+                grid-template-columns:1fr 1fr 1fr;gap:10px" id="coachMed">
+    </div>
+
+    <!-- Note -->
+    <div id="coachNote" style="margin-top:10px;background:var(--bg);border-radius:7px;
+         padding:9px 12px;font-size:11.5px;color:var(--sl);display:none"></div>
+
+    <!-- Signature strip -->
+    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;
+                border-top:1px solid var(--ln);padding-top:10px">
+      <div>
+        <div style="height:16px;border-bottom:1.5px solid var(--sl);margin-bottom:3px"></div>
+        <div style="font-size:9px;color:var(--mu)">Patient Signature</div>
+      </div>
+      <div>
+        <div style="height:16px;border-bottom:1.5px solid var(--sl);margin-bottom:3px"></div>
+        <div style="font-size:9px;color:var(--mu)">Physician / Dietician</div>
+      </div>
+      <div>
+        <div style="height:16px;border-bottom:1.5px solid var(--sl);margin-bottom:3px"></div>
+        <div style="font-size:9px;color:var(--mu)">Date</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /right -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+/* ═══════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════ */
+let rowId = 0;
+
+function g(id){ return document.getElementById(id); }
+function gv(id){ return (g(id)?.value||'').trim(); }
+function fmtD(d){
+  if(!d) return '—';
+  try{ const dt=new Date(d+'T00:00:00');
+    return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}); }
+  catch{ return d; }
+}
+function mos(start,d){
+  if(!start||!d) return '—';
+  const ms = new Date(d+'T00:00:00') - new Date(start+'T00:00:00');
+  return Math.round(ms/2629800000);
+}
+function st(msg){ g('st').textContent=msg; }
+
+/* ═══════════════════════════════════════════════════
+   VISIT ROWS
+═══════════════════════════════════════════════════ */
+function addRow(data={}){
+  const id = ++rowId;
+  const tr = document.createElement('tr');
+  tr.id = 'vrow-'+id;
+  tr.innerHTML = `
+    <td><input type="date" class="vdate" value="${data.date||''}" oninput="render()"></td>
+    <td><input type="number" class="vwt" placeholder="kg" step="0.1"
+         value="${data.weight||''}" style="width:52px" oninput="render()"></td>
+    <td><input class="vwaist" placeholder="cm" value="${data.waist||''}" style="width:42px" oninput="render()"></td>
+    <td><input class="vbp" placeholder="SBP/DBP" value="${data.bp||''}" style="width:60px" oninput="render()"></td>
+    <td><input class="vdose" placeholder="dose" value="${data.dose||''}" style="width:68px" oninput="render()"></td>
+    <td><input class="vnsv" placeholder="NSV / win" value="${data.nsv||''}" oninput="render()"></td>
+    <td><button class="del-row" onclick="delRow(${id})">✕</button></td>`;
+  g('visitInputBody').appendChild(tr);
+  render();
+}
+
+function delRow(id){
+  const el = g('vrow-'+id); if(el) el.remove(); render();
+}
+
+function getRows(){
+  return [...g('visitInputBody').querySelectorAll('tr')].map(tr=>({
+    date:  tr.querySelector('.vdate')?.value||'',
+    weight:parseFloat(tr.querySelector('.vwt')?.value)||null,
+    waist: tr.querySelector('.vwaist')?.value||'',
+    bp:    tr.querySelector('.vbp')?.value||'',
+    dose:  tr.querySelector('.vdose')?.value||'',
+    nsv:   tr.querySelector('.vnsv')?.value||'',
+  })).filter(r=>r.date||r.weight);
+}
+
+/* ═══════════════════════════════════════════════════
+   RENDER — called on every input change
+═══════════════════════════════════════════════════ */
+function render(){
+  const rows  = getRows().filter(r=>r.weight).sort((a,b)=>a.date.localeCompare(b.date));
+  const h     = parseFloat(gv('f_height'))||165;
+  const tgt   = parseFloat(gv('f_target'))||null;
+  const start = gv('f_start')||( rows[0]?.date||'' );
+  const med   = gv('f_med');
+
+  updateKPIs(rows, h, tgt);
+  drawChart(rows, h, tgt, start, med);
+  renderVisitLog(rows, start);
+  renderCoachCard(rows, h, tgt, start);
+  updatePrintMeta(rows, h, tgt, start);
+}
+
+/* ─── KPIs ─── */
+function updateKPIs(rows, h, tgt){
+  if(!rows.length){ ['k0','k1','k2','k3','k4'].forEach(k=>g(k).textContent='—'); return; }
+  const sw=rows[0].weight, cw=rows[rows.length-1].weight;
+  const lost=+(sw-cw).toFixed(1), tbwl=+((sw-cw)/sw*100).toFixed(1);
+  const bmi=+(cw/((h/100)**2)).toFixed(1);
+  g('k0').textContent=sw; g('k1').textContent=cw;
+  g('k2').textContent=lost>=0?('-'+lost):'+'+Math.abs(lost);
+  g('k3').textContent=tbwl+'%'; g('k4').textContent=bmi;
+}
+
+/* ─── SVG Chart ─── */
+function drawChart(rows, h, tgt, start, med){
+  const svg = g('chart'); if(!svg) return;
+  if(!rows.length){ svg.innerHTML='<text x="360" y="150" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="sans-serif">Enter visit data to see graph →</text>'; return; }
+
+  const W=720, H=300, PL=48, PR=20, PT=28, PB=42;
+  const cW=W-PL-PR, cH=H-PT-PB;
+
+  // Date range
+  const dates = rows.map(r=>new Date(r.date+'T00:00:00'));
+  const minD  = dates[0];
+  const lastD = dates[dates.length-1];
+  const projD = new Date(lastD); projD.setMonth(projD.getMonth()+14);
+  const maxD  = projD;
+  const spanMs= maxD-minD || 1;
+
+  const xN = d  => PL + ((d-minD)/spanMs)*cW;
+  const xS = ds => xN(new Date(ds+'T00:00:00'));
+
+  // Weight range
+  const wts  = rows.map(r=>r.weight);
+  const minW = Math.max(0,Math.min(...wts,(tgt||999))-6);
+  const maxW = Math.max(...wts)+8;
+  const yS   = w => PT + (1-(w-minW)/(maxW-minW))*cH;
+
+  // Projection
+  const lastWt = rows[rows.length-1].weight;
+  const rateMap = {semaglutide:.12,tirzepatide:.18,liraglutide:.08,orlistat:.06,phentermine:.08,combo:.14};
+  const annualRate = rateMap[med]||.06;
+  const projPts = [];
+  for(let m=0;m<=12;m+=2){
+    const pd=new Date(lastD); pd.setMonth(pd.getMonth()+m);
+    if(pd>maxD) break;
+    projPts.push({d:pd, w:Math.max((tgt||50), lastWt*(1-annualRate*m/12))});
+  }
+
+  let s='';
+
+  // BMI zones
+  const hm=h/100;
+  const zones=[
+    {lo:18.5,hi:25,  c:'#16a34a',a:.12},
+    {lo:25,  hi:30,  c:'#d97706',a:.12},
+    {lo:30,  hi:35,  c:'#f97316',a:.09},
+    {lo:35,  hi:45,  c:'#e11d48',a:.08},
+  ];
+  zones.forEach(z=>{
+    const w1=Math.max(minW,z.lo*hm*hm), w2=Math.min(maxW,z.hi*hm*hm);
+    if(w1>=maxW||w2<=minW) return;
+    const y1=yS(w2),y2=yS(w1);
+    s+=`<rect x="${PL}" y="${y1.toFixed(1)}" width="${cW}" height="${(y2-y1).toFixed(1)}" fill="${z.c}" opacity="${z.a}"/>`;
+  });
+
+  // Grid Y
+  const step = (maxW-minW)>60?10:(maxW-minW)>30?5:2;
+  for(let w=Math.ceil(minW/step)*step; w<=maxW; w+=step){
+    const y=yS(w);
+    s+=`<line x1="${PL}" y1="${y.toFixed(1)}" x2="${PL+cW}" y2="${y.toFixed(1)}" stroke="#e2e8f0" stroke-width=".6"/>`;
+    s+=`<text x="${PL-3}" y="${y.toFixed(1)}" fill="#94a3b8" font-size="9" text-anchor="end" dominant-baseline="middle" font-family="sans-serif">${w}</text>`;
+  }
+
+  // Grid X — date ticks
+  const addDateTick = (d, lbl) => {
+    const x = xN(d);
+    s+=`<line x1="${x.toFixed(1)}" y1="${PT}" x2="${x.toFixed(1)}" y2="${(PT+cH).toFixed(1)}" stroke="#e2e8f0" stroke-width=".6"/>`;
+    s+=`<text x="${x.toFixed(1)}" y="${(PT+cH+12).toFixed(0)}" fill="#94a3b8" font-size="8.5" text-anchor="middle" font-family="sans-serif">${lbl}</text>`;
+  };
+  // Try to add year/quarter ticks
+  const yStart = dates[0].getFullYear(), yEnd = maxD.getFullYear();
+  for(let y=yStart;y<=yEnd+1;y++){
+    for(let q=0;q<4;q++){
+      const td=new Date(y,q*3,1);
+      if(td>=minD&&td<=maxD){
+        const lbl=q===0?y.toString():['Q1','Q2','Q3','Q4'][q];
+        addDateTick(td,lbl);
+      }
+    }
+  }
+
+  // Axes labels
+  s+=`<text x="${(PL+cW/2)}" y="${H-3}" fill="#475569" font-size="10" text-anchor="middle" font-weight="600" font-family="sans-serif">Visit Date</text>`;
+  s+=`<text x="11" y="${(PT+cH/2)}" fill="#475569" font-size="10" text-anchor="middle" font-weight="600" font-family="sans-serif" transform="rotate(-90 11 ${(PT+cH/2).toFixed(0)})">Weight (kg)</text>`;
+
+  // Target line
+  if(tgt&&tgt>minW&&tgt<maxW){
+    const yT=yS(tgt);
+    s+=`<line x1="${PL}" y1="${yT.toFixed(1)}" x2="${PL+cW}" y2="${yT.toFixed(1)}" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="8,4" opacity=".7"/>`;
+    s+=`<text x="${PL+3}" y="${(yT-3).toFixed(1)}" fill="#16a34a" font-size="9" font-weight="700" font-family="sans-serif">Target ${tgt}kg</text>`;
+  }
+
+  // Projection
+  if(projPts.length>1){
+    const pline=projPts.map(p=>`${xN(p.d).toFixed(1)},${yS(p.w).toFixed(1)}`).join(' ');
+    const baseY=yS(minW);
+    const area=pline+` ${xN(projPts[projPts.length-1].d).toFixed(1)},${baseY.toFixed(1)} ${xN(projPts[0].d).toFixed(1)},${baseY.toFixed(1)}`;
+    s+=`<polygon points="${area}" fill="#2563eb" opacity=".05"/>`;
+    s+=`<polyline points="${pline}" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="7,5" stroke-linejoin="round" stroke-linecap="round" opacity=".75"/>`;
+    const ep=projPts[projPts.length-1];
+    s+=`<circle cx="${xN(ep.d).toFixed(1)}" cy="${yS(ep.w).toFixed(1)}" r="4" fill="#2563eb" stroke="#fff" stroke-width="1.5"/>`;
+    s+=`<text x="${(xN(ep.d)+5).toFixed(0)}" y="${(yS(ep.w)-4).toFixed(1)}" fill="#2563eb" font-size="8.5" font-weight="700" font-family="sans-serif">${ep.w.toFixed(1)}kg (proj)</text>`;
+  }
+
+  // Actual line + shaded area
+  if(rows.length>1){
+    const pts=rows.map(r=>`${xS(r.date).toFixed(1)},${yS(r.weight).toFixed(1)}`).join(' ');
+    const baseY=yS(minW);
+    const area=pts+` ${xS(rows[rows.length-1].date).toFixed(1)},${baseY.toFixed(1)} ${xS(rows[0].date).toFixed(1)},${baseY.toFixed(1)}`;
+    s+=`<polygon points="${area}" fill="#0d9488" opacity=".07"/>`;
+    s+=`<polyline points="${pts}" fill="none" stroke="#0d9488" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+
+  // Dots + labels
+  const startWt = rows[0].weight;
+  rows.forEach((r,i)=>{
+    const cx=xS(r.date), cy=yS(r.weight);
+    const isNSV=!!r.nsv;
+    const col=isNSV?'#7c3aed':'#0d9488';
+    const rr=isNSV?6:4.5;
+    s+=`<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rr}" fill="${col}" stroke="#fff" stroke-width="1.8"/>`;
+    const above=i%2===0;
+    const ty=above?cy-10:cy+16;
+    s+=`<text x="${cx.toFixed(1)}" y="${ty.toFixed(1)}" fill="${col}" font-size="8.5" font-weight="700" text-anchor="middle" font-family="sans-serif">${r.weight}</text>`;
+    if(isNSV&&r.nsv){
+      const lbl=r.nsv.length>20?r.nsv.slice(0,19)+'…':r.nsv;
+      s+=`<text x="${cx.toFixed(1)}" y="${(ty+(above?-10:10)).toFixed(1)}" fill="#7c3aed" font-size="7" text-anchor="middle" font-style="italic" font-family="sans-serif">${lbl}</text>`;
+    }
+  });
+
+  // TBWL annotation
+  if(rows.length>1){
+    const sw=rows[0].weight,cw=rows[rows.length-1].weight;
+    const tb=+((sw-cw)/sw*100).toFixed(1);
+    s+=`<text x="${PL+cW-3}" y="${PT+12}" fill="#0f766e" font-size="10" font-weight="800" text-anchor="end" font-family="sans-serif">−${tb}% TBWL across ${rows.length} visits</text>`;
+  }
+
+  // Title
+  const pid = gv('f_pid')||gv('pidInput');
+  s+=`<text x="${(PL+cW/2)}" y="16" fill="#0f766e" font-size="11" font-weight="800" text-anchor="middle" font-family="sans-serif">Weight Journey${pid?' — '+pid:''}</text>`;
+
+  svg.innerHTML = s;
+}
+
+/* ─── Visit Log ─── */
+function renderVisitLog(rows, start){
+  const el=g('visitLogCard'), tbody=g('visitLogBody');
+  if(!tbody) return;
+  if(!rows.length){ el.style.display='none'; return; }
+  el.style.display='';
+  const sw=rows[0].weight;
+  tbody.innerHTML = rows.map((r,i)=>{
+    const tbwl=i===0?null:+((sw-r.weight)/sw*100).toFixed(1);
+    const tbwlHtml=i===0
+      ?'<span style="font-size:9px;color:var(--mu)">Baseline</span>'
+      :`<span class="tbwl-badge${tbwl<0?' tbwl-neg':''}">${tbwl>=0?'-'+tbwl:'+'+Math.abs(tbwl)}%</span>`;
+    const mo=i===0?'0':mos(start||rows[0].date, r.date);
+    const doseHtml=r.dose?`<span class="dose-tag">${r.dose}</span>`:'—';
+    const nsvHtml=r.nsv?`<span class="nsv-line">★ ${r.nsv}</span>`:'—';
+    return `<tr>
+      <td style="font-weight:700;color:var(--td)">${i+1}</td>
+      <td style="white-space:nowrap;font-weight:600">${fmtD(r.date)}</td>
+      <td style="text-align:center;color:var(--mu)">${mo}</td>
+      <td style="font-weight:700;font-size:12.5px">${r.weight}</td>
+      <td>${tbwlHtml}</td>
+      <td>${r.waist||'—'}</td>
+      <td style="white-space:nowrap">${r.bp||'—'}</td>
+      <td>${doseHtml}</td>
+      <td>${nsvHtml}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ─── Coaching card ─── */
+function renderCoachCard(rows, h, tgt, start){
+  const el=g('coachingCard'); if(!rows.length){ el.style.display='none'; return; }
+  el.style.display='';
+
+  const last=rows[rows.length-1];
+  const sw=rows[0].weight, cw=last.weight;
+  const lost=+(sw-cw).toFixed(1), tbwl=+((sw-cw)/sw*100).toFixed(1);
+  const bmi=+(cw/((h/100)**2)).toFixed(1);
+  const mo=mos(start||rows[0].date, last.date);
+
+  // Stats
+  const stats=[
+    {l:'Visit',v:`#${rows.length}  ·  ${fmtD(last.date)}`},
+    {l:'Start Weight',v:`${sw} kg`},
+    {l:'Today',v:`${cw} kg`},
+    {l:'Total Lost',v:`${lost>=0?'-'+lost:'+'+Math.abs(lost)} kg`},
+    {l:'TBWL',v:`${tbwl}%`},
+    {l:'BMI Now',v:bmi},
+    {l:'Programme Month',v:mo},
+  ];
+  g('coachStats').innerHTML=stats.map(s=>`
+    <div style="background:var(--tl);border-radius:7px;padding:7px 12px;text-align:center;min-width:70px">
+      <div style="font-size:9.5px;color:var(--td);font-weight:700;text-transform:uppercase">${s.l}</div>
+      <div style="font-size:13px;font-weight:800;color:var(--ink);margin-top:2px">${s.v}</div>
+    </div>`).join('');
+
+  // Wins
+  const wins=(gv('f_wins')||last.nsv||'').split(',').map(w=>w.trim()).filter(Boolean);
+  g('winsList').innerHTML=wins.length
+    ?wins.map(w=>`<div class="win-item checked">⭐ ${w}</div>`).join('')
+    :'<div class="win-item" style="color:var(--mu);font-style:italic">Enter wins in the left panel…</div>';
+
+  // Focus
+  const focus=gv('f_focus').split(',').map(f=>f.trim()).filter(Boolean);
+  const focusDefault=[{k:'Protein',v:'______ g/day'},{k:'Water',v:'______ L/day'},
+    {k:'Steps',v:'______ /day'},{k:'Exercise',v:'___ days/week'}];
+  if(focus.length){
+    g('focusList').innerHTML=focus.map(f=>`<div class="focus-item"><span>${f}</span></div>`).join('');
+  } else {
+    g('focusList').innerHTML=focusDefault.map(f=>`<div class="focus-item"><strong>${f.k}:</strong><span>${f.v}</span></div>`).join('');
+  }
+
+  // Med strip
+  const nd=gv('f_next'), ndose=gv('f_ndose'), phys=gv('f_phys');
+  g('coachMed').innerHTML=`
+    <div><div style="font-size:9px;font-weight:700;color:var(--a);text-transform:uppercase;margin-bottom:3px">Current Medication</div>
+    <div style="font-size:12px;font-weight:700">${last.dose||gv('f_med')||'—'}</div></div>
+    <div><div style="font-size:9px;font-weight:700;color:var(--a);text-transform:uppercase;margin-bottom:3px">Next Dose / Change</div>
+    <div style="font-size:12px;font-weight:700">${ndose||'No change planned'}</div></div>
+    <div><div style="font-size:9px;font-weight:700;color:var(--a);text-transform:uppercase;margin-bottom:3px">Next Appointment</div>
+    <div style="font-size:12px;font-weight:700">${fmtD(nd)||'To be scheduled'}</div></div>`;
+
+  // Note
+  const note=gv('f_note');
+  if(note){ g('coachNote').textContent='📝 '+note; g('coachNote').style.display=''; }
+  else g('coachNote').style.display='none';
+}
+
+/* ─── Print meta ─── */
+function updatePrintMeta(rows, h, tgt, start){
+  if(!rows.length){ g('printMeta').textContent=''; return; }
+  const sw=rows[0].weight, cw=rows[rows.length-1].weight;
+  const lo=+(sw-cw).toFixed(1), tb=+((sw-cw)/sw*100).toFixed(1);
+  const pid=gv('f_pid')||gv('pidInput');
+  const phys=gv('f_phys');
+  g('printMeta').textContent=
+    `Patient: ${pid||'—'} · Program start: ${fmtD(start)} · Visits: ${rows.length}`
+    +` · Start: ${sw}kg → Current: ${cw}kg · Lost: ${lo}kg (${tb}% TBWL)`
+    +` · Height: ${h}cm${tgt?` · Target: ${tgt}kg`:''}${phys?' · '+phys:''}`
+    +` · Report: ${new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`;
+}
+
+/* ═══════════════════════════════════════════════════
+   LOAD / SAVE
+═══════════════════════════════════════════════════ */
+function sync(id){
+  if(id==='f_pid') g('pidInput').value=gv('f_pid');
+  render();
+}
+
+function loadById(id){
+  const n=PaniniData.normId(id);
+  if(!PaniniData.validId(n)) return;
+  PaniniData.setActiveId(n);
+  g('pidInput').value=n; g('f_pid').value=n;
+
+  if(n==='WIN-DEMO01'){ loadDemo(); return; }
+
+  const data=PaniniData.load(n);
+  if(!data){ st('No data for '+n); return; }
+
+  // Populate meta
+  const meta=data.meta||{};
+  if(meta.height)        g('f_height').value=meta.height;
+  if(meta.targetWeight)  g('f_target').value=meta.targetWeight;
+  if(meta.programStart)  g('f_start').value=meta.programStart;
+  if(meta.drug)          g('f_med').value=meta.drug;
+
+  // Load visits
+  g('visitInputBody').innerHTML=''; rowId=0;
+  const visits=data.dashVisits||[];
+  // Merge notes from medTracker
+  const mt=(data.medTracker?.visits||[]);
+  visits.forEach(v=>{
+    const mv=mt.find(m=>m.date===v.date);
+    addRow({
+      date:v.date, weight:v.weight, waist:v.waist||'', bp:v.bp||'',
+      dose:v.dose||'', nsv:(v.nsv||[]).join(', ')||(mv?.notes||'')
+    });
+  });
+  render(); st('✓ Loaded '+n);
+}
+
+function loadPatient(){
+  const id=gv('pidInput'); if(!id){ return; }
+  loadById(id);
+}
+
+/* ─── Demo data ─── */
+const DEMO=[
+  {date:'2023-01-15',weight:102,  waist:'108',bp:'148/92',dose:'Sema 0.25mg/wk',nsv:''},
+  {date:'2023-03-15',weight:99.5, waist:'106',bp:'146/90',dose:'Sema 0.5mg/wk', nsv:'Nausea resolving'},
+  {date:'2023-05-15',weight:97,   waist:'104',bp:'142/88',dose:'Sema 1.0mg/wk', nsv:'5kg lost in 4 months'},
+  {date:'2023-07-15',weight:94.2, waist:'102',bp:'140/86',dose:'Sema 1.0mg/wk', nsv:'Amlodipine reduced'},
+  {date:'2023-09-15',weight:91.5, waist:'100',bp:'136/84',dose:'Sema 1.7mg/wk', nsv:'10% TBWL milestone'},
+  {date:'2023-11-15',weight:89.2, waist:'98', bp:'134/82',dose:'Sema 1.7mg/wk', nsv:'Knee pain improving'},
+  {date:'2024-01-15',weight:87.8, waist:'97', bp:'132/82',dose:'Sema 2.4mg/wk', nsv:'HbA1c below 7%, Amlodipine stopped'},
+  {date:'2024-07-15',weight:85.2, waist:'95', bp:'128/80',dose:'Sema 2.4mg/wk', nsv:'NAFLD regression on ultrasound'},
+  {date:'2025-01-15',weight:84.2, waist:'93.8',bp:'126/78',dose:'Sema 2.4mg/wk',nsv:'CPAP discontinued — sleep apnea resolved'},
+  {date:'2025-07-15',weight:83.8, waist:'93.5',bp:'124/76',dose:'Sema 2.4mg/wk',nsv:'ALT normalised — NAFLD in remission'},
+  {date:'2026-01-15',weight:83,   waist:'92.8',bp:'122/76',dose:'Sema 2.4mg/wk',nsv:'T2DM in clinical remission — off all BP meds'},
+];
+
+function loadDemo(){
+  g('f_pid').value='WIN-DEMO01'; g('pidInput').value='WIN-DEMO01';
+  g('f_height').value=165; g('f_target').value=75;
+  g('f_start').value='2023-01-15'; g('f_med').value='semaglutide';
+  g('f_comorb').value='Type 2 Diabetes, Hypertension, NAFLD, Sleep Apnea (OSA)';
+  g('f_phys').value='Dr. A.J. Shukla · Panini Clinic';
+  g('f_wins').value='HbA1c below 7%, All BP medications stopped, Lost 19kg, CPAP discontinued, NAFLD in remission';
+  g('f_focus').value='Maintain 10,000 steps/day, Protein 100g/day, Continue Semaglutide 2.4mg, Annual review labs';
+  g('f_next').value='2026-07-15';
+  g('f_ndose').value='Continue Sema 2.4mg/wk';
+  g('f_note').value='Year 3 review: 18.6% TBWL. T2DM in clinical remission. All antihypertensives stopped. NAFLD resolved. Hepatologist discharged.';
+  g('visitInputBody').innerHTML=''; rowId=0;
+  DEMO.forEach(d=>addRow(d));
+  render(); st('✓ Demo WIN-DEMO01 loaded');
+}
+
+function clearAll(){
+  ['f_pid','f_height','f_target','f_start','f_comorb','f_phys',
+   'f_wins','f_focus','f_note','f_ndose'].forEach(id=>{ if(g(id)) g(id).value=''; });
+  g('f_med').value=''; g('f_sex').value=''; g('f_next').value='';
+  g('visitInputBody').innerHTML=''; rowId=0;
+  g('pidInput').value=''; render(); st('Cleared');
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  if(window.parent!==window) document.body.classList.add('in-iframe');
+  PaniniData.initFrameSync(loadById);
+  const saved=PaniniData.getActiveId();
+  if(saved&&PaniniData.validId(saved)){ loadById(saved); return; }
+  // Start with 3 blank rows
+  addRow(); addRow(); addRow();
+  render();
+});
+</script>
+</body>
+</html>
