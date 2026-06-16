@@ -3,316 +3,308 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Weight Journey Map — Panini</title>
+<title>Weight Journey Report — Panini</title>
 <script src="../assets/js/panini-data.js"></script>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --teal:#0d9488; --teal-dark:#0f766e; --teal-light:#ccfbf1;
-  --green:#16a34a; --green-light:#dcfce7;
-  --amber:#d97706; --amber-light:#fef3c7;
-  --rose:#e11d48;  --rose-light:#ffe4e6;
-  --blue:#2563eb;  --blue-light:#dbeafe;
-  --purple:#7c3aed;
-  --ink:#1f2937; --slate:#475569; --muted:#94a3b8;
-  --line:#e2e8f0; --bg:#f1f5f9; --card:#fff;
-  --radius:12px; --shadow:0 4px 24px rgba(15,23,42,.08);
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --teal:#0d9488;--teal-dk:#0f766e;--teal-lt:#ccfbf1;
+  --green:#16a34a;--green-lt:#dcfce7;
+  --amber:#d97706;--amber-lt:#fef3c7;
+  --rose:#e11d48;--rose-lt:#ffe4e6;
+  --blue:#2563eb;--blue-lt:#dbeafe;
+  --purple:#7c3aed;--purple-lt:#ede9fe;
+  --ink:#1f2937;--slate:#475569;--muted:#94a3b8;
+  --line:#e2e8f0;--bg:#f1f5f9;--card:#fff;
+  --r:12px;--sh:0 4px 20px rgba(15,23,42,.08)
 }
-html { scroll-behavior:smooth; }
-body {
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  background:var(--bg); color:var(--ink);
-  font-size:13.5px; line-height:1.5;
-  -webkit-font-smoothing:antialiased;
-}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg);color:var(--ink);font-size:13px;line-height:1.5;
+  -webkit-font-smoothing:antialiased}
 
 /* ── Toolbar ── */
-.toolbar {
-  position:sticky; top:0; z-index:50;
-  display:flex; align-items:center; justify-content:space-between;
-  flex-wrap:wrap; gap:8px; padding:10px 18px;
-  background:var(--teal-dark); color:#fff;
-  box-shadow:0 2px 8px rgba(0,0,0,.18);
-}
-.toolbar-brand { font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; }
-.toolbar-right  { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-.pid-row { display:flex; align-items:center; gap:6px; }
-.pid-row input {
-  font-size:13px; font-weight:600; letter-spacing:.04em;
-  padding:6px 10px; border-radius:8px;
-  border:1.5px solid rgba(255,255,255,.4); background:rgba(255,255,255,.12);
-  color:#fff; width:150px; font-family:inherit;
-}
-.pid-row input::placeholder { color:rgba(255,255,255,.5); }
-.pid-row input:focus { outline:none; border-color:#fff; }
-.btn {
-  padding:6px 14px; border-radius:8px; font-size:12.5px; font-weight:600;
-  cursor:pointer; border:1.5px solid rgba(255,255,255,.4);
-  background:rgba(255,255,255,.12); color:#fff; transition:background .15s;
-}
-.btn:hover { background:rgba(255,255,255,.26); }
-.btn.solid { background:#fff; color:var(--teal-dark); border-color:#fff; }
-.btn.solid:hover { background:#e2e8f0; }
-.save-status { font-size:11.5px; opacity:.85; }
-
-/* ── Body iframe mode ── */
-body.in-iframe .pid-row { display:none!important; }
-body.in-iframe .toolbar { padding:6px 14px; }
-.patient-badge-inline {
-  font-size:11.5px; font-weight:700; padding:3px 10px;
-  border-radius:6px; background:rgba(255,255,255,.2);
-  color:#fff; letter-spacing:.04em;
-}
+.bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;
+  justify-content:space-between;flex-wrap:wrap;gap:8px;
+  padding:9px 16px;background:var(--teal-dk);color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.bar-brand{font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px}
+.bar-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.pid-row{display:flex;align-items:center;gap:5px}
+.pid-row input{font-size:12.5px;font-weight:700;letter-spacing:.05em;padding:5px 9px;
+  border-radius:7px;border:1.5px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.12);color:#fff;width:145px;font-family:inherit}
+.pid-row input::placeholder{color:rgba(255,255,255,.45)}
+.pid-row input:focus{outline:none;border-color:#fff}
+.btn{padding:6px 13px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);
+  color:#fff;transition:background .15s;font-family:inherit}
+.btn:hover{background:rgba(255,255,255,.25)}
+.btn.solid{background:#fff;color:var(--teal-dk);border-color:#fff}
+.btn.solid:hover{background:#e2e8f0}
+.btn.demo{background:rgba(251,191,36,.25);border-color:rgba(251,191,36,.5);color:#fde68a}
+.btn.demo:hover{background:rgba(251,191,36,.4)}
+.save-st{font-size:11px;opacity:.8}
+body.in-iframe .pid-row{display:none!important}
+body.in-iframe .bar{padding:6px 14px}
+.pt-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px;
+  background:rgba(255,255,255,.2);color:#fff;letter-spacing:.04em}
 
 /* ── Layout ── */
-.wrap { max-width:1100px; margin:0 auto; padding:20px 16px 60px; }
-.two-col { display:grid; grid-template-columns:340px 1fr; gap:20px; }
-@media(max-width:780px){ .two-col { grid-template-columns:1fr; } }
+.wrap{max-width:1080px;margin:0 auto;padding:18px 14px 60px}
+
+/* ── Summary strip ── */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:18px}
+@media(max-width:720px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:440px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--card);border-radius:9px;padding:11px 12px;
+  box-shadow:var(--sh);border-top:3px solid var(--teal);text-align:center}
+.kpi.g{border-top-color:var(--green)}.kpi.a{border-top-color:var(--amber)}
+.kpi.b{border-top-color:var(--blue)}.kpi.p{border-top-color:var(--purple)}
+.kpi.r{border-top-color:var(--rose)}
+.kv{font-size:20px;font-weight:800;color:var(--ink)}
+.kl{font-size:10px;color:var(--muted);margin-top:2px}
 
 /* ── Cards ── */
-.card {
-  background:var(--card); border-radius:var(--radius);
-  padding:18px 20px; box-shadow:var(--shadow); margin-bottom:16px;
-}
-.card-title {
-  font-size:12px; font-weight:700; color:var(--teal-dark);
-  text-transform:uppercase; letter-spacing:.05em;
-  margin-bottom:14px; display:flex; align-items:center; gap:8px;
-}
+.card{background:var(--card);border-radius:var(--r);padding:16px 18px;
+  box-shadow:var(--sh);margin-bottom:16px}
+.card-title{font-size:11px;font-weight:700;color:var(--teal-dk);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;
+  display:flex;align-items:center;gap:7px}
 
-/* ── Input grid ── */
-.field-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
-.field { display:flex; flex-direction:column; gap:3px; }
-label.fld { font-size:10px; font-weight:700; color:var(--slate); text-transform:uppercase; letter-spacing:.04em; }
-input[type="text"],input[type="number"],input[type="date"],select {
-  font-family:inherit; font-size:13px; padding:7px 9px;
-  border:1.5px solid var(--line); border-radius:7px; background:#fff; color:var(--ink);
-  transition:border-color .15s;
-}
-input:focus,select:focus { outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(13,148,136,.1); }
-
-/* ── Milestone table ── */
-.milestone-table { width:100%; border-collapse:collapse; font-size:12px; }
-.milestone-table th {
-  background:var(--teal); color:#fff; font-size:10px; font-weight:700;
-  text-transform:uppercase; letter-spacing:.04em; padding:7px 8px; text-align:left;
-}
-.milestone-table td { border:1px solid var(--line); padding:5px 7px; vertical-align:middle; }
-.milestone-table tr:nth-child(even) td { background:#f8fafc; }
-.milestone-table input,.milestone-table select {
-  width:100%; font-size:11.5px; padding:4px 6px;
-  border:1.5px solid var(--line); border-radius:5px;
-}
-.del-btn {
-  padding:3px 8px; border-radius:5px; font-size:11px;
-  background:var(--rose-light); color:var(--rose);
-  border:1px solid var(--rose); cursor:pointer; font-weight:600;
-}
-.del-btn:hover { background:var(--rose); color:#fff; }
-.add-btn {
-  margin-top:10px; padding:7px 16px; border-radius:7px;
-  background:var(--teal); color:#fff; border:none; cursor:pointer;
-  font-size:12.5px; font-weight:600; font-family:inherit;
-}
-.add-btn:hover { background:var(--teal-dark); }
-
-/* ── Stats strip ── */
-.stats-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:16px; }
-@media(max-width:600px){ .stats-strip { grid-template-columns:1fr 1fr; } }
-.stat-box {
-  background:var(--card); border-radius:9px; padding:12px 14px;
-  box-shadow:var(--shadow); border-top:3px solid var(--teal); text-align:center;
-}
-.stat-box.green  { border-top-color:var(--green); }
-.stat-box.amber  { border-top-color:var(--amber); }
-.stat-box.purple { border-top-color:var(--purple); }
-.stat-num  { font-size:22px; font-weight:800; color:var(--ink); }
-.stat-lbl  { font-size:10.5px; color:var(--muted); margin-top:2px; }
-
-/* ── Chart area ── */
-.chart-container { width:100%; overflow-x:auto; }
-.chart-container svg { display:block; min-width:600px; }
-
-/* ── Projection controls ── */
-.proj-controls { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
-.proj-controls label.fld { white-space:nowrap; }
+/* ── Chart ── */
+.chart-wrap{overflow-x:auto}
+.chart-wrap svg{display:block;min-width:580px}
 
 /* ── Legend ── */
-.legend { display:flex; gap:16px; flex-wrap:wrap; margin-top:8px; font-size:11.5px; color:var(--slate); }
-.leg-item { display:flex; align-items:center; gap:5px; }
-.leg-dot { width:10px; height:10px; border-radius:50%; }
-.leg-line { width:20px; height:3px; border-radius:2px; }
-.leg-dash { width:20px; height:0; border-top:3px dashed; }
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:var(--slate)}
+.leg{display:flex;align-items:center;gap:5px}
+.leg-c{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.leg-l{width:22px;height:3px;border-radius:2px;flex-shrink:0}
+.leg-d{width:22px;height:0;border-top:2.5px dashed;flex-shrink:0}
 
-/* ── Print ── */
-@media print {
-  .toolbar,.add-btn,.del-btn,.pid-row,.btn,.proj-controls { display:none!important; }
-  body { background:#fff; }
-  .wrap { padding:0; max-width:100%; }
-  .card { box-shadow:none; border:1px solid var(--line); }
+/* ── Visit table ── */
+.vt{width:100%;border-collapse:collapse;font-size:11.5px}
+.vt th{background:var(--teal-dk);color:#fff;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;padding:7px 8px;text-align:left;
+  white-space:nowrap}
+.vt td{border:1px solid var(--line);padding:5.5px 7px;vertical-align:top}
+.vt tr:nth-child(even) td{background:#f8fafc}
+.vt tr:hover td{background:var(--teal-lt)}
+.dose-chip{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 6px;
+  border-radius:4px;background:var(--teal-lt);color:var(--teal-dk);white-space:nowrap}
+.esc-chip{background:var(--green-lt);color:var(--green)}
+.nsv-item{font-size:10.5px;color:var(--green);font-weight:600;line-height:1.4}
+.se-item{font-size:10.5px;color:var(--amber);font-weight:600}
+.note-text{font-size:10.5px;color:var(--slate);line-height:1.4}
+.tbwl-pill{display:inline-block;font-size:9.5px;font-weight:800;padding:1px 5px;
+  border-radius:3px;background:var(--green-lt);color:var(--green)}
+.tbwl-reg{background:var(--rose-lt);color:var(--rose)}
+.milestone-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;
+  border-radius:3px;margin:1px 0;background:var(--purple-lt);color:var(--purple)}
+
+/* ── Projection card ── */
+.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.proj-grid{grid-template-columns:1fr}}
+.proj-box{background:var(--blue-lt);border:1px solid #bfdbfe;border-radius:9px;
+  padding:13px 15px}
+.proj-box.t{background:var(--green-lt);border-color:#86efac}
+.proj-label{font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;
+  letter-spacing:.04em;margin-bottom:4px}
+.proj-box.t .proj-label{color:var(--green)}
+.proj-val{font-size:22px;font-weight:800;color:var(--ink)}
+.proj-sub{font-size:11px;color:var(--slate);margin-top:3px}
+
+/* ── Print styles ── */
+@media print{
+  .bar,.btn,.pid-row,.no-print{display:none!important}
+  body{background:#fff;font-size:11px}
+  .wrap{padding:0;max-width:100%}
+  .card{box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
+  .card.pg2{page-break-before:always}
+  .kpi-row{margin-bottom:12px}
+  .vt td,.vt th{font-size:9.5px;padding:4px 5px}
+  .print-header{display:block!important}
 }
+.print-header{display:none;margin-bottom:14px}
+.print-header h2{font-size:16px;font-weight:800;color:var(--teal-dk)}
+.print-header p{font-size:11px;color:var(--slate);margin-top:3px}
 </style>
 </head>
 <body>
 
-<div class="toolbar">
-  <div class="toolbar-brand">📈 Weight Journey Map</div>
-  <div class="toolbar-right">
+<div class="bar">
+  <div class="bar-brand">📈 Weight Journey Report</div>
+  <div class="bar-right">
     <div class="pid-row">
       <input type="text" id="pidInput" placeholder="WIN-XXXXXX" maxlength="16" autocomplete="off" spellcheck="false">
       <button class="btn solid" onclick="loadPatient()">Load</button>
     </div>
-    <button class="btn" onclick="githubLoad()" title="Load from GitHub">☁️ Load</button>
-    <button class="btn solid" onclick="githubExport()">⬇ Export</button>
-    <button class="btn" onclick="window.print()">🖨 Print</button>
-    <span class="save-status" id="saveStatus"></span>
+    <button class="btn demo" onclick="loadDemo()">👤 Demo</button>
+    <button class="btn" onclick="window.print()">🖨 Print / PDF</button>
+    <span class="save-st" id="saveSt"></span>
   </div>
 </div>
 
 <div class="wrap">
 
-  <!-- Stats strip -->
-  <div class="stats-strip" id="statsStrip">
-    <div class="stat-box"><div class="stat-num" id="statBMI">—</div><div class="stat-lbl">Current BMI</div></div>
-    <div class="stat-box green"><div class="stat-num" id="statLoss">—</div><div class="stat-lbl">Total Lost (kg)</div></div>
-    <div class="stat-box amber"><div class="stat-num" id="statPeak">—</div><div class="stat-lbl">Peak Weight (kg)</div></div>
-    <div class="stat-box purple"><div class="stat-num" id="statProj">—</div><div class="stat-lbl">Projected 3yr (kg)</div></div>
+  <!-- Print header (hidden on screen) -->
+  <div class="print-header">
+    <h2>⚖️ Panini Weight Management — Clinical Journey Report</h2>
+    <p id="printMeta"></p>
   </div>
 
-  <div class="two-col">
-
-    <!-- ── Left: Input panel ── -->
-    <div>
-
-      <!-- Patient basics -->
-      <div class="card">
-        <div class="card-title">👤 Patient Basics</div>
-        <div class="field-row">
-          <div class="field"><label class="fld">Height (cm)</label><input type="number" id="height" placeholder="168" min="100" max="250" oninput="render()"></div>
-          <div class="field"><label class="fld">Current Age (yrs)</label><input type="number" id="age" placeholder="38" min="1" max="100" oninput="render()"></div>
-          <div class="field"><label class="fld">Target Weight (kg)</label><input type="number" id="targetWt" placeholder="75" step="0.5" oninput="render()"></div>
-        </div>
-        <div class="field-row">
-          <div class="field"><label class="fld">Program Start Date</label><input type="date" id="programStart" oninput="render()"></div>
-          <div class="field">
-            <label class="fld">Medication</label>
-            <select id="medication" onchange="render()">
-              <option value="">None / Diet only</option>
-              <option value="semaglutide">Semaglutide (Ozempic/Wegovy)</option>
-              <option value="tirzepatide">Tirzepatide (Mounjaro/Zepbound)</option>
-              <option value="liraglutide">Liraglutide (Saxenda)</option>
-              <option value="orlistat">Orlistat (Xenical)</option>
-              <option value="phentermine">Phentermine</option>
-              <option value="combo">Combination therapy</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Milestone entries -->
-      <div class="card">
-        <div class="card-title">📌 Weight Milestones (birth to present)</div>
-        <table class="milestone-table">
-          <thead>
-            <tr>
-              <th>Age (yr)</th>
-              <th>Weight (kg)</th>
-              <th>Event / Cause</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="milestoneBody"></tbody>
-        </table>
-        <button class="add-btn" onclick="addMilestone()">+ Add Milestone</button>
-      </div>
-
-      <!-- Projection controls -->
-      <div class="card">
-        <div class="card-title">🔮 3-Year Projection</div>
-        <div class="proj-controls">
-          <div class="field">
-            <label class="fld">Expected % loss/year</label>
-            <input type="number" id="projRate" value="8" min="1" max="25" step="0.5" oninput="render()">
-          </div>
-          <div class="field">
-            <label class="fld">Show projection</label>
-            <select id="projYears" onchange="render()">
-              <option value="1">1 year</option>
-              <option value="2">2 years</option>
-              <option value="3" selected>3 years</option>
-              <option value="5">5 years</option>
-            </select>
-          </div>
-        </div>
-        <div style="font-size:11px;color:var(--muted)">
-          Projection rates: Diet only ~5%/yr · Semaglutide ~10–15%/yr · Tirzepatide ~15–22%/yr · Liraglutide ~6–8%/yr
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ── Right: Chart ── -->
-    <div>
-      <div class="card">
-        <div class="card-title">📉 Lifetime Weight Trajectory — Birth to Future</div>
-        <div class="chart-container" id="chartContainer">
-          <svg id="chartSvg" viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg"></svg>
-        </div>
-        <div class="legend" id="chartLegend">
-          <div class="leg-item"><div class="leg-dot" style="background:#0d9488"></div> Actual weight</div>
-          <div class="leg-item"><div class="leg-dash" style="border-color:#2563eb"></div> GLP-1 projection</div>
-          <div class="leg-item"><div class="leg-line" style="background:#16a34a;opacity:.4;height:10px;border-radius:2px"></div> Healthy BMI zone (18.5–25)</div>
-          <div class="leg-item"><div class="leg-line" style="background:#d97706;opacity:.4;height:10px;border-radius:2px"></div> Overweight (25–30)</div>
-          <div class="leg-item"><div class="leg-line" style="background:#e11d48;opacity:.3;height:10px;border-radius:2px"></div> Obese (30+)</div>
-        </div>
-      </div>
-
-      <!-- Narrative summary -->
-      <div class="card" id="narrativeCard" style="display:none">
-        <div class="card-title">📋 Clinical Summary</div>
-        <div id="narrativeText" style="font-size:13px;color:var(--slate);line-height:1.6"></div>
-      </div>
-    </div>
-
+  <!-- KPI strip -->
+  <div class="kpi-row" id="kpiRow">
+    <div class="kpi"><div class="kv" id="k0">—</div><div class="kl">Start Weight (kg)</div></div>
+    <div class="kpi g"><div class="kv" id="k1">—</div><div class="kl">Current Weight (kg)</div></div>
+    <div class="kpi g"><div class="kv" id="k2">—</div><div class="kl">Total Lost (kg)</div></div>
+    <div class="kpi b"><div class="kv" id="k3">—</div><div class="kl">TBWL %</div></div>
+    <div class="kpi a"><div class="kv" id="k4">—</div><div class="kl">Current BMI</div></div>
+    <div class="kpi p"><div class="kv" id="k5">—</div><div class="kl">Total Visits</div></div>
   </div>
+
+  <!-- Chart -->
+  <div class="card">
+    <div class="card-title">📉 Weight Trajectory — Every Visit Plotted</div>
+    <div class="chart-wrap">
+      <svg id="chartSvg" viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="leg-c" style="background:#0d9488"></div>Actual weight</div>
+      <div class="leg"><div class="leg-d" style="border-color:#2563eb"></div>Projection (12 &amp; 24 mo)</div>
+      <div class="leg"><div class="leg-l" style="background:#16a34a;opacity:.5;height:10px"></div>Healthy BMI (18.5–25)</div>
+      <div class="leg"><div class="leg-l" style="background:#d97706;opacity:.5;height:10px"></div>Overweight (25–30)</div>
+      <div class="leg"><div class="leg-l" style="background:#e11d48;opacity:.35;height:10px"></div>Obese (30+)</div>
+      <div class="leg"><div class="leg-c" style="background:#16a34a"></div>Dose escalation</div>
+      <div class="leg"><div class="leg-c" style="background:#7c3aed"></div>Milestone event</div>
+    </div>
+  </div>
+
+  <!-- Projection -->
+  <div class="card no-print" id="projCard" style="display:none">
+    <div class="card-title">🔮 Future Projection</div>
+    <div class="proj-grid">
+      <div class="proj-box">
+        <div class="proj-label">12 months from last visit</div>
+        <div class="proj-val" id="proj12">—</div>
+        <div class="proj-sub" id="proj12s"></div>
+      </div>
+      <div class="proj-box t" id="proj24box">
+        <div class="proj-label">24 months from last visit</div>
+        <div class="proj-val" id="proj24">—</div>
+        <div class="proj-sub" id="proj24s"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visit log table -->
+  <div class="card pg2" id="visitCard" style="display:none">
+    <div class="card-title">📋 Visit Log — Complete Clinical Record</div>
+    <div style="overflow-x:auto">
+      <table class="vt" id="visitTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Mo.</th>
+            <th>Weight (kg)</th>
+            <th>TBWL %</th>
+            <th>Waist (cm)</th>
+            <th>BP</th>
+            <th>Dose</th>
+            <th>Steps/day</th>
+            <th>NSV / Milestones</th>
+            <th>Side Effects</th>
+            <th>Clinical Notes</th>
+          </tr>
+        </thead>
+        <tbody id="visitBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Labs timeline -->
+  <div class="card no-print" id="labsCard" style="display:none">
+    <div class="card-title">🧪 Lab Timeline (visits with results)</div>
+    <div style="overflow-x:auto">
+      <table class="vt" id="labsTable">
+        <thead>
+          <tr>
+            <th>Date</th><th>HbA1c (%)</th><th>FBG (mg/dL)</th>
+            <th>LDL (mg/dL)</th><th>TG (mg/dL)</th><th>HDL (mg/dL)</th><th>ALT (U/L)</th>
+          </tr>
+        </thead>
+        <tbody id="labsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
 <script>
-/* ══════════════════════════════════════════════
-   STATE
-════════════════════════════════════════════════ */
-let activeId = null;
-let record   = { meta:{}, milestones:[] };
+/* ═══════════════════════════════════════════
+   DEMO FALLBACK — WIN-DEMO01 data embedded
+═══════════════════════════════════════════ */
+const DEMO_ID = 'WIN-DEMO01';
+const DEMO_META = { height: 165, targetWeight: 75, programStart: '2023-01-15', drug: 'semaglutide' };
+const DEMO_VISITS = [
+  {date:'2023-01-15',weight:102,  waist:108,bp:'148/92',dose:'Semaglutide 0.25mg/wk',steps:3500, hba1c:8.2,fbg:156,ldl:148,tg:210,hdl:38,alt:62,  nsv:[],sideEffect:'None',doseChange:'',notes:'Baseline. GLP-1 candidacy confirmed. T2DM, HTN, NAFLD. Started Semaglutide 0.25mg/wk. Dietician referral made.'},
+  {date:'2023-03-15',weight:99.5, waist:106,bp:'146/90',dose:'Semaglutide 0.5mg/wk', steps:4500, hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:[],sideEffect:'Nausea (mild)',doseChange:'Escalated',notes:'Mild nausea week 1–2, resolving. Protein-first strategy adopted. Escalating dose.'},
+  {date:'2023-05-15',weight:97,   waist:104,bp:'142/88',dose:'Semaglutide 1.0mg/wk', steps:5500, hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:[],sideEffect:'Nausea (resolving)',doseChange:'Escalated',notes:'Early response good — 5kg in 10 weeks. Nausea improving. Escalating to 1mg.'},
+  {date:'2023-07-15',weight:94.2, waist:102,bp:'140/86',dose:'Semaglutide 1.0mg/wk', steps:6000, hba1c:7.4,fbg:128,ldl:null,tg:null,hdl:null,alt:52, nsv:['Amlodipine 5mg reduced — BP better controlled'],sideEffect:'Constipation',doseChange:'Held — side effects',notes:'Constipation 6/10. Held escalation. Added fibre supplement, hydration 2.5L target.'},
+  {date:'2023-09-15',weight:91.5, waist:100,bp:'136/84',dose:'Semaglutide 1.7mg/wk', steps:7000, hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:[],sideEffect:'None',doseChange:'Escalated',notes:'GI resolved. Step count 7000/day. Escalating to 1.7mg. BP trending down.'},
+  {date:'2023-11-15',weight:89.2, waist:98, bp:'134/82',dose:'Semaglutide 1.7mg/wk', steps:7500, hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:['Knee pain improving — walking 7000 steps daily'],sideEffect:'None',doseChange:'No change',notes:'Excellent 10% TBWL at 10 months. Good appetite suppression. Preparing for maintenance dose.'},
+  {date:'2024-01-15',weight:87.8, waist:97, bp:'132/82',dose:'Semaglutide 2.4mg/wk', steps:8000, hba1c:6.8,fbg:112,ldl:128,tg:165,hdl:44,alt:42, nsv:['HbA1c below 7% for first time in 5 years','Amlodipine stopped completely'],sideEffect:'None',doseChange:'Escalated',notes:'Year 1 review. 14.2% TBWL. HbA1c 6.8% — below 7% first time. Escalated to 2.4mg maintenance.'},
+  {date:'2024-03-15',weight:86.5, waist:96, bp:'130/80',dose:'Semaglutide 2.4mg/wk', steps:8500, hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:[],sideEffect:'None',doseChange:'',notes:'Maintaining well. Added resistance training 2×/week. Sleep apnea follow-up arranged.'},
+  {date:'2024-05-15',weight:85.8, waist:95.5,bp:'130/80',dose:'Semaglutide 2.4mg/wk',steps:8000, hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:['Metformin dose reduced from 1g to 500mg'],sideEffect:'None',doseChange:'',notes:'Knee pain reduced — attributed to weight loss. Stable on 2.4mg.'},
+  {date:'2024-07-15',weight:85.2, waist:95, bp:'128/80',dose:'Semaglutide 2.4mg/wk', steps:9000, hba1c:6.4,fbg:104,ldl:null,tg:null,hdl:null,alt:35, nsv:[],sideEffect:'None',doseChange:'',notes:'Year 1.5 — all metabolic markers improving. NAFLD regression on ultrasound.'},
+  {date:'2024-09-15',weight:84.8, waist:94.5,bp:'128/78',dose:'Semaglutide 2.4mg/wk',steps:9500, hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:['No breathlessness climbing 2 flights of stairs'],sideEffect:'None',doseChange:'',notes:'Excellent maintenance. Step goal 10,000/day consistently met. High satisfaction.'},
+  {date:'2024-11-15',weight:84.5, waist:94, bp:'126/78',dose:'Semaglutide 2.4mg/wk', steps:10000,hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:[],sideEffect:'None',doseChange:'',notes:'Slight winter activity dip. Counselled on indoor exercise. Waist at 94cm — target <90.'},
+  {date:'2025-01-15',weight:84.2, waist:93.8,bp:'126/78',dose:'Semaglutide 2.4mg/wk',steps:10000,hba1c:6.1,fbg:98, ldl:118,tg:138,hdl:48,alt:28, nsv:['Sleep apnea resolved — CPAP discontinued','AHI normalised on repeat sleep study'],sideEffect:'None',doseChange:'',notes:'Year 2 review. CPAP discontinued — AHI <5. ALT 28 — near normal. Tremendous progress.'},
+  {date:'2025-03-15',weight:84.8, waist:94.2,bp:'126/78',dose:'Semaglutide 2.4mg/wk',steps:9000, hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:['Waist reduced 15 cm — fitting pre-obesity clothes'],sideEffect:'None',doseChange:'',notes:'Slight regain 0.6kg — travel and social eating. Reinforced protein-first rules.'},
+  {date:'2025-05-15',weight:84.2, waist:93.8,bp:'124/78',dose:'Semaglutide 2.4mg/wk',steps:9500, hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:[],sideEffect:'None',doseChange:'',notes:'Back on track. Consistent maintenance. Waist goal in sight.'},
+  {date:'2025-07-15',weight:83.8, waist:93.5,bp:'124/76',dose:'Semaglutide 2.4mg/wk', steps:10000,hba1c:5.9,fbg:95, ldl:null,tg:null,hdl:null,alt:22, nsv:['ALT normalised — NAFLD in remission, hepatologist discharged'],sideEffect:'None',doseChange:'',notes:'ALT normal (22). Hepatologist formally discharged. Metformin to be tapered.'},
+  {date:'2025-09-15',weight:83.5, waist:93.2,bp:'122/76',dose:'Semaglutide 2.4mg/wk', steps:10500,hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:[],sideEffect:'None',doseChange:'',notes:'Metformin stopped. FBG 95 — euglycaemia on diet and GLP-1 alone.'},
+  {date:'2025-11-15',weight:83.2, waist:93, bp:'122/76',dose:'Semaglutide 2.4mg/wk',  steps:11000,hba1c:null,fbg:null,ldl:null,tg:null,hdl:null,alt:null,nsv:['Metformin stopped completely — euglycaemia on diet alone'],sideEffect:'None',doseChange:'',notes:'Near-target maintenance. HbA1c 5.9% — non-diabetic range approaching.'},
+  {date:'2026-01-15',weight:83,   waist:92.8,bp:'122/76',dose:'Semaglutide 2.4mg/wk',steps:11000,hba1c:5.8,fbg:94, ldl:112,tg:128,hdl:52,alt:22, nsv:["HbA1c 5.8% — pre-diabetes range","All BP medications stopped","Lost 19 kg — 18.6% TBWL in 36 months"],sideEffect:'None',doseChange:'',notes:'Year 3 review. 19kg lost. HbA1c 5.8%. All BP meds stopped. NAFLD in remission. T2DM in clinical remission.'},
+];
 
-/* ══════════════════════════════════════════════
-   UTILITIES
-════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let activeId = null;
+let visits   = [];  // array of visit objects
+let meta     = {};  // { height, targetWeight, programStart, drug }
+
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
 function norm(id){ return PaniniData.normId(id); }
 function validId(id){ return PaniniData.validId(id); }
-function st(msg){ document.getElementById('saveStatus').textContent = msg; }
 function v(id){ return document.getElementById(id); }
+function st(msg){ v('saveSt').textContent = msg; }
+function fmtDate(d){ if(!d) return '—';
+  const dt=new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}); }
+function monthsFrom(start,d){
+  const s=new Date(start+'T00:00:00'), e=new Date(d+'T00:00:00');
+  return Math.round((e-s)/2629800000); }
 
-function saveLocal(){
-  if(!activeId) return;
-  collectMeta();
-  PaniniData.updateSection(activeId, 'weightJourney', record);
+/* ═══════════════════════════════════════════
+   LOAD
+═══════════════════════════════════════════ */
+function loadDemo(){
+  activeId = DEMO_ID;
+  if(v('pidInput')) v('pidInput').value = DEMO_ID;
+  const badge = document.getElementById('iframePtBadge');
+  if(badge) badge.textContent = DEMO_ID;
+  meta   = DEMO_META;
+  visits = DEMO_VISITS;
+  render();
+  st('✓ Demo patient WIN-DEMO01');
 }
 
-function collectMeta(){
-  record.meta = {
-    height:       parseFloat(v('height')?.value)||null,
-    age:          parseFloat(v('age')?.value)||null,
-    targetWt:     parseFloat(v('targetWt')?.value)||null,
-    programStart: v('programStart')?.value||null,
-    medication:   v('medication')?.value||'',
-    projRate:     parseFloat(v('projRate')?.value)||8,
-    projYears:    parseInt(v('projYears')?.value)||3,
-  };
-}
-
-/* ══════════════════════════════════════════════
-   PATIENT LOAD / SAVE
-════════════════════════════════════════════════ */
 function loadById(id){
   const n = norm(id); if(!validId(n)) return;
   activeId = n;
@@ -321,16 +313,39 @@ function loadById(id){
   const badge = document.getElementById('iframePtBadge');
   if(badge) badge.textContent = n;
 
-  const data = PaniniData.getSection(n, 'weightJourney');
+  if(n === DEMO_ID){ loadDemo(); return; }
+
+  const data = PaniniData.load(n);
   if(data){
-    record = data;
-    restoreMeta();
+    meta   = data.meta || {};
+    visits = (data.dashVisits || []).map(dv=>({
+      date:       dv.date,
+      weight:     dv.weight,
+      waist:      dv.waist||null,
+      bp:         dv.bp||'',
+      dose:       dv.dose||'',
+      steps:      dv.steps||null,
+      hba1c:      dv.hba1c||null,
+      fbg:        dv.fbg||null,
+      ldl:        dv.ldl||null,
+      tg:         dv.tg||null,
+      hdl:        dv.hdl||null,
+      alt:        dv.alt||null,
+      nsv:        dv.nsv||[],
+      sideEffect: dv.sideEffect||'',
+      doseChange: dv.doseChange||'',
+      notes:      ''
+    }));
+    // merge notes from medTracker
+    const mt = data.medTracker?.visits || [];
+    mt.forEach(mv=>{
+      const v = visits.find(x=>x.date===mv.date);
+      if(v) v.notes = mv.notes||'';
+    });
     render();
     st('✓ '+n);
   } else {
-    record = { meta:{}, milestones: defaultMilestones() };
-    render();
-    st('New: '+n);
+    st('No data for '+n);
   }
 }
 
@@ -340,422 +355,309 @@ function loadPatient(){
   loadById(id);
 }
 
-async function githubLoad(){
-  if(!activeId){ alert('Enter a Patient ID first.'); return; }
-  st('Loading from GitHub…');
-  const data = await PaniniData.fetchGithub(activeId);
-  if(data?.weightJourney){
-    record = data.weightJourney;
-    restoreMeta(); renderMilestoneTable(); render();
-    st('✓ GitHub loaded');
-  } else { st('Not found on GitHub'); }
-}
-
-function githubExport(){
-  if(!activeId){ alert('Load a patient first.'); return; }
-  saveLocal();
-  PaniniData.exportJson(activeId);
-  st('✓ JSON downloaded');
-}
-
-function restoreMeta(){
-  const m = record.meta||{};
-  if(v('height'))       v('height').value       = m.height||'';
-  if(v('age'))          v('age').value           = m.age||'';
-  if(v('targetWt'))     v('targetWt').value      = m.targetWt||'';
-  if(v('programStart')) v('programStart').value  = m.programStart||'';
-  if(v('medication'))   v('medication').value    = m.medication||'';
-  if(v('projRate'))     v('projRate').value      = m.projRate||8;
-  if(v('projYears'))    v('projYears').value     = m.projYears||3;
-  renderMilestoneTable();
-}
-
-/* ══════════════════════════════════════════════
-   MILESTONES
-════════════════════════════════════════════════ */
-function defaultMilestones(){
-  return [
-    { age:0,  wt:3,  event:'Birth weight',    type:'birth' },
-    { age:5,  wt:'', event:'Childhood',        type:'childhood' },
-    { age:13, wt:'', event:'Teen / puberty',   type:'teen' },
-    { age:20, wt:'', event:'Young adult',      type:'adult' },
-  ];
-}
-
-function addMilestone(){
-  if(!record.milestones) record.milestones = [];
-  record.milestones.push({ age:'', wt:'', event:'', type:'event' });
-  renderMilestoneTable();
-}
-
-function deleteMilestone(i){
-  record.milestones.splice(i,1);
-  renderMilestoneTable();
-  render();
-}
-
-function updateMilestone(i, field, val){
-  if(!record.milestones[i]) return;
-  record.milestones[i][field] = val;
-  render();
-  saveLocal();
-}
-
-const EVENT_TYPES = [
-  {v:'birth',      l:'Birth'},
-  {v:'childhood',  l:'Childhood'},
-  {v:'teen',       l:'Teen / puberty'},
-  {v:'adult',      l:'Young adult'},
-  {v:'pregnancy',  l:'Pregnancy'},
-  {v:'medication', l:'Started medication'},
-  {v:'surgery',    l:'Surgery / illness'},
-  {v:'stress',     l:'Stress / life event'},
-  {v:'diet',       l:'Diet programme'},
-  {v:'peak',       l:'Peak weight'},
-  {v:'nadir',      l:'Lowest adult weight'},
-  {v:'current',    l:'Current'},
-  {v:'event',      l:'Other event'},
-];
-const TYPE_COLORS = {
-  birth:'#7c3aed', childhood:'#2563eb', teen:'#0891b2',
-  adult:'#0d9488', pregnancy:'#ec4899', medication:'#16a34a',
-  surgery:'#dc2626', stress:'#d97706', diet:'#7c3aed',
-  peak:'#e11d48', nadir:'#16a34a', current:'#0d9488', event:'#64748b',
-};
-
-function renderMilestoneTable(){
-  const tbody = v('milestoneBody'); if(!tbody) return;
-  const rows  = record.milestones||[];
-  tbody.innerHTML = rows.map((m,i)=>`
-    <tr>
-      <td><input type="number" value="${m.age||''}" min="0" max="100" placeholder="age"
-          oninput="updateMilestone(${i},'age',this.value)" style="width:55px"></td>
-      <td><input type="number" value="${m.wt||''}" min="1" max="300" step="0.1" placeholder="kg"
-          oninput="updateMilestone(${i},'wt',this.value)" style="width:65px"></td>
-      <td><input type="text" value="${m.event||''}" placeholder="e.g. Pregnancy, started gym…"
-          oninput="updateMilestone(${i},'event',this.value)"></td>
-      <td><button class="del-btn" onclick="deleteMilestone(${i})">✕</button></td>
-    </tr>`).join('');
-}
-
-/* ══════════════════════════════════════════════
-   CHART RENDER
-════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════ */
 function render(){
-  collectMeta();
-  saveLocal();
+  if(!visits.length) return;
+  updateKPIs();
   drawChart();
-  updateStats();
-  buildNarrative();
+  renderVisitTable();
+  renderLabsTable();
+  updateProjection();
+  updatePrintMeta();
+  v('visitCard').style.display = '';
+  v('labsCard').style.display  = '';
+  v('projCard').style.display  = '';
 }
 
+/* ── KPIs ── */
+function updateKPIs(){
+  const h  = (meta.height||165)/100;
+  const s  = visits[0].weight;
+  const c  = visits[visits.length-1].weight;
+  const lo = +(s-c).toFixed(1);
+  const tb = +((s-c)/s*100).toFixed(1);
+  const bmi= +(c/h/h).toFixed(1);
+  v('k0').textContent = s;
+  v('k1').textContent = c;
+  v('k2').textContent = '-'+lo;
+  v('k3').textContent = tb+'%';
+  v('k4').textContent = bmi;
+  v('k5').textContent = visits.length;
+}
+
+/* ── Projection ── */
+function updateProjection(){
+  const last = visits[visits.length-1];
+  const w    = last.weight;
+  // On maintenance Sema 2.4mg: ~1.5% additional loss/yr in maintenance phase
+  const rate = 0.015;
+  const w12  = +(w*(1-rate)).toFixed(1);
+  const w24  = +(w*(1-rate*2)).toFixed(1);
+  const tgt  = meta.targetWeight||75;
+
+  v('proj12').textContent = w12+' kg';
+  v('proj12s').textContent= 'Est. −'+(+(w-w12).toFixed(1))+' kg from '+fmtDate(last.date);
+  v('proj24').textContent = w24+' kg';
+  const tdiff = +(w24-tgt).toFixed(1);
+  v('proj24s').textContent = tdiff<=0
+    ? '✓ Target '+tgt+' kg achieved!'
+    : tdiff+' kg above target ('+tgt+' kg)';
+  if(tdiff<=0) document.getElementById('proj24box').style.background='#d1fae5';
+}
+
+/* ── Visit table ── */
+function renderVisitTable(){
+  const startDate = visits[0].date;
+  const startWt   = visits[0].weight;
+  const tbody = v('visitBody'); if(!tbody) return;
+
+  tbody.innerHTML = visits.map((vv,i)=>{
+    const mo   = i===0?'0':monthsFrom(startDate, vv.date);
+    const tbwl = +((startWt-vv.weight)/startWt*100).toFixed(1);
+    const tbwlHtml = i===0
+      ? '<span class="tbwl-pill" style="background:#f1f5f9;color:#94a3b8">Baseline</span>'
+      : `<span class="tbwl-pill${tbwl<0?' tbwl-reg':''}">${tbwl>0?'-':''}${Math.abs(tbwl)}%</span>`;
+
+    const isEsc = vv.doseChange && vv.doseChange.toLowerCase().includes('escalat');
+    const doseHtml = `<span class="dose-chip${isEsc?' esc-chip':''}">${vv.dose||'—'}</span>`;
+
+    const nsvHtml = [...(vv.nsv||[])].map(n=>`<div class="nsv-item">★ ${n}</div>`).join('')
+                  + (vv.sideEffect&&vv.sideEffect!=='None'?`<div class="se-item">⚠ ${vv.sideEffect}</div>`:'')
+                  + (isEsc?`<span class="milestone-tag">↑ Dose escalated</span>`:'');
+
+    return `<tr>
+      <td style="font-weight:700;color:var(--teal-dk)">${i+1}</td>
+      <td style="white-space:nowrap;font-weight:600">${fmtDate(vv.date)}</td>
+      <td style="text-align:center;color:var(--muted)">${mo}</td>
+      <td style="font-weight:700;font-size:13px">${vv.weight}</td>
+      <td>${tbwlHtml}</td>
+      <td>${vv.waist||'—'}</td>
+      <td style="white-space:nowrap">${vv.bp||'—'}</td>
+      <td>${doseHtml}</td>
+      <td style="text-align:center">${vv.steps?vv.steps.toLocaleString():'—'}</td>
+      <td>${nsvHtml||'<span style="color:var(--muted)">—</span>'}</td>
+      <td>${vv.sideEffect&&vv.sideEffect!=='None'?`<span class="se-item">${vv.sideEffect}</span>`:'<span style="color:var(--green)">None</span>'}</td>
+      <td class="note-text">${vv.notes||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── Labs table ── */
+function renderLabsTable(){
+  const tbody = v('labsBody'); if(!tbody) return;
+  const labVisits = visits.filter(vv=>vv.hba1c||vv.fbg||vv.ldl||vv.alt);
+  if(!labVisits.length){ v('labsCard').style.display='none'; return; }
+  tbody.innerHTML = labVisits.map(vv=>`<tr>
+    <td style="font-weight:600;white-space:nowrap">${fmtDate(vv.date)}</td>
+    <td>${fmt(vv.hba1c,'%')}</td>
+    <td>${fmt(vv.fbg)}</td>
+    <td>${fmt(vv.ldl)}</td>
+    <td>${fmt(vv.tg)}</td>
+    <td>${fmt(vv.hdl)}</td>
+    <td>${fmt(vv.alt)}</td>
+  </tr>`).join('');
+}
+function fmt(v,sfx=''){return v!=null?`<strong>${v}</strong>${sfx}`:`<span style="color:var(--muted)">—</span>`}
+
+/* ── Print meta ── */
+function updatePrintMeta(){
+  const last = visits[visits.length-1];
+  const s=visits[0], h=(meta.height||165)/100;
+  const lo=+(s.weight-last.weight).toFixed(1);
+  const tb=+((s.weight-last.weight)/s.weight*100).toFixed(1);
+  v('printMeta').textContent =
+    `Patient: ${activeId||'—'} | Program start: ${fmtDate(meta.programStart||visits[0].date)}`
+    +` | Total visits: ${visits.length} | Start: ${s.weight}kg → Current: ${last.weight}kg`
+    +` | Lost: ${lo}kg (${tb}% TBWL) | Medication: ${meta.drug||visits[0].dose||'—'}`
+    +` | Report generated: ${new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`;
+}
+
+/* ═══════════════════════════════════════════
+   SVG CHART
+═══════════════════════════════════════════ */
 function drawChart(){
-  const svg    = v('chartSvg'); if(!svg) return;
-  const W=720, H=360, PL=52, PR=20, PT=24, PB=46;
-  const cW = W-PL-PR, cH = H-PT-PB;
+  const svg = v('chartSvg'); if(!svg||!visits.length) return;
+  const W=800,H=320,PL=52,PR=24,PT=30,PB=44;
+  const cW=W-PL-PR, cH=H-PT-PB;
+  const h=(meta.height||165)/100;
+  const tgt=meta.targetWeight||null;
 
-  const meta        = record.meta||{};
-  const heightCm    = meta.height||168;
-  const currentAge  = meta.age||40;
-  const projYears   = meta.projYears||3;
-  const projRate    = (meta.projRate||8)/100;
-  const targetWt    = meta.targetWt||null;
-  const programStart= meta.programStart||null;
-  const medication  = meta.medication||'';
+  // X: date range (add 24 months projection)
+  const dates = visits.map(vv=>new Date(vv.date+'T00:00:00'));
+  const minD  = dates[0];
+  const lastD = dates[dates.length-1];
+  const projEndD = new Date(lastD); projEndD.setMonth(projEndD.getMonth()+27);
+  const maxD  = projEndD;
+  const spanMs = maxD-minD;
+  const xS = d => PL + ((new Date(d+'T00:00:00')-minD)/spanMs)*cW;
+  const xN = d => PL + ((d-minD)/spanMs)*cW;
 
-  // Valid milestone points
-  const pts = (record.milestones||[])
-    .map(m=>({ age:parseFloat(m.age), wt:parseFloat(m.wt), event:m.event||'', type:m.type||'event' }))
-    .filter(p=>!isNaN(p.age)&&!isNaN(p.wt)&&p.wt>0)
-    .sort((a,b)=>a.age-b.age);
+  // Y: weight range
+  const wts  = visits.map(vv=>vv.weight);
+  const minW = Math.max(0,Math.min(...wts,tgt||999)-5);
+  const maxW = Math.max(...wts)+8;
+  const yS   = w => PT + (1-(w-minW)/(maxW-minW))*cH;
 
-  const currentWt = pts.length ? pts[pts.length-1].wt : null;
-
-  // Projection points
+  // Projection weights
+  const lastWt = visits[visits.length-1].weight;
+  const rate   = 0.015;
   const projPts = [];
-  if(currentWt && programStart){
-    const startAge = programStart ? currentAge - (new Date()-new Date(programStart))/365.25/86400000 : currentAge;
-    for(let y=0; y<=projYears; y+=0.5){
-      const factor = expectedFactor(medication, y);
-      projPts.push({ age: startAge+y, wt: currentWt*(1-projRate*factor*y) });
-    }
+  for(let m=0; m<=24; m+=3){
+    const pd = new Date(lastD); pd.setMonth(pd.getMonth()+m);
+    projPts.push({ d:pd, w: lastWt*(1-rate*m/12) });
   }
-
-  // Axis ranges
-  const allWts = [...pts.map(p=>p.wt), ...projPts.map(p=>p.wt), targetWt||0].filter(Boolean);
-  const allAges = [...pts.map(p=>p.age), ...projPts.map(p=>p.age)].filter(x=>!isNaN(x));
-  if(!allWts.length){ svg.innerHTML=''; return; }
-
-  const minAge = Math.max(0, Math.min(...allAges)-2);
-  const maxAge = Math.max(...allAges)+1;
-  const minWt  = Math.max(0, Math.min(...allWts)-5);
-  const maxWt  = Math.min(300, Math.max(...allWts)+10);
-
-  const xS = (age) => PL + ((age-minAge)/(maxAge-minAge))*cW;
-  const yS = (wt)  => PT + (1-(wt-minWt)/(maxWt-minWt))*cH;
-
-  // BMI zone lines → translate to weight at patient height
-  const h = heightCm/100;
-  const bmiToWt = (bmi) => bmi * h * h;
-  const zones = [
-    { bmi1:18.5, bmi2:25,  color:'#16a34a', label:'Normal BMI', alpha:.12 },
-    { bmi1:25,   bmi2:30,  color:'#d97706', label:'Overweight', alpha:.12 },
-    { bmi1:30,   bmi2:35,  color:'#f97316', label:'Obese I',    alpha:.10 },
-    { bmi1:35,   bmi2:40,  color:'#e11d48', label:'Obese II',   alpha:.10 },
-    { bmi1:40,   bmi2:maxWt/h/h+5, color:'#7c3aed', label:'Obese III', alpha:.08 },
-  ];
 
   let html = '';
 
-  // BMI zone bands
+  /* BMI zone bands */
+  const zones = [
+    {bmi1:18.5,bmi2:25,  color:'#16a34a',alpha:.10},
+    {bmi1:25,  bmi2:30,  color:'#d97706',alpha:.10},
+    {bmi1:30,  bmi2:35,  color:'#f97316',alpha:.09},
+    {bmi1:35,  bmi2:40,  color:'#e11d48',alpha:.09},
+    {bmi1:40,  bmi2:maxW/h/h+5,color:'#7c3aed',alpha:.07},
+  ];
   zones.forEach(z=>{
-    const w1 = Math.max(minWt, bmiToWt(z.bmi1));
-    const w2 = Math.min(maxWt, bmiToWt(z.bmi2));
-    if(w1>=maxWt||w2<=minWt) return;
-    const y1 = yS(w2), y2 = yS(w1);
-    html += `<rect x="${PL}" y="${y1.toFixed(1)}" width="${cW}" height="${(y2-y1).toFixed(1)}"
-      fill="${z.color}" opacity="${z.alpha}" rx="0"/>`;
-    // BMI label on right
-    const midY = (y1+y2)/2;
-    if(midY>PT+6&&midY<PT+cH-6){
-      html += `<text x="${PL+cW-3}" y="${midY.toFixed(1)}" fill="${z.color}" font-size="8"
-        font-weight="700" text-anchor="end" dominant-baseline="middle" opacity=".7">${z.label}</text>`;
-    }
+    const w1=Math.max(minW,z.bmi1*h*h), w2=Math.min(maxW,z.bmi2*h*h);
+    if(w1>=maxW||w2<=minW) return;
+    const y1=yS(w2),y2=yS(w1);
+    html+=`<rect x="${PL}" y="${y1.toFixed(1)}" width="${cW}" height="${(y2-y1).toFixed(1)}"
+      fill="${z.color}" opacity="${z.alpha}"/>`;
   });
 
-  // Target weight dashed line
-  if(targetWt&&targetWt>minWt&&targetWt<maxWt){
-    const yT = yS(targetWt);
-    html += `<line x1="${PL}" y1="${yT.toFixed(1)}" x2="${PL+cW}" y2="${yT.toFixed(1)}"
-      stroke="#16a34a" stroke-width="1.5" stroke-dasharray="8,4" opacity=".6"/>`;
-    html += `<text x="${PL+4}" y="${(yT-4).toFixed(1)}" fill="#16a34a" font-size="9" font-weight="700">
-      Target ${targetWt}kg</text>`;
+  /* Target weight line */
+  if(tgt&&tgt>minW&&tgt<maxW){
+    const yT=yS(tgt);
+    html+=`<line x1="${PL}" y1="${yT.toFixed(1)}" x2="${PL+cW}" y2="${yT.toFixed(1)}"
+      stroke="#16a34a" stroke-width="1.5" stroke-dasharray="7,4" opacity=".7"/>`;
+    html+=`<text x="${PL+4}" y="${(yT-4).toFixed(1)}" fill="#16a34a" font-size="9" font-weight="700">
+      Target ${tgt}kg</text>`;
   }
 
-  // Grid lines
-  const wtStep = calcStep(maxWt-minWt);
-  for(let w=Math.ceil(minWt/wtStep)*wtStep; w<=maxWt; w+=wtStep){
-    const y = yS(w);
-    html += `<line x1="${PL}" y1="${y.toFixed(1)}" x2="${PL+cW}" y2="${y.toFixed(1)}"
-      stroke="${w===0?'#1f2937':'#e2e8f0'}" stroke-width="${w===0?1:.6}"/>`;
-    html += `<text x="${(PL-4).toFixed(0)}" y="${y.toFixed(1)}" fill="#94a3b8" font-size="9"
+  /* Grid — y */
+  const step = calcStep(maxW-minW);
+  for(let w=Math.ceil(minW/step)*step; w<=maxW; w+=step){
+    const y=yS(w);
+    html+=`<line x1="${PL}" y1="${y.toFixed(1)}" x2="${PL+cW}" y2="${y.toFixed(1)}"
+      stroke="#e2e8f0" stroke-width=".7"/>`;
+    html+=`<text x="${(PL-4)}" y="${y.toFixed(1)}" fill="#94a3b8" font-size="9"
       text-anchor="end" dominant-baseline="middle">${w}</text>`;
   }
 
-  const ageStep = calcStep(maxAge-minAge);
-  for(let a=Math.ceil(minAge/ageStep)*ageStep; a<=maxAge; a+=ageStep){
-    const x = xS(a);
-    html += `<line x1="${x.toFixed(1)}" y1="${PT}" x2="${x.toFixed(1)}" y2="${(PT+cH).toFixed(1)}"
-      stroke="#e2e8f0" stroke-width=".6"/>`;
-    html += `<text x="${x.toFixed(1)}" y="${(PT+cH+14).toFixed(0)}" fill="#94a3b8" font-size="9"
-      text-anchor="middle">Age ${a}</text>`;
+  /* Grid — x (year ticks) */
+  const minYear=minD.getFullYear(), maxYear=maxD.getFullYear();
+  for(let yr=minYear; yr<=maxYear+1; yr++){
+    const yd=new Date(yr,0,1);
+    if(yd<minD||yd>maxD) continue;
+    const x=xN(yd);
+    html+=`<line x1="${x.toFixed(1)}" y1="${PT}" x2="${x.toFixed(1)}" y2="${(PT+cH).toFixed(1)}"
+      stroke="#e2e8f0" stroke-width=".7"/>`;
+    html+=`<text x="${x.toFixed(1)}" y="${(PT+cH+14).toFixed(0)}" fill="#94a3b8" font-size="9"
+      text-anchor="middle">${yr}</text>`;
   }
 
-  // Axis labels
-  html += `<text x="${(PL+cW/2).toFixed(0)}" y="${(H-4)}" fill="#475569" font-size="10"
-    text-anchor="middle" font-weight="600">Age (years)</text>`;
-  html += `<text x="12" y="${(PT+cH/2).toFixed(0)}" fill="#475569" font-size="10"
-    text-anchor="middle" font-weight="600" transform="rotate(-90 12 ${(PT+cH/2).toFixed(0)})">Weight (kg)</text>`;
+  /* Axis labels */
+  html+=`<text x="${(PL+cW/2)}" y="${H-3}" fill="#475569" font-size="10"
+    text-anchor="middle" font-weight="600">Visit Date</text>`;
+  html+=`<text x="12" y="${(PT+cH/2)}" fill="#475569" font-size="10" text-anchor="middle"
+    font-weight="600" transform="rotate(-90 12 ${(PT+cH/2).toFixed(0)})">Weight (kg)</text>`;
 
-  // Projection area fill
+  /* Projection area + line */
   if(projPts.length>1){
-    const areaPoints = projPts.map(p=>`${xS(p.age).toFixed(1)},${yS(p.wt).toFixed(1)}`).join(' ');
-    const baseY = yS(minWt);
-    html += `<polyline points="${areaPoints}" fill="none" stroke="#2563eb" stroke-width="2.5"
+    const projLine = projPts.map(p=>`${xN(p.d).toFixed(1)},${yS(p.w).toFixed(1)}`).join(' ');
+    const baseY=yS(minW);
+    const projArea = projLine
+      +` ${xN(projPts[projPts.length-1].d).toFixed(1)},${baseY.toFixed(1)}`
+      +` ${xN(projPts[0].d).toFixed(1)},${baseY.toFixed(1)}`;
+    html+=`<polygon points="${projArea}" fill="#2563eb" opacity=".05"/>`;
+    html+=`<polyline points="${projLine}" fill="none" stroke="#2563eb" stroke-width="2"
       stroke-dasharray="8,5" stroke-linejoin="round" stroke-linecap="round" opacity=".75"/>`;
-    // Shaded area under projection
-    const area = projPts.map(p=>`${xS(p.age).toFixed(1)},${yS(p.wt).toFixed(1)}`).join(' ')
-      + ` ${xS(projPts[projPts.length-1].age).toFixed(1)},${baseY.toFixed(1)}`
-      + ` ${xS(projPts[0].age).toFixed(1)},${baseY.toFixed(1)}`;
-    html += `<polygon points="${area}" fill="#2563eb" opacity=".05"/>`;
     // End label
-    const ep = projPts[projPts.length-1];
-    html += `<circle cx="${xS(ep.age).toFixed(1)}" cy="${yS(ep.wt).toFixed(1)}" r="5"
-      fill="#2563eb" stroke="white" stroke-width="1.5"/>`;
-    html += `<text x="${(xS(ep.age)+6).toFixed(0)}" y="${(yS(ep.wt)-5).toFixed(1)}"
-      fill="#2563eb" font-size="9.5" font-weight="700">${ep.wt.toFixed(1)}kg</text>`;
+    const ep=projPts[projPts.length-1];
+    html+=`<circle cx="${xN(ep.d).toFixed(1)}" cy="${yS(ep.w).toFixed(1)}" r="4"
+      fill="#2563eb" stroke="#fff" stroke-width="1.5"/>`;
+    html+=`<text x="${(xN(ep.d)+6).toFixed(0)}" y="${(yS(ep.w)-5).toFixed(1)}"
+      fill="#2563eb" font-size="9" font-weight="700">${ep.w.toFixed(1)}kg</text>`;
   }
 
-  // Actual trajectory line
-  if(pts.length>1){
-    const linePts = pts.map(p=>`${xS(p.age).toFixed(1)},${yS(p.wt).toFixed(1)}`).join(' ');
-    html += `<polyline points="${linePts}" fill="none" stroke="#0d9488" stroke-width="3"
+  /* Actual weight line + shaded area */
+  if(visits.length>1){
+    const linePts=visits.map(vv=>`${xS(vv.date).toFixed(1)},${yS(vv.weight).toFixed(1)}`).join(' ');
+    const baseY=yS(minW);
+    const areaPts=visits.map(vv=>`${xS(vv.date).toFixed(1)},${yS(vv.weight).toFixed(1)}`).join(' ')
+      +` ${xS(visits[visits.length-1].date).toFixed(1)},${baseY.toFixed(1)}`
+      +` ${xS(visits[0].date).toFixed(1)},${baseY.toFixed(1)}`;
+    html+=`<polygon points="${areaPts}" fill="#0d9488" opacity=".06"/>`;
+    html+=`<polyline points="${linePts}" fill="none" stroke="#0d9488" stroke-width="3"
       stroke-linejoin="round" stroke-linecap="round"/>`;
-    // Filled area under curve
-    const area = pts.map(p=>`${xS(p.age).toFixed(1)},${yS(p.wt).toFixed(1)}`).join(' ')
-      + ` ${xS(pts[pts.length-1].age).toFixed(1)},${yS(minWt).toFixed(1)}`
-      + ` ${xS(pts[0].age).toFixed(1)},${yS(minWt).toFixed(1)}`;
-    html += `<polygon points="${area}" fill="#0d9488" opacity=".06"/>`;
   }
 
-  // Data point circles + labels
-  pts.forEach((p,i)=>{
-    const cx = xS(p.age), cy = yS(p.wt);
-    const color = TYPE_COLORS[p.type]||'#0d9488';
-    html += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="6"
-      fill="${color}" stroke="white" stroke-width="2"/>`;
-    // Label (alternate above/below to avoid collision)
-    const above = i%2===0;
-    const ty = above ? cy-12 : cy+18;
-    html += `<text x="${cx.toFixed(1)}" y="${ty.toFixed(1)}" fill="${color}"
-      font-size="8.5" font-weight="700" text-anchor="middle">${p.wt}kg</text>`;
-    if(p.event){
-      html += `<text x="${cx.toFixed(1)}" y="${(ty+(above?-10:10)).toFixed(1)}" fill="#64748b"
-        font-size="7.5" text-anchor="middle">${p.event.length>14?p.event.slice(0,13)+'…':p.event}</text>`;
+  /* Per-visit dots with annotation for key events */
+  const startWt=visits[0].weight;
+  visits.forEach((vv,i)=>{
+    const cx=xS(vv.date), cy=yS(vv.weight);
+    const isEsc=(vv.doseChange||'').toLowerCase().includes('escalat');
+    const hasMilestone=(vv.nsv||[]).length>0;
+    const color=isEsc?'#16a34a':hasMilestone?'#7c3aed':'#0d9488';
+    const r=isEsc||hasMilestone?6:4.5;
+    html+=`<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}"
+      fill="${color}" stroke="#fff" stroke-width="2"/>`;
+    // weight label — alternating above/below
+    const above=i%3!==1;
+    const ty=above?cy-10:cy+16;
+    html+=`<text x="${cx.toFixed(1)}" y="${ty.toFixed(1)}" fill="${color}"
+      font-size="8.5" font-weight="700" text-anchor="middle">${vv.weight}</text>`;
+    // Dose escalation vertical tick
+    if(isEsc){
+      html+=`<line x1="${cx.toFixed(1)}" y1="${(cy+r+2).toFixed(1)}"
+        x2="${cx.toFixed(1)}" y2="${(PT+cH).toFixed(1)}"
+        stroke="#16a34a" stroke-width="1" stroke-dasharray="3,3" opacity=".4"/>`;
+      html+=`<text x="${(cx+3).toFixed(0)}" y="${(PT+cH+10).toFixed(1)}"
+        fill="#16a34a" font-size="8" font-weight="700">↑Dose</text>`;
+    }
+    // NSV milestones: show abbreviated label
+    if(hasMilestone && vv.nsv[0]){
+      const lbl=vv.nsv[0].length>22?vv.nsv[0].slice(0,21)+'…':vv.nsv[0];
+      const lx=cx, ly=above?cy-22:cy+27;
+      html+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="#7c3aed"
+        font-size="7.5" text-anchor="middle" font-style="italic">${lbl}</text>`;
     }
   });
 
-  // Chart title
-  html += `<text x="${(PL+cW/2).toFixed(0)}" y="14" fill="#0f766e" font-size="11" font-weight="800"
-    text-anchor="middle">Lifetime Weight Trajectory — Birth to ${(currentAge+(meta.projYears||3))} yrs</text>`;
+  /* TBWL annotation on right */
+  const tb=+((startWt-visits[visits.length-1].weight)/startWt*100).toFixed(1);
+  html+=`<text x="${(PL+cW-4)}" y="${PT+10}" fill="#0f766e" font-size="10" font-weight="800"
+    text-anchor="end">−${tb}% TBWL over ${visits.length} visits</text>`;
+
+  /* Chart title */
+  html+=`<text x="${(PL+cW/2)}" y="15" fill="#0f766e" font-size="11" font-weight="800"
+    text-anchor="middle">Weight Journey: Every Visit — ${activeId||''}</text>`;
 
   svg.innerHTML = html;
 }
 
-function calcStep(range){
-  if(range>100) return 20;
-  if(range>50)  return 10;
-  if(range>20)  return 5;
-  return 2;
-}
+function calcStep(r){ return r>80?20:r>40?10:r>20?5:2; }
 
-// GLP-1 efficacy curve: faster loss early, plateau
-function expectedFactor(med, years){
-  const curves = {
-    semaglutide:  [0,0.5,0.85,1.0,1.0,1.0],
-    tirzepatide:  [0,0.55,0.9,1.0,1.0,1.0],
-    liraglutide:  [0,0.4,0.75,0.9,0.9,0.9],
-    orlistat:     [0,0.3,0.6,0.75,0.75,0.75],
-    phentermine:  [0,0.6,0.8,0.85,0.85,0.85],
-    combo:        [0,0.55,0.9,1.0,1.0,1.0],
-  };
-  const c = curves[med]||[0,0.4,0.7,0.85,0.9,0.9];
-  const idx = Math.min(Math.floor(years), c.length-1);
-  const frac = years-Math.floor(years);
-  const next = c[Math.min(idx+1, c.length-1)];
-  return c[idx]*(1-frac)+next*frac;
-}
-
-/* ══════════════════════════════════════════════
-   STATS
-════════════════════════════════════════════════ */
-function updateStats(){
-  const meta = record.meta||{};
-  const pts  = (record.milestones||[])
-    .map(m=>({ age:parseFloat(m.age), wt:parseFloat(m.wt) }))
-    .filter(p=>!isNaN(p.age)&&p.wt>0)
-    .sort((a,b)=>a.age-b.age);
-
-  const currentWt = pts.length ? pts[pts.length-1].wt : null;
-  const h = (meta.height||168)/100;
-  const bmi = currentWt ? +(currentWt/(h*h)).toFixed(1) : null;
-  const peakWt = pts.length ? Math.max(...pts.map(p=>p.wt)) : null;
-  const firstWt = pts.length ? pts[0].wt : null;
-  const totalLoss = (currentWt && firstWt) ? +(firstWt-currentWt).toFixed(1) : null;
-
-  // Projection
-  let projWt = null;
-  if(currentWt && meta.programStart){
-    const projYrs = meta.projYears||3;
-    const rate    = (meta.projRate||8)/100;
-    const factor  = expectedFactor(meta.medication||'', projYrs);
-    projWt = +(currentWt*(1-rate*factor*projYrs)).toFixed(1);
-  }
-
-  v('statBMI').textContent  = bmi||'—';
-  v('statLoss').textContent = totalLoss!=null ? (totalLoss>0?'-':'')+totalLoss : '—';
-  v('statPeak').textContent = peakWt||'—';
-  v('statProj').textContent = projWt||'—';
-}
-
-/* ══════════════════════════════════════════════
-   NARRATIVE
-════════════════════════════════════════════════ */
-function buildNarrative(){
-  const meta = record.meta||{};
-  const pts  = (record.milestones||[])
-    .map(m=>({ age:parseFloat(m.age), wt:parseFloat(m.wt), event:m.event }))
-    .filter(p=>!isNaN(p.age)&&p.wt>0)
-    .sort((a,b)=>a.age-b.age);
-
-  if(pts.length<2){ v('narrativeCard').style.display='none'; return; }
-  v('narrativeCard').style.display='';
-
-  const h        = (meta.height||168)/100;
-  const currWt   = pts[pts.length-1].wt;
-  const currBMI  = +(currWt/h/h).toFixed(1);
-  const peakWt   = Math.max(...pts.map(p=>p.wt));
-  const peakAge  = pts.find(p=>p.wt===peakWt)?.age;
-  const totalLoss= +(pts[0].wt-currWt).toFixed(1);
-  const tbwl     = +((pts[0].wt-currWt)/pts[0].wt*100).toFixed(1);
-  const projYrs  = meta.projYears||3;
-  const projRate = (meta.projRate||8)/100;
-  const projWt   = meta.programStart
-    ? +(currWt*(1-projRate*expectedFactor(meta.medication||'',projYrs)*projYrs)).toFixed(1)
-    : null;
-
-  const bmiCat = currBMI<25?'overweight range':currBMI<30?'overweight (BMI 25–30)':
-                 currBMI<35?'Obesity Class I (BMI 30–35)':
-                 currBMI<40?'Obesity Class II (BMI 35–40)':'Obesity Class III (BMI >40)';
-
-  let text = `Patient's weight journey spans from birth weight of <strong>${pts[0].wt} kg</strong>
-    to the current weight of <strong>${currWt} kg</strong> (BMI ${currBMI} — ${bmiCat}). `;
-
-  if(peakWt>currWt){
-    text += `Peak lifetime weight was <strong>${peakWt} kg</strong> at age ${peakAge||'unknown'}. `;
-  }
-  if(totalLoss>0){
-    text += `Total weight change from baseline: <strong>−${totalLoss} kg (${tbwl}% TBWL)</strong>. `;
-  }
-  if(meta.medication && meta.medication !== ''){
-    const medNames = { semaglutide:'Semaglutide', tirzepatide:'Tirzepatide', liraglutide:'Liraglutide',
-                       orlistat:'Orlistat', phentermine:'Phentermine', combo:'Combination therapy' };
-    text += `Currently on <strong>${medNames[meta.medication]||meta.medication}</strong>. `;
-  }
-  if(projWt && meta.programStart){
-    const projLoss = +(currWt-projWt).toFixed(1);
-    const projTBWL = +((currWt-projWt)/currWt*100).toFixed(1);
-    text += `<br><br>📈 <strong>3-Year Projection:</strong> With current protocol (${meta.projRate||8}%/yr),
-      expected weight at ${projYrs} year${projYrs>1?'s':''}: <strong>${projWt} kg</strong>
-      (projected loss: −${projLoss} kg, ${projTBWL}% TBWL). `;
-    if(meta.targetWt && projWt<=meta.targetWt){
-      text += `<span style="color:#16a34a;font-weight:700">✓ Target weight of ${meta.targetWt} kg is achievable within ${projYrs} years on current protocol.</span>`;
-    } else if(meta.targetWt){
-      text += `<span style="color:#d97706;font-weight:700">Target of ${meta.targetWt} kg may require intensified therapy or longer duration.</span>`;
-    }
-  }
-
-  v('narrativeText').innerHTML = text;
-}
-
-/* ══════════════════════════════════════════════
+/* ═══════════════════════════════════════════
    INIT
-════════════════════════════════════════════════ */
+═══════════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded',()=>{
-  // Detect iframe
   if(window.parent!==window){
     document.body.classList.add('in-iframe');
-    const brand = document.querySelector('.toolbar-brand');
+    const brand=document.querySelector('.bar-brand');
     if(brand){
-      const badge = document.createElement('span');
-      badge.id = 'iframePtBadge';
-      badge.className = 'patient-badge-inline';
-      badge.textContent = '—';
+      const badge=document.createElement('span');
+      badge.id='iframePtBadge'; badge.className='pt-badge'; badge.textContent='—';
       brand.appendChild(badge);
     }
   }
-
-  // Register frame sync
   PaniniData.initFrameSync(loadById);
-
-  // Restore from active patient
-  const saved = PaniniData.getActiveId();
-  if(saved && validId(saved)){ loadById(saved); return; }
-
-  // Default demo view
-  record.milestones = defaultMilestones();
-  renderMilestoneTable();
-  render();
+  const saved=PaniniData.getActiveId();
+  if(saved&&validId(saved)){ loadById(saved); return; }
+  // Default: show demo
+  loadDemo();
 });
 </script>
 </body>
