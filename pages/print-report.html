@@ -1,790 +1,2184 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Panini — Fill & Print Report</title>
-<script src="../assets/js/panini-data.js"></script>
-<style>
-/* ─── Reset & vars ─────────────────────────────────────────── */
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --t:#0d9488;--td:#0f766e;--tl:#ccfbf1;
-  --g:#16a34a;--gl:#dcfce7;
-  --a:#d97706;--al:#fef3c7;
-  --b:#2563eb;--bl:#dbeafe;
-  --p:#7c3aed;--pl:#ede9fe;
-  --r:#e11d48;--rl:#ffe4e6;
-  --ink:#1f2937;--sl:#475569;--mu:#94a3b8;
-  --ln:#e2e8f0;--bg:#f1f5f9;--cd:#fff;
-  --sh:0 2px 12px rgba(15,23,42,.08)
-}
-html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  font-size:13px;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panini — Lifetime Trajectory Map</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/panini-data.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        },
+                        clinical: {
+                            navy: '#0f172a',
+                            slate: '#1e293b',
+                            teal: '#0d9488',
+                            emerald: '#10b981',
+                            coral: '#f43f5e',
+                            amber: '#f59e0b',
+                            blue: '#3b82f6',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
-/* ─── Screen layout ─────────────────────────────────────────── */
-.app{display:flex;flex-direction:column;height:100vh}
+    <style>
+        /* Custom scrollbar & baseline styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
 
-/* topbar */
-.topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
-  padding:9px 16px;background:var(--td);color:#fff;flex-shrink:0;
-  box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.topbar-brand{font-size:14px;font-weight:700}
-.topbar-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.tbtn{padding:6px 13px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;
-  border:1.5px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);color:#fff;
-  font-family:inherit;transition:background .15s}
-.tbtn:hover{background:rgba(255,255,255,.25)}
-.tbtn.solid{background:#fff;color:var(--td);border-color:#fff}
-.tbtn.solid:hover{background:#e2e8f0}
-.tbtn.green{background:#16a34a;color:#fff;border-color:#16a34a}
-.tbtn.demo{background:rgba(251,191,36,.25);color:#fde68a;border-color:rgba(251,191,36,.4)}
-.pid-row{display:flex;align-items:center;gap:5px}
-.pid-row input{font-size:12px;font-weight:700;letter-spacing:.05em;padding:5px 9px;
-  border-radius:7px;border:1.5px solid rgba(255,255,255,.4);
-  background:rgba(255,255,255,.12);color:#fff;width:140px;font-family:inherit}
-.pid-row input::placeholder{color:rgba(255,255,255,.45)}
-.pid-row input:focus{outline:none;border-color:#fff}
-.st{font-size:11px;opacity:.8}
-body.in-iframe .pid-row{display:none!important}
+        /* Tooltip styling for interactive SVG */
+        .svg-tooltip {
+            pointer-events: none;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
 
-/* main two-col */
-.main{display:flex;flex:1;overflow:hidden}
+        /* Animations */
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.18); opacity: 1; }
+        }
+        .pulse-circle {
+            animation: pulse-slow 3s infinite;
+        }
 
-/* ─── Left panel ────────────────────────────────────────────── */
-.left{width:340px;min-width:280px;background:var(--cd);overflow-y:auto;
-  border-right:1px solid var(--ln);flex-shrink:0;padding:14px 14px 60px}
-@media(max-width:700px){.left{width:100%;border-right:none;overflow-y:visible}}
+        /* Hide topbar when running inside Panini iframe */
+        body.in-iframe header { display: none !important; }
 
-/* ─── Right panel ───────────────────────────────────────────── */
-.right{flex:1;overflow-y:auto;padding:16px 16px 60px;min-width:0}
-
-/* ─── Form elements ─────────────────────────────────────────── */
-.sec-hdr{font-size:10px;font-weight:700;color:var(--td);text-transform:uppercase;
-  letter-spacing:.06em;padding:6px 0 4px;border-bottom:2px solid var(--tl);
-  margin-bottom:10px;margin-top:16px;display:flex;align-items:center;gap:6px}
-.sec-hdr:first-of-type{margin-top:0}
-.fg{display:flex;flex-direction:column;gap:3px;margin-bottom:9px}
-.fg label{font-size:9.5px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:.04em}
-.fg input,.fg select,.fg textarea{font-family:inherit;font-size:12.5px;padding:7px 9px;
-  border:1.5px solid var(--ln);border-radius:7px;background:#fff;color:var(--ink);
-  transition:border-color .15s}
-.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--t);
-  box-shadow:0 0 0 3px rgba(13,148,136,.1)}
-.fg textarea{resize:vertical;min-height:52px}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-
-/* ─── Visit table ───────────────────────────────────────────── */
-.vt-wrap{overflow-x:auto;margin-bottom:10px}
-.vt{width:100%;border-collapse:collapse;font-size:11px}
-.vt th{background:var(--td);color:#fff;font-size:9px;font-weight:700;text-transform:uppercase;
-  padding:5px 4px;white-space:nowrap;letter-spacing:.04em;text-align:left}
-.vt td{border:1px solid var(--ln);padding:2px 2px;vertical-align:middle}
-.vt tr:nth-child(even) td{background:#f8fafc}
-.vt input,.vt select{width:100%;font-size:11px;padding:4px 4px;border:none;background:transparent;
-  font-family:inherit;color:var(--ink)}
-.vt input:focus,.vt select:focus{outline:none;background:var(--tl)}
-.del-row{padding:3px 6px;border-radius:4px;font-size:10px;background:var(--rl);color:var(--r);
-  border:none;cursor:pointer;font-weight:700}
-.del-row:hover{background:var(--r);color:#fff}
-.add-row-btn{padding:7px 14px;border-radius:7px;background:var(--t);color:#fff;border:none;
-  font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px}
-.add-row-btn:hover{background:var(--td)}
-
-/* ─── Right panel cards ─────────────────────────────────────── */
-.card{background:var(--cd);border-radius:10px;padding:14px 16px;
-  box-shadow:var(--sh);margin-bottom:14px}
-.card-title{font-size:10px;font-weight:700;color:var(--td);text-transform:uppercase;
-  letter-spacing:.05em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-
-/* KPI strip */
-.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
-.kpi{background:var(--cd);border-radius:8px;padding:10px 10px;box-shadow:var(--sh);
-  border-top:3px solid var(--t);text-align:center}
-.kpi.g{border-top-color:var(--g)}.kpi.b{border-top-color:var(--b)}
-.kpi.a{border-top-color:var(--a)}.kpi.p{border-top-color:var(--p)}
-.kv{font-size:18px;font-weight:800;color:var(--ink)}.kl{font-size:9px;color:var(--mu);margin-top:1px}
-
-/* Legend */
-.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px;font-size:10.5px;color:var(--sl)}
-.leg{display:flex;align-items:center;gap:4px}
-.leg-c{width:10px;height:10px;border-radius:50%}
-.leg-l{width:18px;height:3px;border-radius:2px}
-.leg-d{width:18px;height:0;border-top:2.5px dashed}
-
-/* ─── Print mode ─────────────────────────────────────────────── */
-@media print{
-  @page{size:A4 portrait;margin:10mm 12mm 10mm 12mm}
-  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  .app{display:block;height:auto}
-  .topbar{display:none!important}
-  .left{display:none!important}
-  .main{display:block}
-  .right{overflow:visible;padding:0;margin:0}
-  .no-print{display:none!important}
-  .card{box-shadow:none;border:1px solid var(--ln);page-break-inside:avoid;margin-bottom:10px}
-  .pg-break{page-break-before:always}
-  .kpi-row{grid-template-columns:repeat(5,1fr)}
-  .kv{font-size:16px}
-  .print-header{display:block!important}
-  #visitLogCard{page-break-before:always}
-  #coachingCard{page-break-before:always}
-}
-.print-header{display:none;margin-bottom:12px}
-.print-header h2{font-size:16px;font-weight:800;color:var(--td)}
-.print-header p{font-size:10px;color:var(--sl);margin-top:2px}
-
-/* ─── Visit log table (right panel) ─────────────────────────── */
-.vlog{width:100%;border-collapse:collapse;font-size:10.5px}
-.vlog th{background:var(--td);color:#fff;font-size:9px;font-weight:700;text-transform:uppercase;
-  padding:5px 6px;white-space:nowrap;letter-spacing:.04em}
-.vlog td{border:1px solid var(--ln);padding:5px 6px;vertical-align:top}
-.vlog tr:nth-child(even) td{background:#f8fafc}
-.tbwl-badge{display:inline-block;font-size:9px;font-weight:800;padding:1px 5px;
-  border-radius:3px;background:var(--gl);color:var(--g)}
-.tbwl-neg{background:var(--rl);color:var(--r)}
-.dose-tag{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;
-  border-radius:3px;background:var(--tl);color:var(--td)}
-.esc-tag{background:var(--gl);color:var(--g)}
-.nsv-line{color:var(--g);font-size:9.5px;font-weight:600}
-
-/* ─── Coaching card ──────────────────────────────────────────── */
-.coach-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media print{.coach-grid{grid-template-columns:1fr 1fr}}
-.coach-box{border-radius:8px;padding:12px 14px}
-.coach-box.wins{background:var(--gl);border:1px solid #86efac}
-.coach-box.focus{background:var(--bl);border:1px solid #bfdbfe}
-.coach-box h4{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
-  margin-bottom:8px}
-.coach-box.wins h4{color:var(--g)}
-.coach-box.focus h4{color:var(--b)}
-.win-item{font-size:10.5px;padding:2.5px 0;color:var(--sl)}
-.win-item.checked{color:var(--g);font-weight:600}
-.focus-item{display:flex;justify-content:space-between;
-  font-size:10.5px;padding:3px 0;border-bottom:1px solid rgba(37,99,235,.15);color:var(--sl)}
-.focus-item strong{color:var(--b);font-size:10px}
-.focus-item span{font-weight:700;color:var(--ink)}
-</style>
+        /* Print formatting specifically engineered for exactly 2-page physical / PDF report output */
+        @media print {
+            body {
+                background: white !important;
+                color: #0f172a !important;
+                font-size: 11pt !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .print-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
+            .print-page {
+                width: 100% !important;
+                height: 100% !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                padding: 20px 30px !important;
+                box-sizing: border-box !important;
+            }
+            /* Eliminate shadows and backgrounds for crisp professional print */
+            .print-card {
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                border-radius: 6px !important;
+                margin-bottom: 16px !important;
+                padding: 16px !important;
+                background-color: #ffffff !important;
+            }
+            .print-table th {
+                background-color: #f8fafc !important;
+                color: #1e293b !important;
+                border-bottom: 2px solid #cbd5e1 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .print-table td {
+                border-bottom: 1px solid #e2e8f0 !important;
+            }
+            .print-header-bg {
+                background-color: #0f172a !important;
+                color: #ffffff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .print-badge-emerald {
+                background-color: #dcfce7 !important;
+                color: #166534 !important;
+                border: 1px solid #bbf7d0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .print-badge-coral {
+                background-color: #ffe4e6 !important;
+                color: #9f1239 !important;
+                border: 1px solid #fecdd3 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            /* High-resolution SVG print rules */
+            svg {
+                max-width: 100% !important;
+                height: auto !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+        }
+    </style>
 </head>
-<body>
-<div class="app">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased selection:bg-teal-500 selection:text-white min-h-screen flex flex-col">
 
-<!-- ── Topbar ─────────────────────────────────────────────── -->
-<div class="topbar">
-  <div class="topbar-brand">📋 Panini — Fill & Print Report</div>
-  <div class="topbar-right">
-    <div class="pid-row">
-      <input type="text" id="pidInput" placeholder="WIN-XXXXXX" maxlength="16" autocomplete="off" spellcheck="false">
-      <button class="tbtn solid" onclick="loadPatient()">Load</button>
-    </div>
-    <button class="tbtn demo" onclick="loadDemo()">👤 Demo</button>
-    <button class="tbtn" onclick="clearAll()">🗑 Clear</button>
-    <button class="tbtn green" onclick="window.print()">🖨 Print / PDF</button>
-    <span class="st" id="st"></span>
-  </div>
-</div>
+    <!-- Top App Navigation / Bar (Hidden in Print) -->
+    <header class="no-print sticky top-0 z-40 bg-clinical-navy text-white shadow-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Branding -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-clinical-teal to-clinical-emerald flex items-center justify-center shadow-inner font-black text-xl tracking-wider">
+                        <i class="fa-solid fa-weight-scale text-white"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">Panini — Trajectory Map</span>
+                        <span class="hidden sm:inline text-xs text-slate-400 ml-2 border-l border-slate-700 pl-2">Lifetime Weight Trajectory & 3-Year Prognostic Architecture</span>
+                    </div>
+                </div>
 
-<div class="main">
+                <!-- Navigation Tabs & Action Buttons -->
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Tab Switchers -->
+                    <button id="nav-tab-1" onclick="switchTab(1)" class="nav-btn px-3 py-2 rounded-md text-sm font-semibold transition-all flex items-center space-x-2 bg-clinical-teal text-white shadow-sm">
+                        <i class="fa-solid fa-file-medical text-teal-200"></i>
+                        <span class="hidden md:inline">Page 1:</span>
+                        <span>Historical Intake & Yo-Yo</span>
+                    </button>
+                    <button id="nav-tab-2" onclick="switchTab(2)" class="nav-btn px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-line text-emerald-400"></i>
+                        <span class="hidden md:inline">Page 2:</span>
+                        <span>3-Year Prognostic Map</span>
+                    </button>
 
-<!-- ══════════════════════════════════════════════════════════
-     LEFT — DATA ENTRY PANEL
-══════════════════════════════════════════════════════════ -->
-<div class="left no-print">
+                    <div class="h-6 border-l border-slate-700 mx-1"></div>
 
-  <div class="sec-hdr">🏥 Patient Details</div>
-  <div class="fg"><label>Patient ID (WIN-)</label>
-    <input id="f_pid" placeholder="WIN-A4X291" oninput="sync('f_pid')"></div>
-  <div class="row2">
-    <div class="fg"><label>Height (cm)</label>
-      <input type="number" id="f_height" placeholder="165" min="100" max="220" oninput="render()"></div>
-    <div class="fg"><label>Target Weight (kg)</label>
-      <input type="number" id="f_target" placeholder="75" step="0.5" oninput="render()"></div>
-  </div>
-  <div class="row2">
-    <div class="fg"><label>Program Start Date</label>
-      <input type="date" id="f_start" oninput="render()"></div>
-    <div class="fg"><label>Sex</label>
-      <select id="f_sex" onchange="render()">
-        <option value="">—</option>
-        <option value="M">Male</option>
-        <option value="F">Female</option>
-      </select>
-    </div>
-  </div>
-  <div class="fg"><label>Medication</label>
-    <select id="f_med" onchange="render()">
-      <option value="">None / Diet + Exercise</option>
-      <option value="semaglutide">Semaglutide (Ozempic/Wegovy)</option>
-      <option value="tirzepatide">Tirzepatide (Mounjaro/Zepbound)</option>
-      <option value="liraglutide">Liraglutide (Saxenda)</option>
-      <option value="orlistat">Orlistat</option>
-      <option value="phentermine">Phentermine</option>
-      <option value="combo">Combination</option>
-    </select>
-  </div>
-  <div class="fg"><label>Comorbidities</label>
-    <input id="f_comorb" placeholder="T2DM, HTN, NAFLD, OSA…" oninput="render()"></div>
-  <div class="fg"><label>Physician / Clinic</label>
-    <input id="f_phys" placeholder="Dr. ___ · Clinic Code" oninput="render()"></div>
+                    <!-- Actions -->
+                    <button onclick="triggerPrintMode()" title="Print / Export 2-Page Clinical Handout" class="px-3 py-2 rounded-md text-sm font-medium bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 shadow flex items-center space-x-2 transition-all">
+                        <i class="fa-solid fa-print"></i>
+                        <span class="hidden lg:inline">Print 2-Page Report</span>
+                    </button>
+                    <!-- WIN-ID Load -->
+                    <div class="flex items-center space-x-1">
+                        <input type="text" id="panini-win-id" placeholder="WIN-XXXXXX" maxlength="16" autocomplete="off" spellcheck="false"
+                            class="w-32 px-2 py-1.5 rounded-md text-sm font-mono font-bold bg-slate-800 text-white border border-slate-600 focus:outline-none focus:border-teal-400 placeholder-slate-500">
+                        <button onclick="loadFromPaniniInput()" class="px-2 py-1.5 rounded-md text-xs font-bold bg-teal-600 text-white hover:bg-teal-500 transition-all">Load</button>
+                    </div>
+                    <button onclick="openDataModal()" title="Manage Patient Data (Save / Load / Demo)" class="p-2 sm:px-3 sm:py-2 rounded-md text-sm font-medium bg-slate-800 text-slate-200 hover:text-white hover:bg-slate-700 flex items-center space-x-2 transition-all border border-slate-700">
+                        <i class="fa-solid fa-folder-open text-blue-400"></i>
+                        <span class="hidden xl:inline">Patient Data</span>
+                    </button>
+                    <button onclick="openHelpModal()" title="How to Use This Clinic Tool" class="p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+                        <i class="fa-regular fa-circle-question text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
 
-  <div class="sec-hdr">📌 Visit Data — one row per visit</div>
-  <div style="font-size:10px;color:var(--mu);margin-bottom:8px">
-    Enter date + weight at minimum. All other fields optional. Chart updates live.
-  </div>
-  <div class="vt-wrap">
-    <table class="vt" id="visitInputTable">
-      <thead><tr>
-        <th>Date</th><th>Wt kg</th><th>Waist</th><th>BP</th>
-        <th>Dose</th><th>NSV / Key Win</th><th></th>
-      </tr></thead>
-      <tbody id="visitInputBody"></tbody>
-    </table>
-  </div>
-  <button class="add-row-btn" onclick="addRow()">+ Add Visit</button>
-
-  <div class="sec-hdr">🎯 Coaching Card — Latest Visit</div>
-  <div class="fg"><label>Wins this visit (comma-separated)</label>
-    <textarea id="f_wins" placeholder="BP medication reduced, Clothes fitting better, 10,000 steps achieved…" oninput="render()"></textarea></div>
-  <div class="fg"><label>Next visit focus goals</label>
-    <textarea id="f_focus" placeholder="Protein 100g/day, Water 2.5L/day, Walk 10,000 steps, Resistance training 2×/week…" oninput="render()"></textarea></div>
-  <div class="row2">
-    <div class="fg"><label>Next Appointment</label>
-      <input type="date" id="f_next" oninput="render()"></div>
-    <div class="fg"><label>Next Dose Plan</label>
-      <input id="f_ndose" placeholder="e.g. 1.0mg/wk" oninput="render()"></div>
-  </div>
-  <div class="fg"><label>Physician Note</label>
-    <textarea id="f_note" placeholder="Clinical observations for this visit…" oninput="render()"></textarea></div>
-
-</div>
-
-<!-- ══════════════════════════════════════════════════════════
-     RIGHT — LIVE PREVIEW + PRINT OUTPUT
-══════════════════════════════════════════════════════════ -->
-<div class="right" id="rightPanel">
-
-  <!-- Print header (hidden on screen) -->
-  <div class="print-header">
-    <h2>⚖ Panini Weight Management — Clinical Visit Report</h2>
-    <p id="printMeta"></p>
-  </div>
-
-  <!-- KPI row -->
-  <div class="kpi-row" id="kpiRow">
-    <div class="kpi">   <div class="kv" id="k0">—</div><div class="kl">Start Wt (kg)</div></div>
-    <div class="kpi g"> <div class="kv" id="k1">—</div><div class="kl">Current Wt (kg)</div></div>
-    <div class="kpi g"> <div class="kv" id="k2">—</div><div class="kl">Lost (kg)</div></div>
-    <div class="kpi b"> <div class="kv" id="k3">—</div><div class="kl">TBWL %</div></div>
-    <div class="kpi a"> <div class="kv" id="k4">—</div><div class="kl">BMI (current)</div></div>
-  </div>
-
-  <!-- Chart card -->
-  <div class="card">
-    <div class="card-title">📉 Weight Journey — Every Visit Plotted</div>
-    <div id="chartWrap" style="overflow-x:auto">
-      <svg id="chart" viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg"
-           style="display:block;min-width:480px;width:100%"></svg>
-    </div>
-    <div class="legend">
-      <div class="leg"><div class="leg-c" style="background:#0d9488"></div>Actual weight</div>
-      <div class="leg"><div class="leg-d" style="border-color:#2563eb"></div>Projection (12 mo)</div>
-      <div class="leg"><div class="leg-l" style="background:#16a34a;opacity:.4;height:10px"></div>Healthy BMI</div>
-      <div class="leg"><div class="leg-l" style="background:#d97706;opacity:.4;height:10px"></div>Overweight</div>
-      <div class="leg"><div class="leg-l" style="background:#e11d48;opacity:.3;height:10px"></div>Obese</div>
-    </div>
-  </div>
-
-  <!-- Visit log (page 2 in print) -->
-  <div class="card" id="visitLogCard" style="display:none">
-    <div class="card-title">📋 Visit Progress Log</div>
-    <div style="overflow-x:auto">
-      <table class="vlog" id="visitLogTable">
-        <thead><tr>
-          <th>#</th><th>Date</th><th>Mo</th><th>Weight (kg)</th>
-          <th>TBWL %</th><th>Waist (cm)</th><th>BP</th>
-          <th>Dose / Medication</th><th>NSV / Key Win</th>
-        </tr></thead>
-        <tbody id="visitLogBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Coaching card (page 3 in print) -->
-  <div class="card" id="coachingCard" style="display:none">
-    <div class="card-title">🃏 Patient Coaching Card — Latest Visit</div>
-
-    <!-- Stats row -->
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px" id="coachStats"></div>
-
-    <div class="coach-grid">
-      <div class="coach-box wins">
-        <h4>⭐ My Wins This Visit</h4>
-        <div id="winsList"></div>
-      </div>
-      <div class="coach-box focus">
-        <h4>🎯 My Focus for Next Visit</h4>
-        <div id="focusList"></div>
-      </div>
+    <!-- Patient Quick Status Banner (Visible in UI across all tabs) -->
+    <div class="no-print bg-slate-900 text-slate-200 border-b border-slate-800 shadow-inner py-2 px-4 sm:px-6 lg:px-8 text-xs sm:text-sm">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-4 flex-wrap gap-y-1">
+                <div class="flex items-center space-x-2">
+                    <span class="text-slate-400 uppercase tracking-wider text-[10px] font-semibold">Patient ID:</span>
+                    <span id="banner-patient-name" class="font-bold text-teal-300 font-mono">WIN-DEMO01</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-slate-400 uppercase tracking-wider text-[10px] font-semibold">Age (Yr):</span>
+                    <span id="banner-patient-mrn" class="font-mono text-slate-300">39 yrs</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-slate-400 uppercase tracking-wider text-[10px] font-semibold">Height:</span>
+                    <span id="banner-patient-height" class="font-medium text-slate-300">168 cm</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-6 flex-wrap gap-y-1">
+                <div class="flex items-center space-x-2">
+                    <span class="text-slate-400 uppercase tracking-wider text-[10px] font-semibold">Baseline:</span>
+                    <span id="banner-baseline-weight" class="font-extrabold text-amber-400">100 kg</span>
+                    <span id="banner-baseline-bmi" class="px-1.5 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">BMI 35.4</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-slate-400 uppercase tracking-wider text-[10px] font-semibold">Peak Lifetime:</span>
+                    <span id="banner-peak-weight" class="font-extrabold text-coral-400">108 kg</span>
+                    <span id="banner-peak-age" class="text-slate-400 text-xs">(Age 38)</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-slate-400 uppercase tracking-wider text-[10px] font-semibold">3-Yr Prognosis:</span>
+                    <span id="banner-target-weight" class="font-extrabold text-emerald-400">80 kg</span>
+                    <span id="banner-target-bmi" class="px-1.5 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">BMI 28.3</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Medication / next appointment strip -->
-    <div style="margin-top:12px;background:var(--al);border:1px solid #fcd34d;
-                border-radius:8px;padding:10px 14px;display:grid;
-                grid-template-columns:1fr 1fr 1fr;gap:10px" id="coachMed">
+    <!-- MAIN APP CONTENT WRAPPER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: HISTORICAL INTAKE & YO-YO SCORECARD -->
+        <!-- ========================================== -->
+        <section id="tab-1-content" class="space-y-6">
+            
+            <!-- Welcome / Header Card -->
+            <div class="bg-gradient-to-r from-clinical-navy via-slate-800 to-clinical-teal rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                    <i class="fa-solid fa-file-medical text-[250px]"></i>
+                </div>
+                <div class="max-w-4xl relative z-10 space-y-2">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-semibold uppercase tracking-wide">
+                        <i class="fa-solid fa-notes-medical"></i>
+                        <span>Clinical Intake & Trajectory Diagnostic</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Lifetime Weight Trajectory & Yo-Yo Scorecard</h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Rather than viewing obesity as a sudden lapse in adherence, this diagnostic map charts the patient's biological weight velocity from birth. By quantifying past 10-kg milestones and identifying historical weight-cycling ("yo-yo") patterns, we uncover key success factors and metabolic plateaus to formulate a permanent 3-Year Prognostic Map.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Patient Core Parameters Grid Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-blue-50 text-clinical-blue flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <h2 class="text-lg font-bold text-slate-800">1. Patient Baseline Parameters & Clinical Target</h2>
+                    </div>
+                    <button onclick="resetToSamplePatient()" class="text-xs font-semibold text-clinical-teal hover:text-teal-700 flex items-center space-x-1 transition-colors">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Reset to Sample Patient</span>
+                    </button>
+                </div>
+
+                <form id="patient-params-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- WIN-ID -->
+                    <div class="sm:col-span-2 lg:col-span-1">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Patient WIN-ID (Anonymous)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-teal-500"><i class="fa-solid fa-fingerprint"></i></div>
+                            <input type="text" id="input-patient-winid" value="WIN-DEMO01" onchange="updatePatientParams()" placeholder="WIN-XXXXXX"
+                                class="w-full pl-9 pr-3 py-2 bg-teal-50 border border-teal-300 rounded-lg text-sm font-bold font-mono focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">No name, phone, or MRN stored — anonymous ID only</p>
+                    </div>
+                    <!-- Current Age -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Current Age (Years)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-calendar-day"></i></div>
+                            <input type="number" id="input-patient-age" value="39" min="1" max="100" onchange="updatePatientParams()" class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
+                        </div>
+                    </div>
+                    <!-- Height -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Height (cm)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-ruler-vertical"></i></div>
+                            <input type="number" id="input-patient-height" value="168" min="100" max="250" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
+                            <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs font-bold text-slate-400">cm</span>
+                        </div>
+                    </div>
+                    <!-- Baseline Weight -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Current Baseline Weight</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-amber-500"><i class="fa-solid fa-scale-unbalanced"></i></div>
+                            <input type="number" id="input-baseline-weight" value="100" step="0.5" min="20" max="300" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-amber-50 border border-amber-300 rounded-lg text-sm font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">
+                            <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs font-bold text-slate-500">kg</span>
+                        </div>
+                    </div>
+                    <!-- Calculated Baseline BMI -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Baseline BMI & Class</label>
+                        <div class="flex items-center space-x-2 h-[38px] px-3 bg-slate-100 border border-slate-300 rounded-lg">
+                            <span id="param-calc-bmi" class="font-extrabold text-slate-800 text-sm">35.4 kg/m²</span>
+                            <span id="param-calc-class" class="px-2 py-0.5 rounded text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200 truncate">Class II Obesity</span>
+                        </div>
+                    </div>
+                    <!-- Lifetime Peak Weight -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Lifetime Peak Weight</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-rose-500"><i class="fa-solid fa-mountain-sun"></i></div>
+                            <input type="number" id="input-peak-weight" value="108" step="0.5" min="20" max="300" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-rose-50 border border-rose-300 rounded-lg text-sm font-bold text-rose-950 focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all">
+                            <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs font-bold text-rose-500">kg</span>
+                        </div>
+                    </div>
+                    <!-- Age at Peak Weight -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Age at Peak Weight</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400"><i class="fa-solid fa-hourglass-high"></i></div>
+                            <input type="number" id="input-peak-age" value="38" min="1" max="100" onchange="updatePatientParams()" class="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-clinical-teal focus:bg-white transition-all">
+                            <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-xs font-bold text-slate-400">Yrs</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- PART 1: Historical Milestones Intake Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 overflow-hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-4">
+                    <div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-teal-50 text-clinical-teal flex items-center justify-center font-bold text-lg">
+                                <i class="fa-solid fa-timeline"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-slate-800">Part 1: The Historical Data Plot (The Past)</h2>
+                        </div>
+                        <p class="text-slate-500 text-xs sm:text-sm mt-1 ml-11">
+                            Please estimate the age or life stage when you reached the following 10-kg weight milestones or major life events.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center space-x-2 self-end md:self-auto">
+                        <button onclick="autoPopulateMilestones()" title="Auto-generate 10-kg incremental steps based on Current & Peak weight" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center space-x-1.5 border border-slate-300 transition-colors">
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+                            <span>Reset 10-kg Increments</span>
+                        </button>
+                        <button onclick="addMilestoneRow()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-clinical-teal text-white hover:bg-teal-700 flex items-center space-x-1.5 shadow-sm transition-colors">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add Milestone</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b-2 border-slate-200 bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider">
+                                <th class="py-3 px-4 w-1/4">Weight Milestone</th>
+                                <th class="py-3 px-4 w-1/4">Estimated Age</th>
+                                <th class="py-3 px-4 w-5/12">Life Event / Context & Biological Factors</th>
+                                <th class="py-3 px-4 w-1/12 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="milestones-tbody" class="divide-y divide-slate-200 text-sm">
+                            <!-- Populated via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PART 2: Past Weight Loss Attempts & Recurrences (Yo-Yo Scorecard) -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-4">
+                    <div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-coral-50 text-clinical-coral flex items-center justify-center font-bold text-lg">
+                                <i class="fa-solid fa-rotate"></i>
+                            </div>
+                            <h2 class="text-lg font-bold text-slate-800">Part 2: Past Weight Loss Attempts & Weight Cycling ("Yo-Yo" Recurrences)</h2>
+                        </div>
+                        <p class="text-slate-500 text-xs sm:text-sm mt-1 ml-11">
+                            Documenting previous significant weight loss cycles ($\ge 5$ kg, $\ge 10$ kg) reveals key initial adherence triggers and primary causes for biological regain.
+                        </p>
+                    </div>
+
+                    <button onclick="addYoYoRow()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-clinical-coral text-white hover:bg-rose-600 flex items-center space-x-1.5 shadow-sm transition-colors self-end md:self-auto">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Past Attempt</span>
+                    </button>
+                </div>
+
+                <!-- Yo-Yo Summary Counters Box -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Losses of $\ge 5$ kg</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="yoyo-count-5" class="text-2xl font-black text-clinical-teal">3</span>
+                            <span class="text-xs font-medium text-slate-400">Attempts</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Losses of $\ge 10$ kg</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="yoyo-count-10" class="text-2xl font-black text-clinical-blue">2</span>
+                            <span class="text-xs font-medium text-slate-400">Attempts</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Losses of $\ge 15$ kg</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="yoyo-count-15" class="text-2xl font-black text-clinical-emerald">1</span>
+                            <span class="text-xs font-medium text-slate-400">Attempt</span>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-slate-900 to-clinical-navy text-white p-3.5 rounded-xl border border-slate-800 shadow-sm flex flex-col justify-between">
+                        <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Total Lifetime Cycled</span>
+                        <div class="flex items-baseline justify-between mt-2">
+                            <span id="yoyo-total-weight" class="text-2xl font-black text-amber-400">35 kg</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Lost & Regained</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Yo-Yo Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b-2 border-slate-200 bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider">
+                                <th class="py-3 px-3 w-2/12">Attempt / Method</th>
+                                <th class="py-3 px-3 w-1/12">Est. Age</th>
+                                <th class="py-3 px-3 w-1/12">Kg Lost</th>
+                                <th class="py-3 px-3 w-1/12">Maintained</th>
+                                <th class="py-3 px-3 w-3/12">Why They Succeeded Initially (Success Factors)</th>
+                                <th class="py-3 px-3 w-3/12">How & Why They Failed / Regained (Recurrence Triggers)</th>
+                                <th class="py-3 px-3 w-1/12 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="yoyo-tbody" class="divide-y divide-slate-200 text-sm">
+                            <!-- Populated via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Navigation Button to Proceed to Page 2 -->
+            <div class="flex justify-end pt-4">
+                <button onclick="switchTab(2)" class="px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-clinical-teal to-clinical-emerald text-white hover:from-teal-600 hover:to-emerald-600 shadow-lg flex items-center space-x-3 text-base transition-all transform hover:-translate-y-0.5">
+                    <span>Proceed to Page 2: 3-Year Prognostic Map</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+        </section>
+
+
+        <!-- ======================================================== -->
+        <!-- TAB 2: 3-YEAR PROGNOSTIC MAP & MASTER TRAJECTORY CHART -->
+        <!-- ======================================================== -->
+        <section id="tab-2-content" class="space-y-6 hidden">
+            
+            <!-- Prognostic Map Header Card -->
+            <div class="bg-gradient-to-r from-clinical-navy via-slate-800 to-clinical-emerald rounded-xl shadow-lg p-6 text-white relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                    <i class="fa-solid fa-chart-line text-[250px]"></i>
+                </div>
+                <div class="max-w-4xl relative z-10 space-y-2">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold uppercase tracking-wide">
+                        <i class="fa-solid fa-bullseye"></i>
+                        <span>Forward Clinical Roadmap</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">3-Year Clinical Prognostic Map & Visual Trajectory</h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        This section models the patient's expected weight trajectory over the next 36 months under modern medical management (e.g., GLP-1 / Dual Agonist therapy + intensive behavioral and nutritional support). It serves as a visual anchor to explain First Principles: the ascent took decades, the descent will be sharp but biologically controlled, and the long-term goal is a rock-solid horizontal maintenance line.
+                    </p>
+                </div>
+            </div>
+
+            <!-- PART 3: The 3-Year Prognostic Milestones Calculator -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-clinical-emerald flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <h2 class="text-lg font-bold text-slate-800">Part 3: Mathematical Clinical Prognosis Auto-Calculator</h2>
+                    </div>
+
+                    <!-- Modality Selector Dropdown -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-500">Therapy Modality:</label>
+                        <select id="select-therapy-modality" onchange="applyTherapyPreset()" class="bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold py-2 px-3 text-slate-800 focus:ring-2 focus:ring-clinical-emerald focus:bg-white transition-all">
+                            <option value="glp1_high">GLP-1 Intensive (Semaglutide 2.4 / Tirzepatide 15mg) [-20% TBWL]</option>
+                            <option value="glp1_std">GLP-1 Standard Protocol (Semaglutide 1.0mg) [-15% TBWL]</option>
+                            <option value="bariatric">Bariatric / Multi-Agonist Intensive [-30% TBWL]</option>
+                            <option value="lifestyle">Structured Lifestyle & Nutrition Only [-8% TBWL]</option>
+                            <option value="custom">Custom Clinical Pathway</option>
+                        </select>
+                        
+                        <div class="flex items-center space-x-1.5 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-300">
+                            <span class="text-xs font-bold text-slate-600 uppercase">Target:</span>
+                            <input type="number" id="input-target-tbwl" value="20" min="1" max="50" onchange="calculatePrognosis()" class="w-14 bg-white border border-slate-300 rounded text-xs font-extrabold text-emerald-600 px-1.5 py-1 text-center">
+                            <span class="text-xs font-bold text-slate-600">% TBWL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clinical Projection Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b-2 border-slate-200 bg-slate-50 text-slate-600 text-xs font-bold uppercase tracking-wider">
+                                <th class="py-3 px-4 w-2/12">Future Timeline</th>
+                                <th class="py-3 px-4 w-2/12">Target Weight</th>
+                                <th class="py-3 px-4 w-1/12">% TBWL</th>
+                                <th class="py-3 px-4 w-1/12">Est. BMI</th>
+                                <th class="py-3 px-4 w-6/12">Clinical Focus / Physiological Milestone Expected</th>
+                                <th class="py-3 px-4 w-1/12 text-center">Reset</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prognosis-tbody" class="divide-y divide-slate-200 text-sm">
+                            <!-- Populated via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PART 4: Master Interactive Lifetime Visual Trajectory Chart -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-teal-50 text-clinical-teal flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-chart-area"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-800">Part 4: Master Lifetime Trajectory Visual Anchor</h2>
+                            <p class="text-xs text-slate-500">Interactive live rendering combining historical milestones, yo-yo cycling annotations, and 3-year clinical prognosis.</p>
+                        </div>
+                    </div>
+
+                    <!-- Graph display toggles -->
+                    <div class="flex items-center space-x-2 flex-wrap gap-2">
+                        <button onclick="toggleBmiBands()" id="btn-toggle-bmi" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 flex items-center space-x-1.5 transition-colors">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span id="label-toggle-bmi">Hide BMI Bands</span>
+                        </button>
+                        <button onclick="toggleYoyoMarkers()" id="btn-toggle-yoyo" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 flex items-center space-x-1.5 transition-colors">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span id="label-toggle-yoyo">Hide Yo-Yo Dips</span>
+                        </button>
+                        <button onclick="exportChartSvg()" title="Download Graph as Standalone Vector SVG" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-white hover:bg-slate-700 flex items-center space-x-1.5 transition-colors">
+                            <i class="fa-solid fa-download text-emerald-400"></i>
+                            <span>Save Chart Vector</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- THE SVG VISUAL CHART CONTAINER -->
+                <div class="relative w-full overflow-hidden bg-white border border-slate-200 rounded-xl shadow-inner p-2 sm:p-4" style="min-height: 480px;">
+                    <!-- Floating Interactive Tooltip -->
+                    <div id="svg-chart-tooltip" class="svg-tooltip absolute z-30 opacity-0 bg-clinical-navy text-white text-xs px-3 py-2 rounded-lg pointer-events-none transform -translate-x-1/2 -translate-y-full">
+                        <!-- Content inserted dynamically -->
+                    </div>
+
+                    <!-- Bespoke Ultra-Responsive SVG Master Graph -->
+                    <div class="w-full h-full overflow-x-auto overflow-y-hidden flex justify-center">
+                        <svg id="master-svg-chart" viewBox="0 0 1100 550" class="w-full h-auto max-h-[600px] select-none font-sans" style="min-width: 800px;">
+                            <defs>
+                                <!-- Gradients -->
+                                <linearGradient id="asc-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.15" />
+                                    <stop offset="100%" stop-color="#f43f5e" stop-opacity="0.5" />
+                                </linearGradient>
+                                <linearGradient id="desc-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#10b981" stop-opacity="0.5" />
+                                    <stop offset="100%" stop-color="#10b981" stop-opacity="0.15" />
+                                </linearGradient>
+                                <!-- Glow Filters -->
+                                <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#f43f5e" flood-opacity="0.5"/>
+                                </filter>
+                                <filter id="glow-emerald" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#10b981" flood-opacity="0.5"/>
+                                </filter>
+                                <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+                                    <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0f172a" flood-opacity="0.15"/>
+                                </filter>
+                            </defs>
+
+                            <!-- LAYER 0: BMI Background Bands (Rendered via JS) -->
+                            <g id="svg-layer-bmi-bands"></g>
+
+                            <!-- LAYER 1: Grid Lines & Axes -->
+                            <g id="svg-layer-grid"></g>
+
+                            <!-- LAYER 2: Yo-Yo Dips Dotted Annotations -->
+                            <g id="svg-layer-yoyo-paths"></g>
+
+                            <!-- LAYER 3: Trajectory Master Paths (Past Ascent & Future Descent) -->
+                            <g id="svg-layer-paths"></g>
+
+                            <!-- LAYER 4: Reference Horizontal Threshold Lines -->
+                            <g id="svg-layer-guidelines"></g>
+
+                            <!-- LAYER 5: Yo-Yo Annotation Warning Badges -->
+                            <g id="svg-layer-yoyo-badges"></g>
+
+                            <!-- LAYER 6: Milestone Data Points / Interactive Circles -->
+                            <g id="svg-layer-points"></g>
+
+                            <!-- LAYER 7: Major Callout Banners (Peak Weight, Start Program, Year 3 Maintenance) -->
+                            <g id="svg-layer-callouts"></g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Visual Chart Legend Bar -->
+                <div class="mt-4 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-600 pt-3 border-t border-slate-100">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3.5 h-3.5 rounded-full bg-clinical-coral inline-block shadow-sm"></span>
+                        <span class="font-bold text-slate-700">Historical Ascent (The Past)</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3.5 h-3.5 rounded-full bg-clinical-emerald inline-block shadow-sm"></span>
+                        <span class="font-bold text-slate-700">Clinical Prognosis (The Future)</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-4 h-1 border-b-2 border-dashed border-rose-500 inline-block"></span>
+                        <span class="font-medium text-slate-600">Lifetime Peak Weight Threshold</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-4 h-1 border-b-2 border-dashed border-emerald-500 inline-block"></span>
+                        <span class="font-medium text-slate-600">Year 3 Stable Maintenance Goal</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3.5 h-3.5 rounded bg-amber-500/20 border border-amber-500 flex items-center justify-center text-[8px]">⚠️</span>
+                        <span class="font-medium text-slate-600">Past Yo-Yo Recurrence Markers</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PART 5: Why This Visual Approach Works (Clinical Communication Reframes) -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <div class="flex items-center space-x-3 border-b border-slate-200 pb-4 mb-6">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <h2 class="text-lg font-bold text-slate-800">Part 5: Clinical Reframe & Core First Principles</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Pillar 1 -->
+                    <div class="bg-gradient-to-br from-indigo-50/60 to-blue-50/60 rounded-xl p-5 border border-indigo-100 flex flex-col justify-between space-y-3">
+                        <div class="space-y-2">
+                            <div class="w-10 h-10 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-lg font-bold shadow-sm">
+                                <i class="fa-solid fa-shield-heart"></i>
+                            </div>
+                            <h3 class="font-extrabold text-slate-900 text-base">1. Removes Patient Stigma</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                                Plotting the biological weight curve from birth visually proves to the patient that obesity is a chronic, multi-year, progressive biological adaptation—not a sudden personal failure or a lack of willpower.
+                            </p>
+                        </div>
+                        <div class="pt-2 border-t border-indigo-200/60 text-[11px] font-bold text-indigo-700 uppercase tracking-wide flex items-center space-x-1">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Reframes guilt into biological objectivity</span>
+                        </div>
+                    </div>
+
+                    <!-- Pillar 2 -->
+                    <div class="bg-gradient-to-br from-emerald-50/60 to-teal-50/60 rounded-xl p-5 border border-emerald-100 flex flex-col justify-between space-y-3">
+                        <div class="space-y-2">
+                            <div class="w-10 h-10 rounded-lg bg-clinical-teal text-white flex items-center justify-center text-lg font-bold shadow-sm">
+                                <i class="fa-solid fa-scale-balanced"></i>
+                            </div>
+                            <h3 class="font-extrabold text-slate-900 text-base">2. Manages Expectations & Plateaus</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                                Visually demonstrating the mathematical "flattening" of the curve between Month 12 and Month 18 prevents patient panic when rapid weight loss inevitably slows down. It normalizes the plateau as a clinical success.
+                            </p>
+                        </div>
+                        <div class="pt-2 border-t border-emerald-200/60 text-[11px] font-bold text-teal-700 uppercase tracking-wide flex items-center space-x-1">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Eliminates yo-yo abandonment risk</span>
+                        </div>
+                    </div>
+
+                    <!-- Pillar 3 -->
+                    <div class="bg-gradient-to-br from-amber-50/60 to-orange-50/60 rounded-xl p-5 border border-amber-100 flex flex-col justify-between space-y-3">
+                        <div class="space-y-2">
+                            <div class="w-10 h-10 rounded-lg bg-amber-500 text-white flex items-center justify-center text-lg font-bold shadow-sm">
+                                <i class="fa-solid fa-flag-checkered"></i>
+                            </div>
+                            <h3 class="font-extrabold text-slate-900 text-base">3. Reframes Long-Term Success</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                                If a patient regains 2 kg in Year 3 or encounters a minor stress event, they can examine their lifetime trajectory map and verify that they fundamentally remain completely detached from their historical steep upward velocity.
+                            </p>
+                        </div>
+                        <div class="pt-2 border-t border-amber-200/60 text-[11px] font-bold text-amber-800 uppercase tracking-wide flex items-center space-x-1">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Anchors permanent behavior adaptation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Button Back or Print -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+                <button onclick="switchTab(1)" class="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 flex items-center space-x-3 text-sm transition-all">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Page 1: Intake & Yo-Yo Scorecard</span>
+                </button>
+
+                <button onclick="triggerPrintMode()" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-extrabold bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:from-amber-600 hover:to-amber-700 shadow-xl flex items-center justify-center space-x-3 text-base transition-all transform hover:-translate-y-0.5">
+                    <i class="fa-solid fa-print text-lg"></i>
+                    <span>Print / Export 2-Page Clinical Handout</span>
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- App Footer -->
+    <footer class="no-print bg-slate-900 text-slate-400 text-xs py-6 mt-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-semibold text-slate-300">Panini Clinical™ &bull; Lifetime Weight Trajectory & Prognostic Architecture</p>
+            <p>Built for professional clinical intake, patient visualization, and long-term GLP-1 weight management.</p>
+            <p class="text-[10px] text-slate-500 pt-2">No patient name, phone, or MRN stored — anonymous WIN-ID only &bull; Local browser-based execution &bull; Offline capable</p>
+        </div>
+    </footer>
+
+
+    <!-- ======================================================= -->
+    <!-- MODALS & OVERLAYS (Help, Data Management, Print Screen) -->
+    <!-- ======================================================= -->
+
+    <!-- Patient Data Management Modal -->
+    <div id="modal-data" class="no-print fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full mx-4 overflow-hidden border border-slate-200 transform scale-95 transition-transform duration-200">
+            <div class="bg-clinical-navy text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2 font-bold text-lg">
+                    <i class="fa-solid fa-folder-open text-blue-400"></i>
+                    <span>Manage Patient Data</span>
+                </div>
+                <button onclick="closeDataModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 space-y-6 text-sm text-slate-700">
+                <div class="space-y-2">
+                    <h3 class="font-bold text-slate-900">Export Current Profile</h3>
+                    <p class="text-xs text-slate-500">Save the complete patient intake, yo-yo cycling history, and 3-year projection to a portable JSON file or EMR text block.</p>
+                    <div class="flex space-x-3 pt-1">
+                        <button onclick="exportDataJson()" class="px-4 py-2 rounded-lg font-bold bg-clinical-teal text-white hover:bg-teal-700 flex items-center space-x-2 shadow-sm">
+                            <i class="fa-solid fa-file-export"></i>
+                            <span>Download JSON File</span>
+                        </button>
+                        <button onclick="copyDataText()" class="px-4 py-2 rounded-lg font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center space-x-2 border border-slate-300">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Copy EMR Text Block</span>
+                        </button>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200">
+
+                <div class="space-y-2">
+                    <h3 class="font-bold text-slate-900">Import Patient Profile</h3>
+                    <p class="text-xs text-slate-500">Restore a previously saved JSON profile file or paste JSON code.</p>
+                    <input type="file" id="file-import-json" accept=".json" onchange="importDataFile(event)" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                </div>
+
+                <hr class="border-slate-200">
+
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center justify-between">
+                    <div>
+                        <h4 class="font-bold text-amber-900 text-xs">Clinical Demo Preset</h4>
+                        <p class="text-[11px] text-amber-700 mt-0.5">Load a complete 100 kg Sarah Jenkins sample profile to explore the architecture instantly.</p>
+                    </div>
+                    <button onclick="resetToSamplePatient(); closeDataModal();" class="px-3 py-1.5 rounded-lg font-bold bg-amber-500 text-white hover:bg-amber-600 text-xs shadow-sm flex-shrink-0">
+                        Load Demo Patient
+                    </button>
+                </div>
+            </div>
+            <div class="bg-slate-50 px-6 py-3 flex justify-end border-t border-slate-100">
+                <button onclick="closeDataModal()" class="px-4 py-2 rounded-lg font-bold bg-slate-800 text-white hover:bg-slate-700 text-xs">Close</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Note -->
-    <div id="coachNote" style="margin-top:10px;background:var(--bg);border-radius:7px;
-         padding:9px 12px;font-size:11.5px;color:var(--sl);display:none"></div>
-
-    <!-- Signature strip -->
-    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;
-                border-top:1px solid var(--ln);padding-top:10px">
-      <div>
-        <div style="height:16px;border-bottom:1.5px solid var(--sl);margin-bottom:3px"></div>
-        <div style="font-size:9px;color:var(--mu)">Patient Signature</div>
-      </div>
-      <div>
-        <div style="height:16px;border-bottom:1.5px solid var(--sl);margin-bottom:3px"></div>
-        <div style="font-size:9px;color:var(--mu)">Physician / Dietician</div>
-      </div>
-      <div>
-        <div style="height:16px;border-bottom:1.5px solid var(--sl);margin-bottom:3px"></div>
-        <div style="font-size:9px;color:var(--mu)">Date</div>
-      </div>
+    <!-- Instructions / Help Modal -->
+    <div id="modal-help" class="no-print fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 overflow-hidden border border-slate-200 transform scale-95 transition-transform duration-200 max-h-[90vh] flex flex-col">
+            <div class="bg-clinical-navy text-white px-6 py-4 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center space-x-2 font-bold text-lg">
+                    <i class="fa-regular fa-circle-question text-teal-400"></i>
+                    <span>Clinical Architecture Guide & Workflow</span>
+                </div>
+                <button onclick="closeHelpModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed flex-grow">
+                <div class="flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-teal-100 text-clinical-teal flex items-center justify-center font-bold flex-shrink-0 mt-0.5">1</span>
+                    <div>
+                        <h4 class="font-bold text-slate-900">Complete Patient Demographics (Page 1)</h4>
+                        <p class="text-slate-600">Enter the patient's baseline weight, lifetime peak weight, height, and age. The system instantly evaluates their current Baseline BMI, Peak BMI, and establishes obesity classification boundaries.</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-teal-100 text-clinical-teal flex items-center justify-center font-bold flex-shrink-0 mt-0.5">2</span>
+                    <div>
+                        <h4 class="font-bold text-slate-900">Populate Historical 10-kg Milestones (Page 1)</h4>
+                        <p class="text-slate-600">Click <b>"Reset 10-kg Increments"</b> or add specific historical weight nodes. Ask the patient to recall approximately what age they reached 20kg, 40kg, 60kg, 80kg, 100kg, etc., and document major associated life events (e.g., college, marriage, pregnancy, high-stress occupations).</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-coral-100 text-clinical-coral flex items-center justify-center font-bold flex-shrink-0 mt-0.5">3</span>
+                    <div>
+                        <h4 class="font-bold text-slate-900">Document Yo-Yo Cycling & Past Attempts (Page 1)</h4>
+                        <p class="text-slate-600">Record prior weight loss programs (e.g., Keto, Weight Watchers). Most importantly, document <b>Why they succeeded initially</b> and <b>Why they regained</b>. The summary scorecard tracks how many times they lost $\ge 5$ kg or $\ge 10$ kg and their total lifetime weight cycled.</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-clinical-emerald flex items-center justify-center font-bold flex-shrink-0 mt-0.5">4</span>
+                    <div>
+                        <h4 class="font-bold text-slate-900">Model the 3-Year Prognostic Map & Present Chart (Page 2)</h4>
+                        <p class="text-slate-600">Select a modern therapy pathway (e.g., GLP-1 Intensive -20% TBWL) or set a custom target. The clinical calculator constructs exact physiological expectations across Month 0, Month 6, Month 12, Month 18, and Year 3 Maintenance. The Master Visual Graph renders in real time.</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold flex-shrink-0 mt-0.5">5</span>
+                    <div>
+                        <h4 class="font-bold text-slate-900">Print or Save 2-Page Patient Handout</h4>
+                        <p class="text-slate-600">Click <b>"Print 2-Page Report"</b> to instantly generate an immaculate, professional 2-page physical or PDF clinical summary optimized specifically for the patient's physical chart or take-home instructional booklet.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-slate-50 px-6 py-3 flex justify-end border-t border-slate-100 flex-shrink-0">
+                <button onclick="closeHelpModal()" class="px-5 py-2 rounded-lg font-bold bg-clinical-teal text-white hover:bg-teal-700 text-xs shadow">Got it, Let's Begin</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-</div><!-- /right -->
-</div><!-- /main -->
-</div><!-- /app -->
 
-<script>
-/* ═══════════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════════ */
-let rowId = 0;
+    <!-- ========================================================================= -->
+    <!-- PRINT ONLY VIEW CONTAINERS (Automatically formatted into exactly 2 pages) -->
+    <!-- ========================================================================= -->
+    <div id="print-report-container" class="print-only hidden print-container font-sans text-slate-900">
+        
+        <!-- ============================================= -->
+        <!-- PRINT PAGE 1: HISTORICAL INTAKE & YO-YO LOG -->
+        <!-- ============================================= -->
+        <div class="print-page">
+            <!-- Medical Header -->
+            <div style="border-bottom: 3px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h1 style="font-size: 20pt; font-weight: 800; margin: 0; color: #0f172a;">OBITRACK CLINICAL™ SYSTEM</h1>
+                    <div style="font-size: 11pt; font-weight: 600; color: #0d9488; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">Lifetime Weight Trajectory & Patient Intake Scorecard</div>
+                </div>
+                <div style="text-align: right; font-size: 10pt; color: #475569;">
+                    <div><b>Intake Date:</b> <span id="print-date">June 16, 2026</span></div>
+                    <div><b>Clinic File:</b> Confidential Medical Record</div>
+                </div>
+            </div>
 
-function g(id){ return document.getElementById(id); }
-function gv(id){ return (g(id)?.value||'').trim(); }
-function fmtD(d){
-  if(!d) return '—';
-  try{ const dt=new Date(d+'T00:00:00');
-    return dt.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}); }
-  catch{ return d; }
-}
-function mos(start,d){
-  if(!start||!d) return '—';
-  const ms = new Date(d+'T00:00:00') - new Date(start+'T00:00:00');
-  return Math.round(ms/2629800000);
-}
-function st(msg){ g('st').textContent=msg; }
+            <!-- Patient Baseline Info Banner -->
+            <div style="background-color: #f8fafc; border: 2px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
+                <table style="width: 100%; font-size: 11pt;">
+                    <tr>
+                        <td style="width: 33%;"><b>Patient ID:</b> <span id="print-patient-name" style="color: #0d9488; font-family: monospace; font-weight: bold;">WIN-DEMO01</span></td>
+                        <td style="width: 33%;"><b>Current Age:</b> <span id="print-patient-age">39</span> Years</td>
+                        <td style="width: 34%;"><b>Height:</b> <span id="print-patient-height">168</span> cm</td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top: 8px;"><b>Baseline Weight:</b> <span id="print-patient-baseline" style="color: #b45309; font-weight: bold;">100 kg</span> (<span id="print-patient-baseline-bmi">BMI 35.4</span>)</td>
+                        <td style="padding-top: 8px;"><b>Peak Lifetime:</b> <span id="print-patient-peak" style="color: #9f1239; font-weight: bold;">108 kg</span> at Age <span id="print-patient-peak-age">38</span></td>
+                        <td style="padding-top: 8px;" id="print-patient-mrn"></td>
+                    </tr>
+                </table>
+            </div>
 
-/* ═══════════════════════════════════════════════════
-   VISIT ROWS
-═══════════════════════════════════════════════════ */
-function addRow(data={}){
-  const id = ++rowId;
-  const tr = document.createElement('tr');
-  tr.id = 'vrow-'+id;
-  tr.innerHTML = `
-    <td><input type="date" class="vdate" value="${data.date||''}" oninput="render()"></td>
-    <td><input type="number" class="vwt" placeholder="kg" step="0.1"
-         value="${data.weight||''}" style="width:52px" oninput="render()"></td>
-    <td><input class="vwaist" placeholder="cm" value="${data.waist||''}" style="width:42px" oninput="render()"></td>
-    <td><input class="vbp" placeholder="SBP/DBP" value="${data.bp||''}" style="width:60px" oninput="render()"></td>
-    <td><input class="vdose" placeholder="dose" value="${data.dose||''}" style="width:68px" oninput="render()"></td>
-    <td><input class="vnsv" placeholder="NSV / win" value="${data.nsv||''}" oninput="render()"></td>
-    <td><button class="del-row" onclick="delRow(${id})">✕</button></td>`;
-  g('visitInputBody').appendChild(tr);
-  render();
-}
+            <!-- Part 1 Print Table -->
+            <div style="margin-bottom: 28px;">
+                <h2 style="font-size: 14pt; font-weight: 800; color: #0f172a; border-bottom: 2px solid #0d9488; padding-bottom: 6px; margin-top: 0; margin-bottom: 12px;">
+                    Part 1: Historical Weight Milestones Intake (The Past)
+                </h2>
+                <p style="font-size: 10pt; color: #475569; margin-bottom: 10px;">Biological weight velocity from birth across incremental milestones and major associated life stage events.</p>
+                <table class="print-table" style="width: 100%; border-collapse: collapse; font-size: 10pt; border: 1px solid #cbd5e1;">
+                    <thead>
+                        <tr style="background-color: #f1f5f9; border-bottom: 2px solid #cbd5e1; text-align: left;">
+                            <th style="padding: 8px 12px; width: 25%;">Weight Milestone</th>
+                            <th style="padding: 8px 12px; width: 20%;">Estimated Age</th>
+                            <th style="padding: 8px 12px; width: 55%;">Life Event / Physiological & Environmental Context</th>
+                        </tr>
+                    </thead>
+                    <tbody id="print-milestones-tbody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
 
-function delRow(id){
-  const el = g('vrow-'+id); if(el) el.remove(); render();
-}
+            <!-- Part 2 Print Table & Summary Scorecard -->
+            <div>
+                <h2 style="font-size: 14pt; font-weight: 800; color: #0f172a; border-bottom: 2px solid #e11d48; padding-bottom: 6px; margin-top: 0; margin-bottom: 12px;">
+                    Part 2: Previous Weight Loss Attempts & "Yo-Yo" Weight Cycling
+                </h2>
+                
+                <!-- Yo-Yo Stats -->
+                <div style="display: flex; justify-content: space-between; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 16px; margin-bottom: 14px; font-size: 10pt;">
+                    <div><b>&ge; 5 kg Lost:</b> <span id="print-yoyo-5" style="font-weight: bold; color: #0d9488;">3</span> Attempts</div>
+                    <div><b>&ge; 10 kg Lost:</b> <span id="print-yoyo-10" style="font-weight: bold; color: #2563eb;">2</span> Attempts</div>
+                    <div><b>&ge; 15 kg Lost:</b> <span id="print-yoyo-15" style="font-weight: bold; color: #16a34a;">1</span> Attempt</div>
+                    <div><b>Total Lifetime Weight Cycled:</b> <span id="print-yoyo-total" style="font-weight: bold; color: #b45309;">35 kg</span></div>
+                </div>
 
-function getRows(){
-  return [...g('visitInputBody').querySelectorAll('tr')].map(tr=>({
-    date:  tr.querySelector('.vdate')?.value||'',
-    weight:parseFloat(tr.querySelector('.vwt')?.value)||null,
-    waist: tr.querySelector('.vwaist')?.value||'',
-    bp:    tr.querySelector('.vbp')?.value||'',
-    dose:  tr.querySelector('.vdose')?.value||'',
-    nsv:   tr.querySelector('.vnsv')?.value||'',
-  })).filter(r=>r.date||r.weight);
-}
+                <table class="print-table" style="width: 100%; border-collapse: collapse; font-size: 9.5pt; border: 1px solid #cbd5e1;">
+                    <thead>
+                        <tr style="background-color: #f1f5f9; border-bottom: 2px solid #cbd5e1; text-align: left;">
+                            <th style="padding: 8px 10px; width: 20%;">Attempt / Method</th>
+                            <th style="padding: 8px 10px; width: 10%;">Age</th>
+                            <th style="padding: 8px 10px; width: 12%;">Kg Lost (Maint.)</th>
+                            <th style="padding: 8px 10px; width: 29%;">Initial Success Factors</th>
+                            <th style="padding: 8px 10px; width: 29%;">Recurrence / Failure Triggers</th>
+                        </tr>
+                    </thead>
+                    <tbody id="print-yoyo-tbody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
 
-/* ═══════════════════════════════════════════════════
-   RENDER — called on every input change
-═══════════════════════════════════════════════════ */
-function render(){
-  const rows  = getRows().filter(r=>r.weight).sort((a,b)=>a.date.localeCompare(b.date));
-  const h     = parseFloat(gv('f_height'))||165;
-  const tgt   = parseFloat(gv('f_target'))||null;
-  const start = gv('f_start')||( rows[0]?.date||'' );
-  const med   = gv('f_med');
+            <!-- Page 1 Print Footer -->
+            <div style="position: absolute; bottom: 20px; left: 30px; right: 30px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #cbd5e1; padding-top: 10px; font-size: 9pt; color: #64748b;">
+                <div>ObiTrack Clinical™ Health Systems</div>
+                <div><b>Page 1 of 2</b> &bull; Patient Intake & Yo-Yo Summary</div>
+            </div>
+        </div>
 
-  updateKPIs(rows, h, tgt);
-  drawChart(rows, h, tgt, start, med);
-  renderVisitLog(rows, start);
-  renderCoachCard(rows, h, tgt, start);
-  updatePrintMeta(rows, h, tgt, start);
-}
+        <!-- ==================================================== -->
+        <!-- PRINT PAGE 2: 3-YEAR PROGNOSTIC MAP & VISUAL ANCHOR -->
+        <!-- ==================================================== -->
+        <div class="print-page" style="page-break-before: always; break-before: page;">
+            <!-- Medical Header -->
+            <div style="border-bottom: 3px solid #0f172a; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h1 style="font-size: 20pt; font-weight: 800; margin: 0; color: #0f172a;">OBITRACK CLINICAL™ SYSTEM</h1>
+                    <div style="font-size: 11pt; font-weight: 600; color: #10b981; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">3-Year Clinical Prognostic Map & Visual Trajectory</div>
+                </div>
+                <div style="text-align: right; font-size: 10pt; color: #475569;">
+                    <div><b>Patient ID:</b> <span id="print-p2-patient" style="font-weight: bold; color: #0d9488; font-family: monospace;">WIN-DEMO01</span></div>
+                    <div><b>3-Year Target:</b> <span id="print-p2-target" style="color: #10b981; font-weight: bold;">80 kg</span> &bull; <span id="print-p2-mrn"></span></div>
+                </div>
+            </div>
 
-/* ─── KPIs ─── */
-function updateKPIs(rows, h, tgt){
-  if(!rows.length){ ['k0','k1','k2','k3','k4'].forEach(k=>g(k).textContent='—'); return; }
-  const sw=rows[0].weight, cw=rows[rows.length-1].weight;
-  const lost=+(sw-cw).toFixed(1), tbwl=+((sw-cw)/sw*100).toFixed(1);
-  const bmi=+(cw/((h/100)**2)).toFixed(1);
-  g('k0').textContent=sw; g('k1').textContent=cw;
-  g('k2').textContent=lost>=0?('-'+lost):'+'+Math.abs(lost);
-  g('k3').textContent=tbwl+'%'; g('k4').textContent=bmi;
-}
+            <!-- Master Visual Chart Print Output -->
+            <div style="margin-bottom: 20px; text-align: center; border: 2px solid #cbd5e1; border-radius: 8px; padding: 12px; background-color: #ffffff;">
+                <div style="font-size: 12pt; font-weight: 800; color: #0f172a; margin-bottom: 8px; text-align: left; padding-left: 8px;">
+                    Lifetime Trajectory & 36-Month Prognostic Map
+                </div>
+                <!-- Cloned Vector SVG Inserted Here -->
+                <div id="print-svg-container" style="max-height: 400px; display: flex; justify-content: center; overflow: hidden;">
+                    <!-- Will be cloned via JavaScript -->
+                </div>
+            </div>
 
-/* ─── SVG Chart ─── */
-function drawChart(rows, h, tgt, start, med){
-  const svg = g('chart'); if(!svg) return;
-  if(!rows.length){ svg.innerHTML='<text x="360" y="150" text-anchor="middle" fill="#94a3b8" font-size="14" font-family="sans-serif">Enter visit data to see graph →</text>'; return; }
+            <!-- Part 3 Prognostic Timeline Table -->
+            <div style="margin-bottom: 20px;">
+                <h2 style="font-size: 13pt; font-weight: 800; color: #0f172a; border-bottom: 2px solid #10b981; padding-bottom: 6px; margin-top: 0; margin-bottom: 10px;">
+                    Part 3: Forward 3-Year Clinical Roadmap (<span id="print-modality-title">GLP-1 Intensive Protocol -20% TBWL</span>)
+                </h2>
+                <table class="print-table" style="width: 100%; border-collapse: collapse; font-size: 9.5pt; border: 1px solid #cbd5e1;">
+                    <thead>
+                        <tr style="background-color: #f1f5f9; border-bottom: 2px solid #cbd5e1; text-align: left;">
+                            <th style="padding: 6px 10px; width: 18%;">Future Timeline</th>
+                            <th style="padding: 6px 10px; width: 14%;">Target Weight</th>
+                            <th style="padding: 6px 10px; width: 12%;">% TBWL</th>
+                            <th style="padding: 6px 10px; width: 12%;">Projected BMI</th>
+                            <th style="padding: 6px 10px; width: 44%;">Clinical Focus / Expected Physiological Milestone</th>
+                        </tr>
+                    </thead>
+                    <tbody id="print-prognosis-tbody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
 
-  const W=720, H=300, PL=48, PR=20, PT=28, PB=42;
-  const cW=W-PL-PR, cH=H-PT-PB;
+            <!-- Part 5 Clinical Core First Principles -->
+            <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
+                <div style="font-size: 11pt; font-weight: 800; color: #0f172a; margin-bottom: 10px;">
+                    Why This Visual Approach Works (Clinical Core Pillars)
+                </div>
+                <table style="width: 100%; font-size: 9.5pt; vertical-align: top;">
+                    <tr>
+                        <td style="width: 33%; padding-right: 12px; vertical-align: top;">
+                            <div style="font-weight: bold; color: #4338ca; margin-bottom: 4px;">1. Removes Patient Stigma</div>
+                            <div style="color: #475569;">Proves obesity is a multi-year, chronic progressive biological condition rather than a sudden lack of willpower.</div>
+                        </td>
+                        <td style="width: 33%; padding-right: 12px; border-left: 1px solid #cbd5e1; padding-left: 12px; vertical-align: top;">
+                            <div style="font-weight: bold; color: #0d9488; margin-bottom: 4px;">2. Manages Expectations</div>
+                            <div style="color: #475569;">Normalizes the curve "flattening" between Month 12 and 18, preventing panic when initial active weight loss slows.</div>
+                        </td>
+                        <td style="width: 34%; border-left: 1px solid #cbd5e1; padding-left: 12px; vertical-align: top;">
+                            <div style="font-weight: bold; color: #b45309; margin-bottom: 4px;">3. Reframes Long-Term Success</div>
+                            <div style="color: #475569;">Minor regain (e.g., +2 kg in Year 3) is visually confirmed as being fundamentally detached from the historical upward vector.</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-  // Date range
-  const dates = rows.map(r=>new Date(r.date+'T00:00:00'));
-  const minD  = dates[0];
-  const lastD = dates[dates.length-1];
-  const projD = new Date(lastD); projD.setMonth(projD.getMonth()+14);
-  const maxD  = projD;
-  const spanMs= maxD-minD || 1;
+            <!-- Sign-Off Block -->
+            <div style="display: flex; justify-content: space-between; margin-top: 30px; font-size: 10pt; padding-top: 20px; border-top: 2px solid #e2e8f0;">
+                <div style="width: 45%;">
+                    <div style="border-bottom: 1px solid #64748b; height: 30px; margin-bottom: 6px;"></div>
+                    <div><b>Physician Signature</b> / Clinical Director</div>
+                </div>
+                <div style="width: 45%;">
+                    <div style="border-bottom: 1px solid #64748b; height: 30px; margin-bottom: 6px;"></div>
+                    <div><b>Patient Verification</b> / Informed Consent</div>
+                </div>
+            </div>
 
-  const xN = d  => PL + ((d-minD)/spanMs)*cW;
-  const xS = ds => xN(new Date(ds+'T00:00:00'));
+            <!-- Page 2 Print Footer -->
+            <div style="position: absolute; bottom: 20px; left: 30px; right: 30px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #cbd5e1; padding-top: 10px; font-size: 9pt; color: #64748b;">
+                <div>ObiTrack Clinical™ Health Systems</div>
+                <div><b>Page 2 of 2</b> &bull; Prognostic Map & Visual Trajectory</div>
+            </div>
+        </div>
 
-  // Weight range
-  const wts  = rows.map(r=>r.weight);
-  const minW = Math.max(0,Math.min(...wts,(tgt||999))-6);
-  const maxW = Math.max(...wts)+8;
-  const yS   = w => PT + (1-(w-minW)/(maxW-minW))*cH;
+    </div>
 
-  // Projection
-  const lastWt = rows[rows.length-1].weight;
-  const rateMap = {semaglutide:.12,tirzepatide:.18,liraglutide:.08,orlistat:.06,phentermine:.08,combo:.14};
-  const annualRate = rateMap[med]||.06;
-  const projPts = [];
-  for(let m=0;m<=12;m+=2){
-    const pd=new Date(lastD); pd.setMonth(pd.getMonth()+m);
-    if(pd>maxD) break;
-    projPts.push({d:pd, w:Math.max((tgt||50), lastWt*(1-annualRate*m/12))});
-  }
 
-  let s='';
+    <!-- ==================================== -->
+    <!-- APPLICATION JAVASCRIPT ARCHITECTURE  -->
+    <!-- ==================================== -->
+    <script>
+        // MASTER PATIENT CLINICAL STATE
+        let patientState = {
+            winId: "WIN-DEMO01",
+            age: 39,
+            height: 168,
+            baselineWeight: 100,
+            peakWeight: 108,
+            peakAge: 38,
+            targetTbwlPercent: 20,
+            therapyModality: "glp1_high",
+            // Historical Milestones
+            milestones: [
+                { weight: 3.5, age: 0, context: "Birth Weight (Healthy term delivery)", custom: false },
+                { weight: 10, age: 1.2, context: "Infancy milestone (Pediatric chart record)", custom: false },
+                { weight: 20, age: 6, context: "Early childhood / Kindergarten stage", custom: false },
+                { weight: 30, age: 9.5, context: "Late childhood active growth", custom: false },
+                { weight: 40, age: 12.5, context: "Early teens / Middle school entry", custom: false },
+                { weight: 50, age: 15, context: "Mid teens / High school active sports", custom: false },
+                { weight: 60, age: 18, context: "Late teens / College entrance exam stress", custom: false },
+                { weight: 70, age: 22, context: "First corporate job / Sedentary transition", custom: false },
+                { weight: 80, age: 26, context: "Marriage / Relocation & diet shift", custom: false },
+                { weight: 90, age: 31, context: "High stress career promotion / First pregnancy", custom: false },
+                { weight: 100, age: 34, context: "Post-pregnancy retention / Pandemic lockdown", custom: false },
+                { weight: 108, age: 38, context: "Lifetime Peak Weight (High work burnout / joint pain)", custom: true },
+                { weight: 100, age: 39, context: "Current Baseline Consultation (Start of 3-Yr Program)", custom: false }
+            ],
+            // Yo-Yo Past Attempts
+            yoyoAttempts: [
+                { attempt: "Weight Watchers & Low Fat", age: 26, weightLost: 8, maintained: "4 months", successFactor: "Weekly group meetings, structured point logging, strict adherence", failureFactor: "Persistent constant hunger, social dining friction, rebounded during career travel" },
+                { attempt: "Strict Keto & Intermittent Fasting", age: 31, weightLost: 14, maintained: "6 months", successFactor: "Rapid initial water/fat loss, total carbohydrate elimination clarity", failureFactor: "Extreme cravings, LDL lipid spike, intense rebound gain when carbs re-introduced" },
+                { attempt: "Commercial Cleanse & HIIT Boot Camp", age: 36, weightLost: 6, maintained: "1 month", successFactor: "High initial motivation, intense daily exercise deficit", failureFactor: "Physical exhaustion, knee joint injury, extreme compensatory overeating" }
+            ],
+            // Future Prognostic Nodes (Auto-calculated but customizable)
+            prognosticNodes: [
+                { month: 0, timelineStr: "Today (Month 0)", weight: 100, tbwlPercent: 0, bmi: 35.4, focus: "Start of GLP-1 / Dual Agonist protocol. Establishing daily 100g protein and 7,500 step habits.", isCustom: false },
+                { month: 6, timelineStr: "+ 6 Months", weight: 88, tbwlPercent: 12, bmi: 31.2, focus: "10-15% TBWL. Active fat loss phase, up-titrating to primary therapeutic dose, major metabolic shift.", isCustom: false },
+                { month: 12, timelineStr: "+ 12 Months", weight: 83, tbwlPercent: 17, bmi: 29.4, focus: "15-20% TBWL. Major metabolic normalization (HbA1c, fasting insulin, lipids). Normalizing blood pressure.", isCustom: false },
+                { month: 18, timelineStr: "+ 18 Months", weight: 80, tbwlPercent: 20, bmi: 28.3, focus: "Target weight loss plateau reached. Transitioning focus primarily to muscle recomposition & strength.", isCustom: false },
+                { month: 36, timelineStr: "+ 36 Months (Year 3)", weight: 80, tbwlPercent: 20, bmi: 28.3, focus: "Maintained horizontal trajectory line. Permanent physiological, behavioral, and nutritional adaptation achieved.", isCustom: false }
+            ],
+            // Visual Config Controls
+            showBmiBands: true,
+            showYoyoMarkers: true
+        };
 
-  // BMI zones
-  const hm=h/100;
-  const zones=[
-    {lo:18.5,hi:25,  c:'#16a34a',a:.12},
-    {lo:25,  hi:30,  c:'#d97706',a:.12},
-    {lo:30,  hi:35,  c:'#f97316',a:.09},
-    {lo:35,  hi:45,  c:'#e11d48',a:.08},
-  ];
-  zones.forEach(z=>{
-    const w1=Math.max(minW,z.lo*hm*hm), w2=Math.min(maxW,z.hi*hm*hm);
-    if(w1>=maxW||w2<=minW) return;
-    const y1=yS(w2),y2=yS(w1);
-    s+=`<rect x="${PL}" y="${y1.toFixed(1)}" width="${cW}" height="${(y2-y1).toFixed(1)}" fill="${z.c}" opacity="${z.a}"/>`;
-  });
+        // ============================================================
+        // PANINI DATA INTEGRATION — load from PaniniData store
+        // ============================================================
+        function loadFromPanini(id) {
+            if (!id || !PaniniData.validId(id)) return;
+            PaniniData.setActiveId(id);
+            patientState.winId = id;
+            if (document.getElementById("panini-win-id")) document.getElementById("panini-win-id").value = id;
+            document.getElementById("input-patient-winid").value = id;
 
-  // Grid Y
-  const step = (maxW-minW)>60?10:(maxW-minW)>30?5:2;
-  for(let w=Math.ceil(minW/step)*step; w<=maxW; w+=step){
-    const y=yS(w);
-    s+=`<line x1="${PL}" y1="${y.toFixed(1)}" x2="${PL+cW}" y2="${y.toFixed(1)}" stroke="#e2e8f0" stroke-width=".6"/>`;
-    s+=`<text x="${PL-3}" y="${y.toFixed(1)}" fill="#94a3b8" font-size="9" text-anchor="end" dominant-baseline="middle" font-family="sans-serif">${w}</text>`;
-  }
+            if (id === 'WIN-DEMO01') { resetToSamplePatient(); return; }
 
-  // Grid X — date ticks
-  const addDateTick = (d, lbl) => {
-    const x = xN(d);
-    s+=`<line x1="${x.toFixed(1)}" y1="${PT}" x2="${x.toFixed(1)}" y2="${(PT+cH).toFixed(1)}" stroke="#e2e8f0" stroke-width=".6"/>`;
-    s+=`<text x="${x.toFixed(1)}" y="${(PT+cH+12).toFixed(0)}" fill="#94a3b8" font-size="8.5" text-anchor="middle" font-family="sans-serif">${lbl}</text>`;
-  };
-  // Try to add year/quarter ticks
-  const yStart = dates[0].getFullYear(), yEnd = maxD.getFullYear();
-  for(let y=yStart;y<=yEnd+1;y++){
-    for(let q=0;q<4;q++){
-      const td=new Date(y,q*3,1);
-      if(td>=minD&&td<=maxD){
-        const lbl=q===0?y.toString():['Q1','Q2','Q3','Q4'][q];
-        addDateTick(td,lbl);
-      }
-    }
-  }
+            let data = PaniniData.load(id);
+            if (!data) return;
 
-  // Axes labels
-  s+=`<text x="${(PL+cW/2)}" y="${H-3}" fill="#475569" font-size="10" text-anchor="middle" font-weight="600" font-family="sans-serif">Visit Date</text>`;
-  s+=`<text x="11" y="${(PT+cH/2)}" fill="#475569" font-size="10" text-anchor="middle" font-weight="600" font-family="sans-serif" transform="rotate(-90 11 ${(PT+cH/2).toFixed(0)})">Weight (kg)</text>`;
+            let meta = data.meta || {};
+            if (meta.height) patientState.height = meta.height;
+            if (meta.targetWeight) {
+                // Back-calculate TBWL from target weight
+                let tpct = Math.round((patientState.baselineWeight - meta.targetWeight) / patientState.baselineWeight * 100);
+                if (tpct > 0 && tpct < 50) patientState.targetTbwlPercent = tpct;
+            }
 
-  // Target line
-  if(tgt&&tgt>minW&&tgt<maxW){
-    const yT=yS(tgt);
-    s+=`<line x1="${PL}" y1="${yT.toFixed(1)}" x2="${PL+cW}" y2="${yT.toFixed(1)}" stroke="#16a34a" stroke-width="1.5" stroke-dasharray="8,4" opacity=".7"/>`;
-    s+=`<text x="${PL+3}" y="${(yT-3).toFixed(1)}" fill="#16a34a" font-size="9" font-weight="700" font-family="sans-serif">Target ${tgt}kg</text>`;
-  }
+            // Load visits → populate milestones from dashVisits
+            let visits = data.dashVisits || [];
+            if (visits.length > 0) {
+                // Convert clinic visits to trajectory milestones
+                patientState.baselineWeight = visits[0].weight;
+                let newMs = visits.map(v => ({
+                    weight: v.weight,
+                    age: patientState.age - Math.round((new Date() - new Date(v.date)) / 31557600000),
+                    context: `Visit — ${v.date}${v.dose ? ' · ' + v.dose : ''}${v.nsv && v.nsv.length ? ' · ' + v.nsv[0] : ''}`,
+                    custom: false
+                }));
+                // Filter to unique ages
+                patientState.milestones = newMs;
+                patientState.peakWeight = Math.max(...visits.map(v => v.weight));
+            }
+            calculatePrognosis();
+        }
 
-  // Projection
-  if(projPts.length>1){
-    const pline=projPts.map(p=>`${xN(p.d).toFixed(1)},${yS(p.w).toFixed(1)}`).join(' ');
-    const baseY=yS(minW);
-    const area=pline+` ${xN(projPts[projPts.length-1].d).toFixed(1)},${baseY.toFixed(1)} ${xN(projPts[0].d).toFixed(1)},${baseY.toFixed(1)}`;
-    s+=`<polygon points="${area}" fill="#2563eb" opacity=".05"/>`;
-    s+=`<polyline points="${pline}" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="7,5" stroke-linejoin="round" stroke-linecap="round" opacity=".75"/>`;
-    const ep=projPts[projPts.length-1];
-    s+=`<circle cx="${xN(ep.d).toFixed(1)}" cy="${yS(ep.w).toFixed(1)}" r="4" fill="#2563eb" stroke="#fff" stroke-width="1.5"/>`;
-    s+=`<text x="${(xN(ep.d)+5).toFixed(0)}" y="${(yS(ep.w)-4).toFixed(1)}" fill="#2563eb" font-size="8.5" font-weight="700" font-family="sans-serif">${ep.w.toFixed(1)}kg (proj)</text>`;
-  }
+        function loadFromPaniniInput() {
+            let id = (document.getElementById("panini-win-id").value || '').trim().toUpperCase();
+            if (id) loadFromPanini(id);
+        }
 
-  // Actual line + shaded area
-  if(rows.length>1){
-    const pts=rows.map(r=>`${xS(r.date).toFixed(1)},${yS(r.weight).toFixed(1)}`).join(' ');
-    const baseY=yS(minW);
-    const area=pts+` ${xS(rows[rows.length-1].date).toFixed(1)},${baseY.toFixed(1)} ${xS(rows[0].date).toFixed(1)},${baseY.toFixed(1)}`;
-    s+=`<polygon points="${area}" fill="#0d9488" opacity=".07"/>`;
-    s+=`<polyline points="${pts}" fill="none" stroke="#0d9488" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>`;
-  }
+        // INITIALIZE APPLICATION ON DOM LOAD
+        document.addEventListener("DOMContentLoaded", function() {
+            // Set current date in print header
+            let today = new Date();
+            let dateStr = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById("print-date").innerText = dateStr;
 
-  // Dots + labels
-  const startWt = rows[0].weight;
-  rows.forEach((r,i)=>{
-    const cx=xS(r.date), cy=yS(r.weight);
-    const isNSV=!!r.nsv;
-    const col=isNSV?'#7c3aed':'#0d9488';
-    const rr=isNSV?6:4.5;
-    s+=`<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${rr}" fill="${col}" stroke="#fff" stroke-width="1.8"/>`;
-    const above=i%2===0;
-    const ty=above?cy-10:cy+16;
-    s+=`<text x="${cx.toFixed(1)}" y="${ty.toFixed(1)}" fill="${col}" font-size="8.5" font-weight="700" text-anchor="middle" font-family="sans-serif">${r.weight}</text>`;
-    if(isNSV&&r.nsv){
-      const lbl=r.nsv.length>20?r.nsv.slice(0,19)+'…':r.nsv;
-      s+=`<text x="${cx.toFixed(1)}" y="${(ty+(above?-10:10)).toFixed(1)}" fill="#7c3aed" font-size="7" text-anchor="middle" font-style="italic" font-family="sans-serif">${lbl}</text>`;
-    }
-  });
+            // Panini frame sync
+            if (window.parent !== window) document.body.classList.add('in-iframe');
+            PaniniData.initFrameSync(loadFromPanini);
+            let saved = PaniniData.getActiveId();
+            if (saved && PaniniData.validId(saved)) { loadFromPanini(saved); return; }
 
-  // TBWL annotation
-  if(rows.length>1){
-    const sw=rows[0].weight,cw=rows[rows.length-1].weight;
-    const tb=+((sw-cw)/sw*100).toFixed(1);
-    s+=`<text x="${PL+cW-3}" y="${PT+12}" fill="#0f766e" font-size="10" font-weight="800" text-anchor="end" font-family="sans-serif">−${tb}% TBWL across ${rows.length} visits</text>`;
-  }
+            // Load State into UI
+            refreshEntireApp();
+        });
 
-  // Title
-  const pid = gv('f_pid')||gv('pidInput');
-  s+=`<text x="${(PL+cW/2)}" y="16" fill="#0f766e" font-size="11" font-weight="800" text-anchor="middle" font-family="sans-serif">Weight Journey${pid?' — '+pid:''}</text>`;
+        // ======================================
+        // CORE REACTIVITY & RENDER ORCHESTRATION
+        // ======================================
+        function refreshEntireApp() {
+            // Calculate BMIs and status
+            let heightM = patientState.height / 100;
+            let baseBmi = (patientState.baselineWeight / (heightM * heightM)).toFixed(1);
+            let targetWeight = patientState.baselineWeight * (1 - patientState.targetTbwlPercent / 100);
+            let targetBmi = (targetWeight / (heightM * heightM)).toFixed(1);
 
-  svg.innerHTML = s;
-}
+            // Update UI quick banner
+            document.getElementById("banner-patient-name").innerText = patientState.winId;
+            document.getElementById("banner-patient-mrn").innerText = `${patientState.age} yrs`;
+            document.getElementById("banner-patient-height").innerText = `${patientState.height} cm`;
+            document.getElementById("banner-baseline-weight").innerText = `${patientState.baselineWeight} kg`;
+            document.getElementById("banner-baseline-bmi").innerText = `BMI ${baseBmi}`;
+            document.getElementById("banner-peak-weight").innerText = `${patientState.peakWeight} kg`;
+            document.getElementById("banner-peak-age").innerText = `(Age ${patientState.peakAge})`;
+            document.getElementById("banner-target-weight").innerText = `${targetWeight.toFixed(1)} kg`;
+            document.getElementById("banner-target-bmi").innerText = `BMI ${targetBmi}`;
 
-/* ─── Visit Log ─── */
-function renderVisitLog(rows, start){
-  const el=g('visitLogCard'), tbody=g('visitLogBody');
-  if(!tbody) return;
-  if(!rows.length){ el.style.display='none'; return; }
-  el.style.display='';
-  const sw=rows[0].weight;
-  tbody.innerHTML = rows.map((r,i)=>{
-    const tbwl=i===0?null:+((sw-r.weight)/sw*100).toFixed(1);
-    const tbwlHtml=i===0
-      ?'<span style="font-size:9px;color:var(--mu)">Baseline</span>'
-      :`<span class="tbwl-badge${tbwl<0?' tbwl-neg':''}">${tbwl>=0?'-'+tbwl:'+'+Math.abs(tbwl)}%</span>`;
-    const mo=i===0?'0':mos(start||rows[0].date, r.date);
-    const doseHtml=r.dose?`<span class="dose-tag">${r.dose}</span>`:'—';
-    const nsvHtml=r.nsv?`<span class="nsv-line">★ ${r.nsv}</span>`:'—';
-    return `<tr>
-      <td style="font-weight:700;color:var(--td)">${i+1}</td>
-      <td style="white-space:nowrap;font-weight:600">${fmtD(r.date)}</td>
-      <td style="text-align:center;color:var(--mu)">${mo}</td>
-      <td style="font-weight:700;font-size:12.5px">${r.weight}</td>
-      <td>${tbwlHtml}</td>
-      <td>${r.waist||'—'}</td>
-      <td style="white-space:nowrap">${r.bp||'—'}</td>
-      <td>${doseHtml}</td>
-      <td>${nsvHtml}</td>
-    </tr>`;
-  }).join('');
-}
+            // Update Input Params Form
+            document.getElementById("input-patient-winid").value = patientState.winId;
+            if (document.getElementById("panini-win-id")) document.getElementById("panini-win-id").value = patientState.winId;
+            document.getElementById("input-patient-age").value = patientState.age;
+            document.getElementById("input-patient-height").value = patientState.height;
+            document.getElementById("input-baseline-weight").value = patientState.baselineWeight;
+            document.getElementById("input-peak-weight").value = patientState.peakWeight;
+            document.getElementById("input-peak-age").value = patientState.peakAge;
+            document.getElementById("input-target-tbwl").value = patientState.targetTbwlPercent;
+            document.getElementById("select-therapy-modality").value = patientState.therapyModality;
 
-/* ─── Coaching card ─── */
-function renderCoachCard(rows, h, tgt, start){
-  const el=g('coachingCard'); if(!rows.length){ el.style.display='none'; return; }
-  el.style.display='';
+            // Baseline BMI Card Display
+            document.getElementById("param-calc-bmi").innerText = `${baseBmi} kg/m²`;
+            document.getElementById("param-calc-class").innerText = getBmiClassStr(baseBmi);
+            document.getElementById("param-calc-class").className = `px-2 py-0.5 rounded text-xs font-bold ${getBmiClassBadgeStyle(baseBmi)} truncate`;
 
-  const last=rows[rows.length-1];
-  const sw=rows[0].weight, cw=last.weight;
-  const lost=+(sw-cw).toFixed(1), tbwl=+((sw-cw)/sw*100).toFixed(1);
-  const bmi=+(cw/((h/100)**2)).toFixed(1);
-  const mo=mos(start||rows[0].date, last.date);
+            // Sort milestones by age
+            patientState.milestones.sort((a, b) => a.age - b.age);
 
-  // Stats
-  const stats=[
-    {l:'Visit',v:`#${rows.length}  ·  ${fmtD(last.date)}`},
-    {l:'Start Weight',v:`${sw} kg`},
-    {l:'Today',v:`${cw} kg`},
-    {l:'Total Lost',v:`${lost>=0?'-'+lost:'+'+Math.abs(lost)} kg`},
-    {l:'TBWL',v:`${tbwl}%`},
-    {l:'BMI Now',v:bmi},
-    {l:'Programme Month',v:mo},
-  ];
-  g('coachStats').innerHTML=stats.map(s=>`
-    <div style="background:var(--tl);border-radius:7px;padding:7px 12px;text-align:center;min-width:70px">
-      <div style="font-size:9.5px;color:var(--td);font-weight:700;text-transform:uppercase">${s.l}</div>
-      <div style="font-size:13px;font-weight:800;color:var(--ink);margin-top:2px">${s.v}</div>
-    </div>`).join('');
+            // Render Tables & Chart
+            renderMilestonesTable();
+            renderYoYoTable();
+            renderPrognosisTable();
+            renderMasterSvgChart();
+            renderPrintReportData();
+        }
 
-  // Wins
-  const wins=(gv('f_wins')||last.nsv||'').split(',').map(w=>w.trim()).filter(Boolean);
-  g('winsList').innerHTML=wins.length
-    ?wins.map(w=>`<div class="win-item checked">⭐ ${w}</div>`).join('')
-    :'<div class="win-item" style="color:var(--mu);font-style:italic">Enter wins in the left panel…</div>';
+        // ==========================================
+        // DATA UPDATES & CALCULATIONS FROM UI INPUTS
+        // ==========================================
+        function updatePatientParams() {
+            patientState.winId = (document.getElementById("input-patient-winid").value || "WIN-000000").toUpperCase();
+            if (document.getElementById("panini-win-id")) document.getElementById("panini-win-id").value = patientState.winId;
+            patientState.age = parseFloat(document.getElementById("input-patient-age").value) || 39;
+            patientState.height = parseFloat(document.getElementById("input-patient-height").value) || 168;
+            
+            let oldBaseline = patientState.baselineWeight;
+            patientState.baselineWeight = parseFloat(document.getElementById("input-baseline-weight").value) || 100;
+            patientState.peakWeight = parseFloat(document.getElementById("input-peak-weight").value) || 108;
+            patientState.peakAge = parseFloat(document.getElementById("input-peak-age").value) || 38;
 
-  // Focus
-  const focus=gv('f_focus').split(',').map(f=>f.trim()).filter(Boolean);
-  const focusDefault=[{k:'Protein',v:'______ g/day'},{k:'Water',v:'______ L/day'},
-    {k:'Steps',v:'______ /day'},{k:'Exercise',v:'___ days/week'}];
-  if(focus.length){
-    g('focusList').innerHTML=focus.map(f=>`<div class="focus-item"><span>${f}</span></div>`).join('');
-  } else {
-    g('focusList').innerHTML=focusDefault.map(f=>`<div class="focus-item"><strong>${f.k}:</strong><span>${f.v}</span></div>`).join('');
-  }
+            // Automatically sync the baseline weight & peak weight in the milestones table
+            let baseMs = patientState.milestones.find(m => m.context.includes("Baseline") || m.context.includes("Current"));
+            if (baseMs) {
+                baseMs.weight = patientState.baselineWeight;
+                baseMs.age = patientState.age;
+            }
+            let peakMs = patientState.milestones.find(m => m.context.includes("Peak"));
+            if (peakMs) {
+                peakMs.weight = patientState.peakWeight;
+                peakMs.age = patientState.peakAge;
+            }
 
-  // Med strip
-  const nd=gv('f_next'), ndose=gv('f_ndose'), phys=gv('f_phys');
-  g('coachMed').innerHTML=`
-    <div><div style="font-size:9px;font-weight:700;color:var(--a);text-transform:uppercase;margin-bottom:3px">Current Medication</div>
-    <div style="font-size:12px;font-weight:700">${last.dose||gv('f_med')||'—'}</div></div>
-    <div><div style="font-size:9px;font-weight:700;color:var(--a);text-transform:uppercase;margin-bottom:3px">Next Dose / Change</div>
-    <div style="font-size:12px;font-weight:700">${ndose||'No change planned'}</div></div>
-    <div><div style="font-size:9px;font-weight:700;color:var(--a);text-transform:uppercase;margin-bottom:3px">Next Appointment</div>
-    <div style="font-size:12px;font-weight:700">${fmtD(nd)||'To be scheduled'}</div></div>`;
+            // Recalculate prognosis if baseline weight shifted
+            calculatePrognosis();
 
-  // Note
-  const note=gv('f_note');
-  if(note){ g('coachNote').textContent='📝 '+note; g('coachNote').style.display=''; }
-  else g('coachNote').style.display='none';
-}
+            refreshEntireApp();
+        }
 
-/* ─── Print meta ─── */
-function updatePrintMeta(rows, h, tgt, start){
-  if(!rows.length){ g('printMeta').textContent=''; return; }
-  const sw=rows[0].weight, cw=rows[rows.length-1].weight;
-  const lo=+(sw-cw).toFixed(1), tb=+((sw-cw)/sw*100).toFixed(1);
-  const pid=gv('f_pid')||gv('pidInput');
-  const phys=gv('f_phys');
-  g('printMeta').textContent=
-    `Patient: ${pid||'—'} · Program start: ${fmtD(start)} · Visits: ${rows.length}`
-    +` · Start: ${sw}kg → Current: ${cw}kg · Lost: ${lo}kg (${tb}% TBWL)`
-    +` · Height: ${h}cm${tgt?` · Target: ${tgt}kg`:''}${phys?' · '+phys:''}`
-    +` · Report: ${new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})}`;
-}
+        function getBmiClassStr(bmi) {
+            let b = parseFloat(bmi);
+            if (b < 18.5) return "Underweight";
+            if (b < 25) return "Normal Healthy Weight";
+            if (b < 30) return "Overweight Category";
+            if (b < 35) return "Class I Obesity";
+            if (b < 40) return "Class II Obesity";
+            return "Class III Severe Obesity";
+        }
 
-/* ═══════════════════════════════════════════════════
-   LOAD / SAVE
-═══════════════════════════════════════════════════ */
-function sync(id){
-  if(id==='f_pid') g('pidInput').value=gv('f_pid');
-  render();
-}
+        function getBmiClassBadgeStyle(bmi) {
+            let b = parseFloat(bmi);
+            if (b < 18.5) return "bg-blue-100 text-blue-700 border-blue-200";
+            if (b < 25) return "bg-emerald-100 text-emerald-700 border-emerald-200";
+            if (b < 30) return "bg-amber-100 text-amber-700 border-amber-200";
+            if (b < 35) return "bg-rose-100 text-rose-700 border-rose-200";
+            if (b < 40) return "bg-red-100 text-red-800 border-red-300";
+            return "bg-rose-950 text-rose-200 border-rose-800";
+        }
 
-function loadById(id){
-  const n=PaniniData.normId(id);
-  if(!PaniniData.validId(n)) return;
-  PaniniData.setActiveId(n);
-  g('pidInput').value=n; g('f_pid').value=n;
+        // ==================================
+        // PART 1: HISTORICAL MILESTONES LOGIC
+        // ==================================
+        function autoPopulateMilestones() {
+            if (!confirm("Reset all historical milestones to standardized 10-kg increments based on your current baseline & peak weight?")) return;
+            
+            let ms = [];
+            ms.push({ weight: 3.5, age: 0, context: "Birth Weight (Healthy term)", custom: false });
+            ms.push({ weight: 10, age: 1.2, context: "Infancy milestone", custom: false });
+            
+            // Increment by 10kg up to peak/current
+            let maxW = Math.max(patientState.baselineWeight, patientState.peakWeight);
+            let w = 20;
+            let roughAges = { 20: 5, 30: 9, 40: 12, 50: 15, 60: 18, 70: 22, 80: 26, 90: 30, 100: 34, 110: 37, 120: 40, 130: 43 };
+            
+            while (w <= maxW) {
+                // don't duplicate exact current or peak
+                if (Math.abs(w - patientState.baselineWeight) > 2 && Math.abs(w - patientState.peakWeight) > 2) {
+                    let age = roughAges[w] || Math.round(5 + (w - 20) * 0.35);
+                    if (age >= patientState.age) age = patientState.age - 1;
+                    ms.push({ weight: w, age: age, context: `Reached ~${w} kg milestone`, custom: false });
+                }
+                w += 10;
+            }
 
-  if(n==='WIN-DEMO01'){ loadDemo(); return; }
+            // Insert Peak
+            if (patientState.peakWeight > patientState.baselineWeight) {
+                ms.push({ weight: patientState.peakWeight, age: patientState.peakAge, context: "Lifetime Peak Weight", custom: true });
+            }
 
-  const data=PaniniData.load(n);
-  if(!data){ st('No data for '+n); return; }
+            // Insert Current Baseline
+            ms.push({ weight: patientState.baselineWeight, age: patientState.age, context: "Current Baseline Consultation & GLP-1 Start", custom: false });
 
-  // Populate meta
-  const meta=data.meta||{};
-  if(meta.height)        g('f_height').value=meta.height;
-  if(meta.targetWeight)  g('f_target').value=meta.targetWeight;
-  if(meta.programStart)  g('f_start').value=meta.programStart;
-  if(meta.drug)          g('f_med').value=meta.drug;
+            ms.sort((a, b) => a.age - b.age);
+            patientState.milestones = ms;
+            refreshEntireApp();
+        }
 
-  // Load visits
-  g('visitInputBody').innerHTML=''; rowId=0;
-  const visits=data.dashVisits||[];
-  // Merge notes from medTracker
-  const mt=(data.medTracker?.visits||[]);
-  visits.forEach(v=>{
-    const mv=mt.find(m=>m.date===v.date);
-    addRow({
-      date:v.date, weight:v.weight, waist:v.waist||'', bp:v.bp||'',
-      dose:v.dose||'', nsv:(v.nsv||[]).join(', ')||(mv?.notes||'')
-    });
-  });
-  render(); st('✓ Loaded '+n);
-}
+        function addMilestoneRow() {
+            let weight = parseFloat(prompt("Enter Weight Milestone (kg):", "75"));
+            if (!weight || isNaN(weight)) return;
+            let age = parseFloat(prompt(`Enter estimated age when you reached ${weight} kg:`, "24"));
+            if (isNaN(age)) age = 24;
+            let context = prompt(`Enter optional life event or context for ${weight} kg (e.g., College graduate, New job):`, "New lifestyle shift");
 
-function loadPatient(){
-  const id=gv('pidInput'); if(!id){ return; }
-  loadById(id);
-}
+            patientState.milestones.push({ weight: weight, age: age, context: context || `Reached ${weight} kg`, custom: true });
+            patientState.milestones.sort((a, b) => a.age - b.age);
+            refreshEntireApp();
+        }
 
-/* ─── Demo data ─── */
-const DEMO=[
-  {date:'2023-01-15',weight:102,  waist:'108',bp:'148/92',dose:'Sema 0.25mg/wk',nsv:''},
-  {date:'2023-03-15',weight:99.5, waist:'106',bp:'146/90',dose:'Sema 0.5mg/wk', nsv:'Nausea resolving'},
-  {date:'2023-05-15',weight:97,   waist:'104',bp:'142/88',dose:'Sema 1.0mg/wk', nsv:'5kg lost in 4 months'},
-  {date:'2023-07-15',weight:94.2, waist:'102',bp:'140/86',dose:'Sema 1.0mg/wk', nsv:'Amlodipine reduced'},
-  {date:'2023-09-15',weight:91.5, waist:'100',bp:'136/84',dose:'Sema 1.7mg/wk', nsv:'10% TBWL milestone'},
-  {date:'2023-11-15',weight:89.2, waist:'98', bp:'134/82',dose:'Sema 1.7mg/wk', nsv:'Knee pain improving'},
-  {date:'2024-01-15',weight:87.8, waist:'97', bp:'132/82',dose:'Sema 2.4mg/wk', nsv:'HbA1c below 7%, Amlodipine stopped'},
-  {date:'2024-07-15',weight:85.2, waist:'95', bp:'128/80',dose:'Sema 2.4mg/wk', nsv:'NAFLD regression on ultrasound'},
-  {date:'2025-01-15',weight:84.2, waist:'93.8',bp:'126/78',dose:'Sema 2.4mg/wk',nsv:'CPAP discontinued — sleep apnea resolved'},
-  {date:'2025-07-15',weight:83.8, waist:'93.5',bp:'124/76',dose:'Sema 2.4mg/wk',nsv:'ALT normalised — NAFLD in remission'},
-  {date:'2026-01-15',weight:83,   waist:'92.8',bp:'122/76',dose:'Sema 2.4mg/wk',nsv:'T2DM in clinical remission — off all BP meds'},
-];
+        function deleteMilestoneRow(index) {
+            if (patientState.milestones.length <= 2) {
+                alert("Cannot delete the only remaining milestones.");
+                return;
+            }
+            patientState.milestones.splice(index, 1);
+            refreshEntireApp();
+        }
 
-function loadDemo(){
-  g('f_pid').value='WIN-DEMO01'; g('pidInput').value='WIN-DEMO01';
-  g('f_height').value=165; g('f_target').value=75;
-  g('f_start').value='2023-01-15'; g('f_med').value='semaglutide';
-  g('f_comorb').value='Type 2 Diabetes, Hypertension, NAFLD, Sleep Apnea (OSA)';
-  g('f_phys').value='Dr. A.J. Shukla · Panini Clinic';
-  g('f_wins').value='HbA1c below 7%, All BP medications stopped, Lost 19kg, CPAP discontinued, NAFLD in remission';
-  g('f_focus').value='Maintain 10,000 steps/day, Protein 100g/day, Continue Semaglutide 2.4mg, Annual review labs';
-  g('f_next').value='2026-07-15';
-  g('f_ndose').value='Continue Sema 2.4mg/wk';
-  g('f_note').value='Year 3 review: 18.6% TBWL. T2DM in clinical remission. All antihypertensives stopped. NAFLD resolved. Hepatologist discharged.';
-  g('visitInputBody').innerHTML=''; rowId=0;
-  DEMO.forEach(d=>addRow(d));
-  render(); st('✓ Demo WIN-DEMO01 loaded');
-}
+        function updateMilestoneCell(index, field, value) {
+            if (field === 'weight' || field === 'age') {
+                patientState.milestones[index][field] = parseFloat(value) || 0;
+            } else {
+                patientState.milestones[index][field] = value;
+            }
+            renderMasterSvgChart();
+            renderPrintReportData();
+        }
 
-function clearAll(){
-  ['f_pid','f_height','f_target','f_start','f_comorb','f_phys',
-   'f_wins','f_focus','f_note','f_ndose'].forEach(id=>{ if(g(id)) g(id).value=''; });
-  g('f_med').value=''; g('f_sex').value=''; g('f_next').value='';
-  g('visitInputBody').innerHTML=''; rowId=0;
-  g('pidInput').value=''; render(); st('Cleared');
-}
+        function renderMilestonesTable() {
+            let tbody = document.getElementById("milestones-tbody");
+            tbody.innerHTML = "";
 
-/* ═══════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════ */
-window.addEventListener('DOMContentLoaded',()=>{
-  if(window.parent!==window) document.body.classList.add('in-iframe');
-  PaniniData.initFrameSync(loadById);
-  const saved=PaniniData.getActiveId();
-  if(saved&&PaniniData.validId(saved)){ loadById(saved); return; }
-  // Start with 3 blank rows
-  addRow(); addRow(); addRow();
-  render();
-});
-</script>
+            patientState.milestones.forEach((m, idx) => {
+                let isPeak = m.weight === patientState.peakWeight;
+                let isBase = m.context.includes("Baseline") || m.context.includes("Current");
+
+                let tr = document.createElement("tr");
+                tr.className = `hover:bg-teal-50/40 transition-colors ${isPeak ? 'bg-rose-50/60 font-semibold' : ''} ${isBase ? 'bg-amber-50/60 font-semibold' : ''}`;
+
+                tr.innerHTML = `
+                    <td class="py-2.5 px-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2 h-2 rounded-full ${isPeak ? 'bg-rose-500' : (isBase ? 'bg-amber-500' : 'bg-teal-500')}"></span>
+                            <input type="number" step="0.5" value="${m.weight}" onchange="updateMilestoneCell(${idx}, 'weight', this.value)" class="w-20 px-2 py-1 bg-transparent border-b border-slate-300 hover:border-teal-500 focus:bg-white focus:border-teal-600 focus:ring-0 text-sm font-bold ${isPeak ? 'text-rose-700' : (isBase ? 'text-amber-800' : 'text-slate-900')}">
+                            <span class="text-xs font-bold text-slate-400">kg</span>
+                            ${isPeak ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-rose-200 text-rose-800 ml-1">PEAK</span>' : ''}
+                            ${isBase ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-amber-200 text-amber-800 ml-1">START</span>' : ''}
+                        </div>
+                    </td>
+                    <td class="py-2.5 px-4">
+                        <div class="flex items-center space-x-1">
+                            <input type="number" step="0.5" value="${m.age}" onchange="updateMilestoneCell(${idx}, 'age', this.value)" class="w-16 px-2 py-1 bg-transparent border-b border-slate-300 hover:border-teal-500 focus:bg-white focus:border-teal-600 text-sm font-semibold text-slate-800">
+                            <span class="text-xs text-slate-500 font-medium">Yrs</span>
+                        </div>
+                    </td>
+                    <td class="py-2.5 px-4">
+                        <input type="text" value="${m.context}" onchange="updateMilestoneCell(${idx}, 'context', this.value)" class="w-full px-2 py-1 bg-transparent border-b border-transparent hover:border-slate-300 focus:bg-white focus:border-teal-600 text-sm text-slate-700">
+                    </td>
+                    <td class="py-2.5 px-4 text-center">
+                        <button onclick="deleteMilestoneRow(${idx})" title="Delete Row" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+
+        // ===================================
+        // PART 2: YO-YO / PAST ATTEMPTS LOGIC
+        // ===================================
+        function addYoYoRow() {
+            let attempt = prompt("Enter Attempt or Program Name (e.g., Extreme Juice Fast, Weight Watchers):", "Keto Diet & Bootcamp");
+            if (!attempt) return;
+            let age = parseFloat(prompt("Approximate Age when this attempt started:", "32")) || 32;
+            let lost = parseFloat(prompt("How many kilograms did you lose?", "10")) || 10;
+            let maint = prompt("How long did you successfully maintain the weight loss?", "5 months") || "5 months";
+            let success = prompt("Why did it succeed initially? (Key initial anchors):", "Strict structured menu, high initial excitement");
+            let failure = prompt("Why did it fail or trigger regain? (Recurrence factor):", "Extreme constant hunger, too restrictive for family dinners");
+
+            patientState.yoyoAttempts.push({
+                attempt: attempt, age: age, weightLost: lost, maintained: maint,
+                successFactor: success || "Initial structured focus", failureFactor: failure || "Biological hunger rebound"
+            });
+            refreshEntireApp();
+        }
+
+        function deleteYoYoRow(index) {
+            patientState.yoyoAttempts.splice(index, 1);
+            refreshEntireApp();
+        }
+
+        function updateYoYoCell(index, field, value) {
+            if (field === 'age' || field === 'weightLost') {
+                patientState.yoyoAttempts[index][field] = parseFloat(value) || 0;
+            } else {
+                patientState.yoyoAttempts[index][field] = value;
+            }
+            renderYoYoTable();
+            renderPrintReportData();
+        }
+
+        function renderYoYoTable() {
+            let tbody = document.getElementById("yoyo-tbody");
+            tbody.innerHTML = "";
+
+            let count5 = 0;
+            let count10 = 0;
+            let count15 = 0;
+            let totalWeightCycled = 0;
+
+            patientState.yoyoAttempts.forEach((y, idx) => {
+                if (y.weightLost >= 5) count5++;
+                if (y.weightLost >= 10) count10++;
+                if (y.weightLost >= 15) count15++;
+                totalWeightCycled += (y.weightLost * 2); // lost + regained
+
+                let tr = document.createElement("tr");
+                tr.className = "hover:bg-rose-50/30 transition-colors";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-semibold text-slate-900">
+                        <input type="text" value="${y.attempt}" onchange="updateYoYoCell(${idx}, 'attempt', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:bg-white px-1 py-0.5 text-sm font-bold text-slate-800">
+                    </td>
+                    <td class="py-3 px-3">
+                        <input type="number" value="${y.age}" onchange="updateYoYoCell(${idx}, 'age', this.value)" class="w-14 bg-transparent border-b border-slate-300 px-1 py-0.5 text-sm font-semibold text-slate-800">
+                    </td>
+                    <td class="py-3 px-3">
+                        <div class="flex items-center space-x-1">
+                            <span class="text-xs font-bold text-rose-600">&darr;</span>
+                            <input type="number" step="0.5" value="${y.weightLost}" onchange="updateYoYoCell(${idx}, 'weightLost', this.value)" class="w-14 bg-transparent border-b border-slate-300 font-extrabold text-clinical-teal px-1 py-0.5 text-sm">
+                            <span class="text-xs text-slate-400">kg</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-3 text-slate-600 text-sm">
+                        <input type="text" value="${y.maintained}" onchange="updateYoYoCell(${idx}, 'maintained', this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 px-1 py-0.5 text-sm">
+                    </td>
+                    <td class="py-3 px-3">
+                        <textarea rows="2" onchange="updateYoYoCell(${idx}, 'successFactor', this.value)" class="w-full bg-transparent border border-transparent hover:border-slate-300 focus:bg-white focus:border-teal-500 rounded p-1 text-xs text-slate-700 leading-snug resize-none">${y.successFactor}</textarea>
+                    </td>
+                    <td class="py-3 px-3">
+                        <textarea rows="2" onchange="updateYoYoCell(${idx}, 'failureFactor', this.value)" class="w-full bg-transparent border border-transparent hover:border-slate-300 focus:bg-white focus:border-rose-500 rounded p-1 text-xs text-rose-900 leading-snug resize-none">${y.failureFactor}</textarea>
+                    </td>
+                    <td class="py-3 px-3 text-center">
+                        <button onclick="deleteYoYoRow(${idx})" title="Delete Attempt" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update Summary Stats Badges
+            document.getElementById("yoyo-count-5").innerText = count5;
+            document.getElementById("yoyo-count-10").innerText = count10;
+            document.getElementById("yoyo-count-15").innerText = count15;
+            document.getElementById("yoyo-total-weight").innerText = `${totalWeightCycled.toFixed(0)} kg`;
+        }
+
+
+        // ==========================================
+        // PART 3: 3-YEAR CLINICAL PROGNOSIS MATH
+        // ==========================================
+        function applyTherapyPreset() {
+            let mod = document.getElementById("select-therapy-modality").value;
+            patientState.therapyModality = mod;
+
+            if (mod === "glp1_high") patientState.targetTbwlPercent = 20;
+            if (mod === "glp1_std") patientState.targetTbwlPercent = 15;
+            if (mod === "bariatric") patientState.targetTbwlPercent = 30;
+            if (mod === "lifestyle") patientState.targetTbwlPercent = 8;
+            
+            document.getElementById("input-target-tbwl").value = patientState.targetTbwlPercent;
+            calculatePrognosis();
+            refreshEntireApp();
+        }
+
+        function calculatePrognosis() {
+            let pct = parseFloat(document.getElementById("input-target-tbwl").value) || 20;
+            patientState.targetTbwlPercent = pct;
+
+            let W0 = patientState.baselineWeight;
+            let expectedLossKg = W0 * (pct / 100);
+            let finalTargetWeight = W0 - expectedLossKg;
+
+            let heightM = patientState.height / 100;
+
+            // Generate exact nodes
+            patientState.prognosticNodes = [
+                {
+                    month: 0, timelineStr: "Today (Month 0)", weight: W0,
+                    tbwlPercent: 0, bmi: parseFloat((W0 / (heightM * heightM)).toFixed(1)),
+                    focus: "Start of medical therapy & behavioral protocol. Establishing daily step targets & structured high protein distribution.", isCustom: false
+                },
+                {
+                    month: 6, timelineStr: "+ 6 Months", weight: parseFloat((W0 - expectedLossKg * 0.60).toFixed(1)),
+                    tbwlPercent: parseFloat((pct * 0.60).toFixed(1)), bmi: parseFloat(((W0 - expectedLossKg * 0.60) / (heightM * heightM)).toFixed(1)),
+                    focus: "Active rapid fat loss phase. Up-titrating to primary therapeutic maintenance dosage. Significant reduction in visceral adiposity.", isCustom: false
+                },
+                {
+                    month: 12, timelineStr: "+ 12 Months", weight: parseFloat((W0 - expectedLossKg * 0.85).toFixed(1)),
+                    tbwlPercent: parseFloat((pct * 0.85).toFixed(1)), bmi: parseFloat(((W0 - expectedLossKg * 0.85) / (heightM * heightM)).toFixed(1)),
+                    focus: "Major metabolic normalization (HbA1c, fasting lipids, blood pressure). Reaching therapeutic target plateau.", isCustom: false
+                },
+                {
+                    month: 18, timelineStr: "+ 18 Months", weight: parseFloat(finalTargetWeight.toFixed(1)),
+                    tbwlPercent: pct, bmi: parseFloat((finalTargetWeight / (heightM * heightM)).toFixed(1)),
+                    focus: "Peak weight loss plateau. Primary clinical focus shifts to active muscle recomposition and functional physical capability.", isCustom: false
+                },
+                {
+                    month: 36, timelineStr: "+ 36 Months (Year 3)", weight: parseFloat(finalTargetWeight.toFixed(1)),
+                    tbwlPercent: pct, bmi: parseFloat((finalTargetWeight / (heightM * heightM)).toFixed(1)),
+                    focus: "Stable horizontal maintenance line. Permanent behavioral, biological, and metabolic adaptation confirmed.", isCustom: false
+                }
+            ];
+
+            refreshEntireApp();
+        }
+
+        function updatePrognosisRow(index, weightVal) {
+            let w = parseFloat(weightVal) || patientState.baselineWeight;
+            let W0 = patientState.baselineWeight;
+            let heightM = patientState.height / 100;
+            
+            let node = patientState.prognosticNodes[index];
+            node.weight = w;
+            node.tbwlPercent = parseFloat((((W0 - w) / W0) * 100).toFixed(1));
+            node.bmi = parseFloat((w / (heightM * heightM)).toFixed(1));
+            node.isCustom = true;
+
+            // if Year 3 was changed, update our banner & guidelines
+            if (node.month === 36) {
+                patientState.targetTbwlPercent = node.tbwlPercent;
+                document.getElementById("input-target-tbwl").value = node.tbwlPercent;
+            }
+
+            renderPrognosisTable();
+            renderMasterSvgChart();
+            renderPrintReportData();
+        }
+
+        function updatePrognosisFocus(index, textVal) {
+            patientState.prognosticNodes[index].focus = textVal;
+            renderPrintReportData();
+        }
+
+        function renderPrognosisTable() {
+            let tbody = document.getElementById("prognosis-tbody");
+            tbody.innerHTML = "";
+
+            patientState.prognosticNodes.forEach((p, idx) => {
+                let isFinal = p.month === 36;
+                let tr = document.createElement("tr");
+                tr.className = `hover:bg-emerald-50/40 transition-colors ${isFinal ? 'bg-emerald-50/70 font-bold' : ''}`;
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-bold text-slate-900 flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full ${isFinal ? 'bg-emerald-600 pulse-circle' : 'bg-teal-500'}"></span>
+                        <span>${p.timelineStr}</span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="flex items-center space-x-1">
+                            <input type="number" step="0.5" value="${p.weight}" onchange="updatePrognosisRow(${idx}, this.value)" class="w-20 px-2 py-1 bg-transparent border-b border-slate-300 hover:border-emerald-500 focus:bg-white focus:border-emerald-600 font-black text-base ${isFinal ? 'text-emerald-700' : 'text-slate-900'}">
+                            <span class="text-xs font-bold text-slate-500">kg</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="px-2 py-1 rounded text-xs font-black ${isFinal ? 'bg-emerald-200 text-emerald-900 shadow-sm' : 'bg-slate-100 text-slate-700'}">
+                            -${p.tbwlPercent}%
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 font-extrabold text-slate-700 text-sm">
+                        ${p.bmi}
+                    </td>
+                    <td class="py-3 px-4">
+                        <textarea rows="2" onchange="updatePrognosisFocus(${idx}, this.value)" class="w-full bg-transparent border border-transparent hover:border-slate-300 focus:bg-white focus:border-emerald-500 rounded p-1 text-xs text-slate-700 leading-snug resize-none">${p.focus}</textarea>
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        ${p.isCustom ? `
+                            <button onclick="calculatePrognosis()" title="Reset to auto-calculated node" class="p-1 rounded text-amber-600 hover:bg-amber-50">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                        ` : '<span class="text-[10px] text-slate-400 font-mono">AUTO</span>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+
+        // ========================================================
+        // PART 4: MASTER BESPOKE INTERACTIVE VECTOR SVG CHARTING
+        // ========================================================
+        function toggleBmiBands() {
+            patientState.showBmiBands = !patientState.showBmiBands;
+            document.getElementById("label-toggle-bmi").innerText = patientState.showBmiBands ? "Hide BMI Bands" : "Show BMI Bands";
+            document.getElementById("btn-toggle-bmi").className = `px-3 py-1.5 rounded-lg text-xs font-semibold ${patientState.showBmiBands ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-slate-100 text-slate-600 border-slate-300'} flex items-center space-x-1.5 transition-colors`;
+            renderMasterSvgChart();
+        }
+
+        function toggleYoyoMarkers() {
+            patientState.showYoyoMarkers = !patientState.showYoyoMarkers;
+            document.getElementById("label-toggle-yoyo").innerText = patientState.showYoyoMarkers ? "Hide Yo-Yo Dips" : "Show Yo-Yo Dips";
+            document.getElementById("btn-toggle-yoyo").className = `px-3 py-1.5 rounded-lg text-xs font-semibold ${patientState.showYoyoMarkers ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-slate-100 text-slate-600 border-slate-300'} flex items-center space-x-1.5 transition-colors`;
+            renderMasterSvgChart();
+        }
+
+        function renderMasterSvgChart() {
+            let svg = document.getElementById("master-svg-chart");
+            if (!svg) return;
+
+            // Geometry Config
+            const W = 1100;
+            const H = 550;
+            const padL = 65;
+            const padR = 210; // Extra room on right for gorgeous maintenance annotations
+            const padT = 55;
+            const padB = 60;
+            const plotW = W - padL - padR;
+            const plotH = H - padT - padB;
+
+            // Axes Bounds
+            let maxAge = patientState.age + 3.0; // Projections go exactly 3 years out
+            let maxWeight = Math.max(patientState.peakWeight + 12, 120);
+
+            // Scale Functions
+            function getX(age) {
+                return padL + (age / maxAge) * plotW;
+            }
+            function getY(weight) {
+                return padT + plotH - (weight / maxWeight) * plotH;
+            }
+
+            let heightM = patientState.height / 100;
+
+            // ----------------------------------------
+            // 0. Render Background BMI Bands
+            // ----------------------------------------
+            let layerBmi = document.getElementById("svg-layer-bmi-bands");
+            layerBmi.innerHTML = "";
+            if (patientState.showBmiBands) {
+                let bmiThresholds = [
+                    { bmi: 40, color: "#fef2f2", label: "Class III Obesity (BMI ≥ 40)" },
+                    { bmi: 35, color: "#fff1f2", label: "Class II Obesity (BMI 35-40)" },
+                    { bmi: 30, color: "#fff7ed", label: "Class I Obesity (BMI 30-35)" },
+                    { bmi: 25, color: "#f0fdf4", label: "Overweight (BMI 25-30)" },
+                    { bmi: 18.5, color: "#f0f9ff", label: "Healthy Weight (BMI 18.5-25)" }
+                ];
+
+                let prevY = padT;
+                // Reverse iterate to stack bands downwards
+                let bandH;
+                let bandsHtml = "";
+                
+                // Let's compute weight boundaries
+                let w40 = 40 * heightM * heightM;
+                let w35 = 35 * heightM * heightM;
+                let w30 = 30 * heightM * heightM;
+                let w25 = 25 * heightM * heightM;
+                let w185 = 18.5 * heightM * heightM;
+
+                let bounds = [
+                    { name: "Class III Obesity (BMI ≥40)", topW: maxWeight, botW: w40, col: "#fff1f2", txtCol: "#9f1239" },
+                    { name: "Class II Obesity (BMI 35-40)", topW: w40, botW: w35, col: "#ffe4e6", txtCol: "#e11d48" },
+                    { name: "Class I Obesity (BMI 30-35)", topW: w35, botW: w30, col: "#ffedd5", txtCol: "#c2410c" },
+                    { name: "Overweight Zone (BMI 25-30)", topW: w30, botW: w25, col: "#fef9c3", txtCol: "#a16207" },
+                    { name: "Healthy Target Zone (BMI 18.5-25)", topW: w25, botW: w185, col: "#dcfce7", txtCol: "#15803d" }
+                ];
+
+                bounds.forEach(b => {
+                    let yTop = Math.max(getY(b.topW), padT);
+                    let yBot = Math.min(getY(b.botW), padT + plotH);
+                    if (yBot > yTop) {
+                        bandsHtml += `
+                            <rect x="${padL}" y="${yTop}" width="${plotW + padR - 30}" height="${yBot - yTop}" fill="${b.col}" opacity="0.6" rx="4"/>
+                            <text x="${W - 25}" y="${yTop + (yBot - yTop)/2 + 4}" fill="${b.txtCol}" font-size="10" font-weight="700" text-anchor="end" opacity="0.85">${b.name}</text>
+                        `;
+                    }
+                });
+                layerBmi.innerHTML = bandsHtml;
+            }
+
+            // ----------------------------------------
+            // 1. Render Grid Lines & Axes
+            // ----------------------------------------
+            let layerGrid = document.getElementById("svg-layer-grid");
+            let gridHtml = `
+                <!-- Master Axis Box -->
+                <line x1="${padL}" y1="${padT + plotH}" x2="${W - 30}" y2="${padT + plotH}" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + plotH}" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+            `;
+
+            // Y Axis Ticks (Weights)
+            for (let w = 0; w <= maxWeight; w += 20) {
+                let y = getY(w);
+                if (y >= padT && y <= padT + plotH) {
+                    gridHtml += `
+                        <line x1="${padL - 6}" y1="${y}" x2="${W - 30}" y2="${y}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3"/>
+                        <text x="${padL - 12}" y="${y + 4}" fill="#475569" font-size="11" font-weight="700" text-anchor="end">${w} kg</text>
+                    `;
+                }
+            }
+
+            // X Axis Ticks (Ages)
+            let ageSteps = [0, 5, 10, 15, 20, 25, 30, 35, patientState.age, patientState.age + 1, patientState.age + 2, patientState.age + 3];
+            // Remove close duplicates
+            let cleanSteps = [];
+            ageSteps.forEach(a => {
+                if (!cleanSteps.some(cs => Math.abs(cs - a) < 1.2)) cleanSteps.push(a);
+            });
+
+            cleanSteps.forEach(a => {
+                let x = getX(a);
+                let isCurrent = a === patientState.age;
+                let isFuture = a > patientState.age;
+                let labelStr = isCurrent ? `Age ${a} (NOW)` : (isFuture ? `+${Math.round(a - patientState.age)} Yr` : `Age ${a}`);
+                
+                gridHtml += `
+                    <line x1="${x}" y1="${padT}" x2="${x}" y2="${padT + plotH + 6}" stroke="${isCurrent ? '#b45309' : '#cbd5e1'}" stroke-width="${isCurrent ? '2' : '1'}" stroke-dasharray="${isCurrent ? 'none' : '4 4'}"/>
+                    <text x="${x}" y="${padT + plotH + 20}" fill="${isCurrent ? '#b45309' : (isFuture ? '#10b981' : '#475569')}" font-size="${isCurrent ? '12' : '11'}" font-weight="${isCurrent || isFuture ? '800' : '600'}" text-anchor="middle">${labelStr}</text>
+                `;
+            });
+            gridHtml += `<text x="${padL + plotW/2}" y="${padT + plotH + 45}" fill="#0f172a" font-size="13" font-weight="800" text-anchor="middle" letter-spacing="1">PATIENT AGE (YEARS) & FORWARD PROGNOSIS TIMELINE</text>`;
+            layerGrid.innerHTML = gridHtml;
+
+
+            // ----------------------------------------
+            // 2 & 3. Render Historical & Prognostic Master Curves
+            // ----------------------------------------
+            let layerPaths = document.getElementById("svg-layer-paths");
+            let layerYoYoPaths = document.getElementById("svg-layer-yoyo-paths");
+            
+            // Generate Path Data for Historical Ascent
+            let ascPts = patientState.milestones.map(m => `${getX(m.age)},${getY(m.weight)}`).join(" L ");
+            
+            // Area Under Curve for Ascent
+            let firstMs = patientState.milestones[0];
+            let lastMs = patientState.milestones[patientState.milestones.length - 1];
+            let ascArea = `M ${getX(firstMs.age)},${padT + plotH} L ${ascPts} L ${getX(lastMs.age)},${padT + plotH} Z`;
+
+            // Generate Path Data for Forward Prognosis
+            let pNodes = patientState.prognosticNodes.map(pn => ({ age: patientState.age + (pn.month / 12), weight: pn.weight }));
+            let descPts = pNodes.map(pn => `${getX(pn.age)},${getY(pn.weight)}`).join(" L ");
+
+            let descArea = `M ${getX(pNodes[0].age)},${padT + plotH} L ${descPts} L ${getX(pNodes[pNodes.length - 1].age)},${padT + plotH} Z`;
+
+            // Optional Yo-Yo visual annotation paths (illustrating historical cycling dips)
+            let yoyoPathsHtml = "";
+            let yoyoBadgesHtml = "";
+
+            if (patientState.showYoyoMarkers) {
+                patientState.yoyoAttempts.forEach((yy, idx) => {
+                    // locate baseline historical weight around that age
+                    let roughW = 80;
+                    let msBefore = patientState.milestones.slice().reverse().find(m => m.age <= yy.age);
+                    if (msBefore) roughW = msBefore.weight;
+
+                    let xStart = getX(yy.age);
+                    let yTop = getY(roughW);
+                    let yDip = getY(roughW - yy.weightLost);
+                    let xDip = getX(yy.age + 0.3);
+                    let xRec = getX(yy.age + 0.8);
+
+                    // If it fits well within the past
+                    if (yy.age < patientState.age - 0.5) {
+                        yoyoPathsHtml += `
+                            <path d="M ${xStart},${yTop} Q ${xDip},${yDip} ${xDip},${yDip} Q ${xRec},${yTop} ${xRec},${yTop}" stroke="#f59e0b" stroke-width="2.5" stroke-dasharray="3 3" fill="none" filter="url(#glow-red)"/>
+                        `;
+                        yoyoBadgesHtml += `
+                            <g class="cursor-pointer transform hover:scale-110 transition-transform" onmouseover="showSvgTooltip(event, 'YO-YO ATTEMPT #${idx+1}: ${yy.attempt}<br>Age: ${yy.age} yrs | Lost: ${yy.weightLost} kg<br><b>Success Driver:</b> ${yy.successFactor}<br><b>Regain Trigger:</b> ${yy.failureFactor}')" onmouseout="hideSvgTooltip()">
+                                <rect x="${xDip - 42}" y="${yDip - 28}" width="84" height="22" fill="#f59e0b" rx="11" stroke="#ffffff" stroke-width="2" filter="url(#card-shadow)"/>
+                                <text x="${xDip}" y="${yDip - 13}" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">⚠️ -${yy.weightLost} kg Dip</text>
+                            </g>
+                        `;
+                    }
+                });
+            }
+            layerYoYoPaths.innerHTML = yoyoPathsHtml;
+            document.getElementById("svg-layer-yoyo-badges").innerHTML = yoyoBadgesHtml;
+
+            layerPaths.innerHTML = `
+                <!-- Shading Fills -->
+                <path d="${ascArea}" fill="url(#asc-grad)"/>
+                <path d="${descArea}" fill="url(#desc-grad)"/>
+                
+                <!-- Master Ascent Line (The Past) -->
+                <path d="M ${ascPts}" stroke="#f43f5e" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#glow-red)"/>
+                
+                <!-- Master Descent & Maintenance Line (The Future Roadmap) -->
+                <path d="M ${descPts}" stroke="#10b981" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#glow-emerald)"/>
+            `;
+
+
+            // ----------------------------------------
+            // 4. Reference Guidelines
+            // ----------------------------------------
+            let layerGuides = document.getElementById("svg-layer-guidelines");
+            let xCurrent = getX(patientState.age);
+            let yPeak = getY(patientState.peakWeight);
+            let yTarget = getY(patientState.prognosticNodes[patientState.prognosticNodes.length - 1].weight);
+
+            layerGuides.innerHTML = `
+                <!-- Lifetime Peak Weight Guide Line -->
+                <line x1="${padL}" y1="${yPeak}" x2="${W - 30}" y2="${yPeak}" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="6 4"/>
+                
+                <!-- 3-Year Maintenance Target Guide Line -->
+                <line x1="${xCurrent}" y1="${yTarget}" x2="${W - 30}" y2="${yTarget}" stroke="#10b981" stroke-width="2" stroke-dasharray="6 4"/>
+            `;
+
+
+            // ----------------------------------------
+            // 5. Interactive Milestone Data Points / Circles
+            // ----------------------------------------
+            let layerPts = document.getElementById("svg-layer-points");
+            let ptsHtml = "";
+
+            // Historical Points
+            patientState.milestones.forEach((m, idx) => {
+                let x = getX(m.age);
+                let y = getY(m.weight);
+                let isPeak = m.weight === patientState.peakWeight;
+                let isBase = m.age === patientState.age;
+
+                let tooltipTxt = `<b>HISTORICAL MILESTONE</b><br>Age: ${m.age} yrs | Weight: ${m.weight} kg<br>Context: ${m.context}`;
+
+                ptsHtml += `
+                    <g class="cursor-pointer" onmouseover="showSvgTooltip(event, '${tooltipTxt}')" onmouseout="hideSvgTooltip()">
+                        <circle cx="${x}" cy="${y}" r="${isPeak || isBase ? '8' : '5.5'}" fill="${isPeak ? '#9f1239' : (isBase ? '#b45309' : '#f43f5e')}" stroke="#ffffff" stroke-width="2.5" filter="url(#card-shadow)"/>
+                        ${isPeak ? `<circle cx="${x}" cy="${y}" r="12" fill="none" stroke="#f43f5e" stroke-width="2" class="pulse-circle"/>` : ''}
+                        ${isBase ? `<circle cx="${x}" cy="${y}" r="12" fill="none" stroke="#f59e0b" stroke-width="2" class="pulse-circle"/>` : ''}
+                    </g>
+                `;
+            });
+
+            // Forward Prognosis Points
+            pNodes.forEach((pn, idx) => {
+                let x = getX(pn.age);
+                let y = getY(pn.weight);
+                let isFinal = idx === pNodes.length - 1;
+                let nodeMeta = patientState.prognosticNodes[idx];
+
+                let tooltipTxt = `<b>CLINICAL PROGNOSIS: ${nodeMeta.timelineStr}</b><br>Target Weight: ${pn.weight} kg (-${nodeMeta.tbwlPercent}% TBWL)<br>Est. BMI: ${nodeMeta.bmi} kg/m²<br><b>Focus:</b> ${nodeMeta.focus}`;
+
+                ptsHtml += `
+                    <g class="cursor-pointer" onmouseover="showSvgTooltip(event, '${tooltipTxt}')" onmouseout="hideSvgTooltip()">
+                        <circle cx="${x}" cy="${y}" r="${isFinal ? '9' : '7'}" fill="#10b981" stroke="#ffffff" stroke-width="2.5" filter="url(#glow-emerald)"/>
+                        ${isFinal ? `<circle cx="${x}" cy="${y}" r="14" fill="none" stroke="#10b981" stroke-width="2.5" class="pulse-circle"/>` : ''}
+                    </g>
+                `;
+            });
+            layerPts.innerHTML = ptsHtml;
+
+
+            // ----------------------------------------
+            // 6. Major Callout Banners
+            // ----------------------------------------
+            let layerCallouts = document.getElementById("svg-layer-callouts");
+            let xPeak = getX(patientState.peakAge);
+            let xStart = getX(patientState.age);
+            let yStart = getY(patientState.baselineWeight);
+            let xFinal = getX(patientState.age + 3.0);
+            let yFinal = getY(patientState.prognosticNodes[patientState.prognosticNodes.length - 1].weight);
+
+            layerCallouts.innerHTML = `
+                <!-- Peak Callout Banner -->
+                <g class="transform hover:-translate-y-1 transition-transform cursor-pointer" onmouseover="showSvgTooltip(event, 'Lifetime Peak Weight reached at Age ${patientState.peakAge}<br>Highly progressive biological vector requiring intensive stabilization.')" onmouseout="hideSvgTooltip()">
+                    <line x1="${xPeak}" y1="${yPeak - 10}" x2="${xPeak}" y2="${yPeak - 35}" stroke="#9f1239" stroke-width="2" />
+                    <rect x="${xPeak - 80}" y="${yPeak - 65}" width="160" height="30" fill="#9f1239" rx="6" stroke="#ffffff" stroke-width="2" filter="url(#card-shadow)"/>
+                    <text x="${xPeak}" y="${yPeak - 45}" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">⚠️ PEAK: ${patientState.peakWeight} kg (Age ${patientState.peakAge})</text>
+                </g>
+
+                <!-- Program Start Banner -->
+                <g class="transform hover:-translate-y-1 transition-transform cursor-pointer" onmouseover="showSvgTooltip(event, 'Baseline Consultation<br>Establishing First Principles & Initiating GLP-1 / Dual Agonist Pathway.')" onmouseout="hideSvgTooltip()">
+                    <line x1="${xStart}" y1="${yStart - 10}" x2="${xStart}" y2="${yStart - 45}" stroke="#b45309" stroke-width="2" />
+                    <rect x="${xStart - 85}" y="${yStart - 75}" width="170" height="30" fill="#b45309" rx="6" stroke="#ffffff" stroke-width="2" filter="url(#card-shadow)"/>
+                    <text x="${xStart}" y="${yStart - 55}" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">🚀 START: ${patientState.baselineWeight} kg (Age ${patientState.age})</text>
+                </g>
+
+                <!-- Year 3 Maintenance Plateau Callout -->
+                <g class="transform hover:-translate-y-1 transition-transform cursor-pointer" onmouseover="showSvgTooltip(event, 'Year 3 Stable Maintenance Target<br>Permanent physiological adaptation and behavioral autonomy achieved.')" onmouseout="hideSvgTooltip()">
+                    <rect x="${xFinal + 12}" y="${yFinal - 20}" width="165" height="40" fill="#065f46" rx="8" stroke="#ffffff" stroke-width="2" filter="url(#glow-emerald)"/>
+                    <text x="${xFinal + 94}" y="${yFinal - 2}" fill="#ffffff" font-size="11" font-weight="800" text-anchor="middle">🎯 YEAR 3 GOAL</text>
+                    <text x="${xFinal + 94}" y="${yFinal + 12}" fill="#a7f3d0" font-size="10" font-weight="700" text-anchor="middle">${patientState.prognosticNodes[4].weight} kg (-${patientState.targetTbwlPercent}% TBWL)</text>
+                </g>
+            `;
+        }
+
+        // Tooltip handlers for Interactive SVG
+        function showSvgTooltip(event, text) {
+            let tt = document.getElementById("svg-chart-tooltip");
+            if (!tt) return;
+            tt.innerHTML = text;
+            tt.style.opacity = "1";
+            
+            // position relative to SVG or mouse
+            let container = document.getElementById("master-svg-chart").getBoundingClientRect();
+            let mouseX = event.clientX - container.left;
+            let mouseY = event.clientY - container.top;
+            
+            tt.style.left = `${event.clientX}px`;
+            tt.style.top = `${event.clientY - 15}px`;
+        }
+
+        function hideSvgTooltip() {
+            let tt = document.getElementById("svg-chart-tooltip");
+            if (tt) tt.style.opacity = "0";
+        }
+
+
+        // ===============================================
+        // PRINT REPORT SYNC (Formatting into exactly 2 pages)
+        // ===============================================
+        function renderPrintReportData() {
+            // Patient Baseline banner
+            document.getElementById("print-patient-name").innerText = patientState.winId;
+            document.getElementById("print-patient-age").innerText = patientState.age;
+            document.getElementById("print-patient-height").innerText = patientState.height;
+            document.getElementById("print-patient-baseline").innerText = `${patientState.baselineWeight} kg`;
+            document.getElementById("print-patient-peak").innerText = `${patientState.peakWeight} kg`;
+            document.getElementById("print-patient-peak-age").innerText = patientState.peakAge;
+            document.getElementById("print-p2-patient").innerText = patientState.winId;
+            document.getElementById("print-p2-target").innerText = `${patientState.prognosticNodes[4].weight} kg (-${patientState.targetTbwlPercent}% TBWL)`;
+
+            let heightM = patientState.height / 100;
+            let baseBmi = (patientState.baselineWeight / (heightM * heightM)).toFixed(1);
+            document.getElementById("print-patient-baseline-bmi").innerText = `BMI ${baseBmi} &bull; ${getBmiClassStr(baseBmi)}`;
+
+            // Modality Title
+            let selectElem = document.getElementById("select-therapy-modality");
+            document.getElementById("print-modality-title").innerText = selectElem.options[selectElem.selectedIndex].innerText;
+
+            // Sync Milestones
+            let tbodyMs = document.getElementById("print-milestones-tbody");
+            tbodyMs.innerHTML = "";
+            patientState.milestones.forEach(m => {
+                tbodyMs.innerHTML += `
+                    <tr>
+                        <td style="padding: 6px 12px; font-weight: bold; color: ${m.weight === patientState.peakWeight ? '#9f1239' : '#0f172a'};">${m.weight} kg ${m.weight === patientState.peakWeight ? '(PEAK)' : ''}</td>
+                        <td style="padding: 6px 12px;">Age ${m.age}</td>
+                        <td style="padding: 6px 12px;">${m.context}</td>
+                    </tr>
+                `;
+            });
+
+            // Sync Yo-Yo Table & Counters
+            let count5 = 0; let count10 = 0; let count15 = 0; let totalCycled = 0;
+            let tbodyYoyo = document.getElementById("print-yoyo-tbody");
+            tbodyYoyo.innerHTML = "";
+
+            patientState.yoyoAttempts.forEach(y => {
+                if (y.weightLost >= 5) count5++;
+                if (y.weightLost >= 10) count10++;
+                if (y.weightLost >= 15) count15++;
+                totalCycled += (y.weightLost * 2);
+
+                tbodyYoyo.innerHTML += `
+                    <tr>
+                        <td style="padding: 6px 10px; font-weight: bold;">${y.attempt}</td>
+                        <td style="padding: 6px 10px;">Age ${y.age}</td>
+                        <td style="padding: 6px 10px; color: #0d9488; font-weight: bold;">-${y.weightLost} kg (${y.maintained})</td>
+                        <td style="padding: 6px 10px;">${y.successFactor}</td>
+                        <td style="padding: 6px 10px; color: #9f1239;">${y.failureFactor}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById("print-yoyo-5").innerText = count5;
+            document.getElementById("print-yoyo-10").innerText = count10;
+            document.getElementById("print-yoyo-15").innerText = count15;
+            document.getElementById("print-yoyo-total").innerText = `${totalCycled.toFixed(0)} kg`;
+
+            // Sync Prognosis Table
+            let tbodyProg = document.getElementById("print-prognosis-tbody");
+            tbodyProg.innerHTML = "";
+            patientState.prognosticNodes.forEach(p => {
+                tbodyProg.innerHTML += `
+                    <tr style="${p.month === 36 ? 'background-color: #dcfce7; font-weight: bold;' : ''}">
+                        <td style="padding: 6px 10px; font-weight: bold;">${p.timelineStr}</td>
+                        <td style="padding: 6px 10px; color: #10b981; font-weight: bold;">${p.weight} kg</td>
+                        <td style="padding: 6px 10px;">-${p.tbwlPercent}%</td>
+                        <td style="padding: 6px 10px;">BMI ${p.bmi}</td>
+                        <td style="padding: 6px 10px;">${p.focus}</td>
+                    </tr>
+                `;
+            });
+
+            // Clone Master SVG to print container so it displays immaculately
+            let cloneContainer = document.getElementById("print-svg-container");
+            let originalSvg = document.getElementById("master-svg-chart");
+            if (originalSvg) {
+                cloneContainer.innerHTML = "";
+                let clonedSvg = originalSvg.cloneNode(true);
+                clonedSvg.removeAttribute("id");
+                clonedSvg.style.width = "100%";
+                clonedSvg.style.height = "auto";
+                clonedSvg.style.maxHeight = "360px";
+                cloneContainer.appendChild(clonedSvg);
+            }
+        }
+
+        function triggerPrintMode() {
+            // Ensure UI data sync
+            renderPrintReportData();
+            // Fire standard browser print
+            window.print();
+        }
+
+
+        // =====================================
+        // TAB SWITCHERS & UI MODAL CONTROLLERS
+        // =====================================
+        function switchTab(tabNum) {
+            let t1 = document.getElementById("tab-1-content");
+            let t2 = document.getElementById("tab-2-content");
+            let b1 = document.getElementById("nav-tab-1");
+            let b2 = document.getElementById("nav-tab-2");
+
+            if (tabNum === 1) {
+                t1.classList.remove("hidden");
+                t2.classList.add("hidden");
+                
+                b1.className = "nav-btn px-3 py-2 rounded-md text-sm font-semibold transition-all flex items-center space-x-2 bg-clinical-teal text-white shadow-sm";
+                b2.className = "nav-btn px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center space-x-2";
+            } else {
+                t1.classList.add("hidden");
+                t2.classList.remove("hidden");
+                
+                b2.className = "nav-btn px-3 py-2 rounded-md text-sm font-semibold transition-all flex items-center space-x-2 bg-clinical-emerald text-white shadow-sm";
+                b1.className = "nav-btn px-3 py-2 rounded-md text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center space-x-2";
+                
+                // Refresh SVG render when made visible
+                renderMasterSvgChart();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function openDataModal() {
+            let m = document.getElementById("modal-data");
+            m.classList.remove("pointer-events-none");
+            m.classList.add("opacity-100");
+            m.firstElementChild.classList.remove("scale-95");
+            m.firstElementChild.classList.add("scale-100");
+        }
+        function closeDataModal() {
+            let m = document.getElementById("modal-data");
+            m.classList.add("pointer-events-none");
+            m.classList.remove("opacity-100");
+            m.firstElementChild.classList.add("scale-95");
+            m.firstElementChild.classList.remove("scale-100");
+        }
+
+        function openHelpModal() {
+            let m = document.getElementById("modal-help");
+            m.classList.remove("pointer-events-none");
+            m.classList.add("opacity-100");
+            m.firstElementChild.classList.remove("scale-95");
+            m.firstElementChild.classList.add("scale-100");
+        }
+        function closeHelpModal() {
+            let m = document.getElementById("modal-help");
+            m.classList.add("pointer-events-none");
+            m.classList.remove("opacity-100");
+            m.firstElementChild.classList.add("scale-95");
+            m.firstElementChild.classList.remove("scale-100");
+        }
+
+        function exportDataJson() {
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(patientState, null, 2));
+            let dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `Panini_Trajectory_${patientState.winId}.json`);
+            dlAnchorElem.click();
+        }
+
+        function copyDataText() {
+            let text = `PANINI CLINICAL SUMMARY\nPatient ID: ${patientState.winId} | Age: ${patientState.age} | Height: ${patientState.height} cm\nBaseline Weight: ${patientState.baselineWeight} kg | Lifetime Peak: ${patientState.peakWeight} kg (Age ${patientState.peakAge})\n3-Year Target: ${patientState.prognosticNodes[4].weight} kg (-${patientState.targetTbwlPercent}% TBWL)\n\nYo-Yo History: Logged ${patientState.yoyoAttempts.length} primary programs.\nTotal Lifetime Cycled: ${document.getElementById("yoyo-total-weight").innerText}`;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("EMR Summary Block successfully copied to clipboard!");
+            });
+        }
+
+        function importDataFile(event) {
+            let file = event.target.files[0];
+            if (!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    let imported = JSON.parse(e.target.result);
+                    if (imported && (imported.winId || imported.name) && imported.milestones) {
+                        if (!imported.winId) imported.winId = imported.mrn || "WIN-000000";
+                        delete imported.name; delete imported.mrn;
+                        patientState = imported;
+                        refreshEntireApp();
+                        closeDataModal();
+                        alert("Patient profile successfully loaded!");
+                    } else {
+                        alert("Invalid JSON profile format.");
+                    }
+                } catch(err) {
+                    alert("Error parsing JSON file.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportChartSvg() {
+            let svgElem = document.getElementById("master-svg-chart");
+            let serializer = new XMLSerializer();
+            let svgStr = serializer.serializeToString(svgElem);
+            // prepend XML declaration
+            svgStr = '<?xml version="1.0" standalone="no"?>\r\n' + svgStr;
+            let url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
+            let a = document.createElement("a");
+            a.download = `Lifetime_Trajectory_Chart_${patientState.winId}.svg`;
+            a.href = url;
+            a.click();
+        }
+
+        function resetToSamplePatient() {
+            patientState = {
+                winId: "WIN-DEMO01",
+                age: 39,
+                height: 168,
+                baselineWeight: 100,
+                peakWeight: 108,
+                peakAge: 38,
+                targetTbwlPercent: 20,
+                therapyModality: "glp1_high",
+                milestones: [
+                    { weight: 3.5, age: 0, context: "Birth Weight (Healthy term delivery)", custom: false },
+                    { weight: 10, age: 1.2, context: "Infancy milestone (Pediatric chart record)", custom: false },
+                    { weight: 20, age: 6, context: "Early childhood / Kindergarten stage", custom: false },
+                    { weight: 30, age: 9.5, context: "Late childhood active growth", custom: false },
+                    { weight: 40, age: 12.5, context: "Early teens / Middle school entry", custom: false },
+                    { weight: 50, age: 15, context: "Mid teens / High school active sports", custom: false },
+                    { weight: 60, age: 18, context: "Late teens / College entrance exam stress", custom: false },
+                    { weight: 70, age: 22, context: "First corporate job / Sedentary transition", custom: false },
+                    { weight: 80, age: 26, context: "Marriage / Relocation & diet shift", custom: false },
+                    { weight: 90, age: 31, context: "High stress career promotion / First pregnancy", custom: false },
+                    { weight: 100, age: 34, context: "Post-pregnancy retention / Pandemic lockdown", custom: false },
+                    { weight: 108, age: 38, context: "Lifetime Peak Weight (High work burnout / joint pain)", custom: true },
+                    { weight: 100, age: 39, context: "Current Baseline Consultation (Start of 3-Yr Program)", custom: false }
+                ],
+                yoyoAttempts: [
+                    { attempt: "Weight Watchers & Low Fat", age: 26, weightLost: 8, maintained: "4 months", successFactor: "Weekly group meetings, structured point logging, strict adherence", failureFactor: "Persistent constant hunger, social dining friction, rebounded during career travel" },
+                    { attempt: "Strict Keto & Intermittent Fasting", age: 31, weightLost: 14, maintained: "6 months", successFactor: "Rapid initial water/fat loss, total carbohydrate elimination clarity", failureFactor: "Extreme cravings, LDL lipid spike, intense rebound gain when carbs re-introduced" },
+                    { attempt: "Commercial Cleanse & HIIT Boot Camp", age: 36, weightLost: 6, maintained: "1 month", successFactor: "High initial motivation, intense daily exercise deficit", failureFactor: "Physical exhaustion, knee joint injury, extreme compensatory overeating" }
+                ],
+                prognosticNodes: [
+                    { month: 0, timelineStr: "Today (Month 0)", weight: 100, tbwlPercent: 0, bmi: 35.4, focus: "Start of GLP-1 / Dual Agonist protocol. Establishing daily 100g protein and 7,500 step habits.", isCustom: false },
+                    { month: 6, timelineStr: "+ 6 Months", weight: 88, tbwlPercent: 12, bmi: 31.2, focus: "10-15% TBWL. Active fat loss phase, up-titrating to primary therapeutic dose, major metabolic shift.", isCustom: false },
+                    { month: 12, timelineStr: "+ 12 Months", weight: 83, tbwlPercent: 17, bmi: 29.4, focus: "15-20% TBWL. Major metabolic normalization (HbA1c, fasting insulin, lipids). Normalizing blood pressure.", isCustom: false },
+                    { month: 18, timelineStr: "+ 18 Months", weight: 80, tbwlPercent: 20, bmi: 28.3, focus: "Target weight loss plateau reached. Transitioning focus primarily to muscle recomposition & strength.", isCustom: false },
+                    { month: 36, timelineStr: "+ 36 Months (Year 3)", weight: 80, tbwlPercent: 20, bmi: 28.3, focus: "Maintained horizontal trajectory line. Permanent physiological, behavioral, and nutritional adaptation achieved.", isCustom: false }
+                ],
+                showBmiBands: true,
+                showYoyoMarkers: true
+            };
+            refreshEntireApp();
+        }
+    </script>
 </body>
 </html>
