@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Medication Titration Tracker — Panini</title>
+<script src="../assets/js/panini-data.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -242,6 +243,8 @@ input:focus,select:focus { outline:none; border-color:var(--teal); box-shadow:0 
       <input type="text" id="pidInput" placeholder="WIN-XXXXXX" maxlength="16" autocomplete="off" spellcheck="false">
       <button class="btn solid" onclick="loadPatient()">Load</button>
     </div>
+    <button class="btn" id="btnGhLoad" onclick="githubLoad()" title="Load from GitHub JSON">☁️ Load</button>
+    <button class="btn solid" onclick="githubExport()" title="Download JSON for GitHub commit">⬇ Export JSON</button>
     <button class="btn" onclick="window.print()">🖨 Print</button>
     <span class="save-status" id="saveStatus"></span>
   </div>
@@ -494,24 +497,49 @@ const DRUGS = {
 /* ══════════════════════════════════════════════
    STATE
 ════════════════════════════════════════════════ */
-const STORE_PREFIX='paniniMed_';
-const ID_KEY='paniniActiveMedId';
+// Storage backed by PaniniData (panini-data.js)
 let activeId=null, record=null, selectedDrug=null;
 
 /* ══════════════════════════════════════════════
    UTILITIES
 ════════════════════════════════════════════════ */
-function norm(id){ return String(id||'').trim().toUpperCase().replace(/[^A-Z0-9-]/g,''); }
-function validId(id){ return /^WIN-[A-Z0-9]{4,12}$/.test(id)||/^[A-Z0-9]{6,16}$/.test(id); }
-function storeKey(id){ return STORE_PREFIX+id; }
+function norm(id){ return PaniniData.normId(id); }
+function validId(id){ return PaniniData.validId(id); }
 function status(msg){ document.getElementById('saveStatus').textContent=msg; }
 function v(id){ return document.getElementById(id); }
 function saveLocal(){
   if(!record||!activeId) return;
-  try{ localStorage.setItem(storeKey(activeId), JSON.stringify({...record,patientId:activeId,updatedAt:new Date().toISOString()})); }catch(_){}
+  PaniniData.updateSection(activeId,'medTracker',record);
 }
 function loadLocal(id){
-  try{ const r=localStorage.getItem(storeKey(id)); return r?JSON.parse(r):null; } catch(_){ return null; }
+  // Try central store first
+  const med=PaniniData.getSection(id,'medTracker');
+  if(med&&med.drug) return med;
+  // Legacy fallback
+  try{
+    const raw=localStorage.getItem('paniniMed_'+id);
+    if(raw) return JSON.parse(raw);
+  }catch(_){}
+  return null;
+}
+async function githubLoad(){
+  if(!activeId){ alert('Enter a Patient ID first.'); return; }
+  status('Loading from GitHub…');
+  const data=await PaniniData.fetchGithub(activeId);
+  if(data&&data.medTracker){
+    record=data.medTracker;
+    if(record.drug){ selectDrug(record.drug,true); }
+    if(record.startDate) v('startDate').value=record.startDate;
+    if(record.targetDose) v('targetDose').value=record.targetDose;
+    renderAll(); status('✓ Loaded from GitHub: '+activeId);
+  } else {
+    status('Not found on GitHub (using local data)');
+  }
+}
+function githubExport(){
+  if(!activeId){ alert('Load a patient first.'); return; }
+  PaniniData.exportJson(activeId);
+  status('✓ JSON downloaded — commit to data/patients/');
 }
 
 /* ══════════════════════════════════════════════
@@ -521,7 +549,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   renderDrugGrid();
   // Restore last session
   try{
-    const saved=localStorage.getItem(ID_KEY);
+    const saved=PaniniData.getActiveId();
     if(saved&&validId(saved)){
       v('pidInput').value=saved; activeId=saved;
       const rec=loadLocal(saved);
@@ -557,7 +585,7 @@ function loadPatient(){
   const id=norm(v('pidInput').value);
   if(!validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
   activeId=id;
-  try{ localStorage.setItem(ID_KEY,id); }catch(_){}
+  PaniniData.setActiveId(id);
   const saved=loadLocal(id);
   if(saved){
     record=saved;

@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Progress Card — Panini</title>
+<script src="../assets/js/panini-data.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal:#0d9488; --teal-dark:#0f766e; --teal-light:#ccfbf1;
+  --green:#16a34a; --green-light:#dcfce7;
+  --amber:#d97706; --amber-light:#fef3c7;
+  --rose:#e11d48;  --rose-light:#ffe4e6;
+  --blue:#2563eb;  --blue-light:#dbeafe;
+  --ink:#1f2937;   --slate:#475569; --muted:#94a3b8;
+  --line:#e2e8f0;  --bg:#f1f5f9; --card:#fff;
+  --radius:12px;
+}
+html { scroll-behavior:smooth; }
+body {
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg); color:var(--ink);
+  font-size:14px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── Screen toolbar (hidden on print) ── */
+.toolbar {
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:8px; padding:10px 18px;
+  background:var(--teal-dark); color:#fff;
+}
+.toolbar-brand { font-size:15px; font-weight:700; }
+.toolbar-right { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.pid-row { display:flex; gap:6px; align-items:center; }
+.pid-row input {
+  font-size:13px; font-weight:600; padding:6px 10px; border-radius:8px;
+  border:1.5px solid rgba(255,255,255,.4); background:rgba(255,255,255,.12);
+  color:#fff; width:160px; font-family:inherit;
+}
+.pid-row input::placeholder { color:rgba(255,255,255,.5); }
+.pid-row input:focus { outline:none; border-color:#fff; }
+.btn {
+  padding:6px 14px; border-radius:8px; font-size:12.5px; font-weight:600;
+  cursor:pointer; border:1.5px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.12); color:#fff; transition:background .15s;
+}
+.btn:hover { background:rgba(255,255,255,.26); }
+.btn.solid { background:#fff; color:var(--teal-dark); border-color:#fff; }
+.status { font-size:11.5px; opacity:.8; }
+
+/* ── Empty state ── */
+.empty {
+  text-align:center; padding:60px 20px;
+  max-width:500px; margin:40px auto;
+  background:var(--card); border-radius:var(--radius);
+  box-shadow:0 4px 24px rgba(0,0,0,.08);
+}
+.empty h2 { color:var(--teal-dark); margin-bottom:8px; }
+.empty p  { color:var(--slate); }
+
+/* ═══════════════════════════════════════════
+   CARD — designed for A4 print
+   Screen: centered, max-width 720px
+═══════════════════════════════════════════ */
+.card-wrap {
+  max-width:720px; margin:24px auto; padding:0 16px 40px;
+}
+
+/* Card container */
+.card {
+  background:var(--card); border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,.1);
+  border:1px solid var(--line);
+}
+
+/* ── Card header ── */
+.card-header {
+  background:linear-gradient(135deg,var(--teal-dark) 0%,var(--teal) 100%);
+  color:#fff; padding:24px 28px;
+  display:flex; justify-content:space-between; align-items:flex-start;
+  flex-wrap:wrap; gap:12px;
+}
+.card-header-left h1 { font-size:20px; font-weight:800; margin-bottom:4px; }
+.card-header-left p  { font-size:12px; opacity:.9; }
+.card-header-right   { text-align:right; }
+.visit-badge {
+  display:inline-block; padding:4px 14px; border-radius:20px;
+  background:rgba(255,255,255,.2); font-size:12px; font-weight:700;
+  margin-bottom:4px;
+}
+.card-id { font-size:11px; opacity:.75; font-family:monospace; }
+
+/* ── Progress bar strip ── */
+.progress-strip {
+  background:var(--teal-light); padding:10px 28px;
+  display:flex; align-items:center; gap:12px;
+}
+.progress-label { font-size:11px; font-weight:700; color:var(--teal-dark); white-space:nowrap; }
+.progress-bar-outer {
+  flex:1; height:10px; background:#fff; border-radius:10px; overflow:hidden;
+  border:1px solid rgba(13,148,136,.25);
+}
+.progress-bar-inner { height:100%; border-radius:10px; background:var(--teal); transition:width .4s; }
+.progress-pct { font-size:12px; font-weight:800; color:var(--teal-dark); white-space:nowrap; }
+
+/* ── Key numbers row ── */
+.numbers-row {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  border-bottom:1px solid var(--line);
+}
+@media(max-width:540px){ .numbers-row { grid-template-columns:1fr 1fr; } }
+.num-cell {
+  padding:18px 16px; text-align:center;
+  border-right:1px solid var(--line);
+}
+.num-cell:last-child { border-right:none; }
+.num-value { font-size:26px; font-weight:800; color:var(--teal-dark); line-height:1; }
+.num-value.green  { color:var(--green); }
+.num-value.amber  { color:var(--amber); }
+.num-value.rose   { color:var(--rose); }
+.num-label { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-top:5px; }
+.num-delta { font-size:11.5px; font-weight:700; margin-top:3px; }
+.num-delta.up   { color:var(--rose); }
+.num-delta.down { color:var(--green); }
+
+/* ── MMS arc ── */
+.mms-section {
+  display:flex; align-items:center; gap:20px;
+  padding:18px 28px; border-bottom:1px solid var(--line);
+  flex-wrap:wrap;
+}
+.mms-arc-wrap { position:relative; width:100px; height:56px; flex-shrink:0; }
+.mms-arc-wrap svg { width:100%; height:auto; }
+.mms-number {
+  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  font-size:20px; font-weight:800; line-height:1;
+}
+.mms-meta { flex:1; min-width:160px; }
+.mms-title { font-size:13px; font-weight:700; color:var(--teal-dark); margin-bottom:4px; }
+.mms-desc  { font-size:12px; color:var(--slate); line-height:1.5; }
+.mms-bar-wrap { flex:1; min-width:200px; }
+.mms-bar-track { height:12px; background:var(--bg); border-radius:10px; overflow:hidden; border:1px solid var(--line); }
+.mms-bar-fill  { height:100%; border-radius:10px; transition:width .5s; }
+.mms-ticks { display:flex; justify-content:space-between; margin-top:3px; }
+.mms-ticks span { font-size:9.5px; color:var(--muted); }
+
+/* ── Sections ── */
+.card-section { padding:18px 28px; border-bottom:1px solid var(--line); }
+.card-section:last-of-type { border-bottom:none; }
+.section-head {
+  font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--teal-dark); margin-bottom:12px;
+  display:flex; align-items:center; gap:6px;
+}
+
+/* ── Wins ── */
+.wins-list { display:flex; flex-direction:column; gap:6px; }
+.win-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:9px 14px; border-radius:9px;
+  background:var(--green-light); font-size:13px;
+}
+.win-item .ico { flex-shrink:0; }
+
+/* ── Focus ── */
+.focus-box {
+  padding:14px 16px; border-radius:10px;
+  background:var(--amber-light); border-left:4px solid var(--amber);
+  font-size:13px; line-height:1.55;
+}
+.focus-box strong { display:block; margin-bottom:4px; color:var(--amber); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+
+/* ── Medication ── */
+.med-row {
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+}
+.med-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 16px; border-radius:20px;
+  background:var(--blue-light); color:var(--blue);
+  font-size:13px; font-weight:700;
+}
+.med-next { font-size:12.5px; color:var(--slate); }
+
+/* ── Behavioral bars ── */
+.beh-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media(max-width:460px){ .beh-grid { grid-template-columns:1fr; } }
+.beh-item { }
+.beh-label { font-size:11.5px; font-weight:700; color:var(--slate); margin-bottom:4px; display:flex; justify-content:space-between; }
+.beh-track { height:8px; background:var(--bg); border-radius:6px; overflow:hidden; border:1px solid var(--line); }
+.beh-fill  { height:100%; border-radius:6px; }
+
+/* ── NSV chips ── */
+.nsv-wrap { display:flex; flex-wrap:wrap; gap:6px; }
+.nsv-chip {
+  font-size:12px; font-weight:600; padding:4px 12px; border-radius:20px;
+  background:var(--green-light); color:var(--green);
+}
+
+/* ── Lab row ── */
+.lab-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:10px; }
+.lab-item {
+  text-align:center; padding:10px 8px; border-radius:9px;
+  border:1px solid var(--line); background:#f8fafc;
+}
+.lab-val { font-size:16px; font-weight:800; color:var(--teal-dark); }
+.lab-name { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; margin-top:2px; }
+
+/* ── Next appointment ── */
+.appt-row {
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:12px;
+}
+.appt-line {
+  display:flex; align-items:center; gap:10px;
+  font-size:13px;
+}
+.appt-line label { font-weight:700; color:var(--teal-dark); white-space:nowrap; }
+.appt-line input {
+  border:none; border-bottom:2px dashed var(--muted); background:transparent;
+  font-family:inherit; font-size:13px; padding:2px 6px; min-width:160px;
+  color:var(--ink);
+}
+.appt-line input:focus { outline:none; border-bottom-color:var(--teal); }
+.clinician-line {
+  display:flex; align-items:center; gap:10px;
+  font-size:13px; font-weight:700; color:var(--teal-dark);
+}
+.clinician-line .sig {
+  border:none; border-bottom:2px solid var(--line);
+  background:transparent; font-family:inherit; font-size:13px;
+  padding:2px 8px; min-width:140px; color:var(--ink);
+}
+.clinician-line .sig:focus { outline:none; border-bottom-color:var(--teal); }
+
+/* ── Footer ── */
+.card-footer {
+  background:#f8fafc; padding:12px 28px;
+  display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:8px;
+  border-top:1px solid var(--line);
+}
+.card-footer p { font-size:10.5px; color:var(--muted); }
+.card-footer strong { color:var(--teal-dark); }
+
+/* ── Trend sparkline (inline SVG) ── */
+.sparkline-wrap { width:100%; overflow:hidden; }
+.sparkline-wrap svg { width:100%; height:auto; display:block; }
+
+/* ═══════════════════════════════════════
+   PRINT STYLES
+═══════════════════════════════════════ */
+@media print {
+  .toolbar { display:none!important; }
+  body { background:#fff; font-size:12px; }
+  .card-wrap { margin:0; padding:0; max-width:100%; }
+  .card { border-radius:0; box-shadow:none; border:none; }
+  .card-header { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .numbers-row .num-value { font-size:20px; }
+  .card-section { padding:12px 20px; }
+  .appt-line input, .clinician-line .sig { min-width:120px; }
+  .empty, .btn { display:none!important; }
+}
+</style>
+</head>
+<body>
+
+<!-- Screen toolbar -->
+<div class="toolbar">
+  <div class="toolbar-brand">📋 Patient Progress Card</div>
+  <div class="toolbar-right">
+    <div class="pid-row">
+      <input type="text" id="pidInput" placeholder="WIN-XXXXXX" maxlength="16" autocomplete="off" spellcheck="false">
+      <button class="btn solid" onclick="loadCard()">Load</button>
+    </div>
+    <button class="btn" onclick="githubLoad()">☁️ Load from GitHub</button>
+    <button class="btn solid" onclick="window.print()">🖨 Print / Save PDF</button>
+    <span class="status" id="status"></span>
+  </div>
+</div>
+
+<!-- Empty state -->
+<div class="empty" id="emptyState">
+  <div style="font-size:48px;margin-bottom:12px">📋</div>
+  <h2>Patient Progress Card</h2>
+  <p>Enter a Patient ID and click <strong>Load</strong> to generate the visit coaching card. Print or Save as PDF to hand to the patient.</p>
+  <p style="margin-top:8px;font-size:12px;color:var(--muted)">Data is read from the Visit Intelligence Dashboard record.</p>
+</div>
+
+<!-- Card -->
+<div class="card-wrap" id="cardWrap" style="display:none">
+  <div class="card" id="theCard">
+
+    <!-- Header -->
+    <div class="card-header">
+      <div class="card-header-left">
+        <h1>⚖️ Progress Report</h1>
+        <p id="hdrSub">Weight Management Program</p>
+      </div>
+      <div class="card-header-right">
+        <div class="visit-badge" id="visitBadge">Visit 1</div><br>
+        <div id="visitDate" style="font-size:13px;opacity:.9;margin-top:2px"></div>
+        <div class="card-id" id="cardId"></div>
+      </div>
+    </div>
+
+    <!-- Progress bar toward target -->
+    <div class="progress-strip" id="progressStrip" style="display:none">
+      <span class="progress-label">Journey to target</span>
+      <div class="progress-bar-outer">
+        <div class="progress-bar-inner" id="progressBarInner" style="width:0%"></div>
+      </div>
+      <span class="progress-pct" id="progressPct"></span>
+    </div>
+
+    <!-- Key numbers -->
+    <div class="numbers-row" id="numbersRow"></div>
+
+    <!-- Metabolic Momentum Score -->
+    <div class="mms-section">
+      <div class="mms-arc-wrap">
+        <svg viewBox="0 0 100 56" xmlns="http://www.w3.org/2000/svg" id="mmsArc"></svg>
+        <div class="mms-number" id="mmsNum">—</div>
+      </div>
+      <div class="mms-meta">
+        <div class="mms-title">Metabolic Momentum Score</div>
+        <div class="mms-desc" id="mmsDesc">—</div>
+      </div>
+      <div class="mms-bar-wrap">
+        <div class="mms-bar-track">
+          <div class="mms-bar-fill" id="mmsBarFill" style="width:0%"></div>
+        </div>
+        <div class="mms-ticks"><span>0</span><span>40</span><span>65</span><span>100</span></div>
+      </div>
+    </div>
+
+    <!-- Weight trend sparkline -->
+    <div class="card-section" id="sparkSection" style="display:none">
+      <div class="section-head">📉 Weight Trend (kg)</div>
+      <div class="sparkline-wrap" id="sparkWrap"></div>
+    </div>
+
+    <!-- Wins -->
+    <div class="card-section" id="winsSection">
+      <div class="section-head">🏅 Your Wins This Visit</div>
+      <div class="wins-list" id="winsList"></div>
+    </div>
+
+    <!-- Behavioral scores -->
+    <div class="card-section" id="behSection">
+      <div class="section-head">📊 Lifestyle Scores (this visit)</div>
+      <div class="beh-grid" id="behGrid"></div>
+    </div>
+
+    <!-- Non-scale victories -->
+    <div class="card-section" id="nsvSection" style="display:none">
+      <div class="section-head">✨ Non-Scale Victories</div>
+      <div class="nsv-wrap" id="nsvWrap"></div>
+    </div>
+
+    <!-- Labs -->
+    <div class="card-section" id="labSection" style="display:none">
+      <div class="section-head">🔬 Latest Labs</div>
+      <div class="lab-grid" id="labGrid"></div>
+    </div>
+
+    <!-- Medication -->
+    <div class="card-section" id="medSection">
+      <div class="section-head">💊 Current Medication</div>
+      <div class="med-row" id="medRow"></div>
+    </div>
+
+    <!-- Focus area -->
+    <div class="card-section" id="focusSection">
+      <div class="section-head">🎯 Focus for Next 8 Weeks</div>
+      <div class="focus-box" id="focusBox"></div>
+    </div>
+
+    <!-- Next appointment + clinician -->
+    <div class="card-section">
+      <div class="section-head">📅 Next Steps</div>
+      <div class="appt-row">
+        <div class="appt-line">
+          <label>Next appointment:</label>
+          <input type="text" id="apptDate" placeholder="____ / ____ / ______">
+        </div>
+        <div class="clinician-line">
+          Clinician: <input class="sig" type="text" id="clinicianSig" placeholder="Dr. _______________">
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="card-footer">
+      <p>Panini Weight Management · AACE / EASO / OMA aligned · Confidential clinical document</p>
+      <p>Patient ID: <strong id="footerId">—</strong></p>
+    </div>
+
+  </div><!-- /card -->
+</div><!-- /card-wrap -->
+
+<script>
+/* ══════════════════════════════════════════════
+   COACHING CARD — reads from PaniniData central store
+════════════════════════════════════════════════ */
+let activeId=null;
+
+function st(msg){ document.getElementById('status').textContent=msg; }
+
+// Load from URL param on page load
+window.addEventListener('DOMContentLoaded',()=>{
+  const params=new URLSearchParams(window.location.search);
+  const urlId=params.get('id');
+  if(urlId&&PaniniData.validId(PaniniData.normId(urlId))){
+    document.getElementById('pidInput').value=urlId;
+    activeId=PaniniData.normId(urlId);
+    buildCard();
+  } else {
+    const saved=PaniniData.getActiveId();
+    if(saved&&PaniniData.validId(saved)){
+      document.getElementById('pidInput').value=saved;
+      activeId=saved;
+      buildCard();
+    }
+  }
+});
+
+function loadCard(){
+  const raw=document.getElementById('pidInput').value;
+  const id=PaniniData.normId(raw);
+  if(!PaniniData.validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
+  activeId=id;
+  buildCard();
+  st('Loaded: '+id);
+}
+
+async function githubLoad(){
+  if(!activeId){ alert('Enter a Patient ID first.'); return; }
+  st('Loading from GitHub…');
+  await PaniniData.fetchGithub(activeId);
+  buildCard();
+  st('✓ Loaded from GitHub');
+}
+
+/* ── Main card builder ── */
+function buildCard(){
+  const rec=PaniniData.load(activeId);
+  const visits=(rec.dashVisits||[]).filter(v=>v.date);
+  const medRec=rec.medTracker||{};
+
+  if(!visits.length&&!medRec.drug){
+    document.getElementById('emptyState').style.display='';
+    document.getElementById('cardWrap').style.display='none';
+    st('No visit data found for '+activeId+'. Enter data in the Dashboard first.');
+    return;
+  }
+
+  document.getElementById('emptyState').style.display='none';
+  document.getElementById('cardWrap').style.display='';
+
+  const latest=visits[visits.length-1]||{};
+  const prev=visits[visits.length-2]||{};
+  const baseline=visits[0]||{};
+
+  // ── Header ──
+  document.getElementById('visitBadge').textContent='Visit '+visits.length;
+  document.getElementById('visitDate').textContent=latest.date||new Date().toLocaleDateString();
+  document.getElementById('cardId').textContent='ID: '+activeId;
+  document.getElementById('footerId').textContent=activeId;
+  document.getElementById('hdrSub').textContent=
+    rec.meta?.programStart?'Program started '+rec.meta.programStart:'Chronic Weight Management Program';
+
+  // ── Numbers ──
+  const wt=parseFloat(latest.weight); const wt0=parseFloat(baseline.weight);
+  const wtPrev=parseFloat(prev.weight);
+  const ws=parseFloat(latest.waist);  const ws0=parseFloat(baseline.waist);
+  const wtLoss=wt&&wt0?+((wt0-wt)/wt0*100).toFixed(1):null;
+  const wtDelta=wt&&wtPrev?+(wt-wtPrev).toFixed(1):null;
+  const wsDelta=ws&&ws0?+(ws0-ws).toFixed(1):null;
+  const mms=computeMMS(visits);
+
+  // Progress bar toward target (assume 15% TBWL as gold standard)
+  if(wtLoss!=null){
+    const pct=Math.min(100,Math.round(wtLoss/15*100));
+    document.getElementById('progressStrip').style.display='';
+    document.getElementById('progressBarInner').style.width=pct+'%';
+    document.getElementById('progressPct').textContent=wtLoss+'% of 15% goal';
+  }
+
+  document.getElementById('numbersRow').innerHTML=`
+    ${numCell('Current Weight', wt?wt+' kg':'—',
+      wtDelta!=null?(wtDelta>0?'▲ +'+wtDelta+' from last':'▼ '+Math.abs(wtDelta)+' from last'):'Baseline',
+      wtDelta>0?'up':wtDelta<0?'down':null)}
+    ${numCell('Total Loss', wtLoss!=null?wtLoss+'%':'—',
+      wt0?'from '+wt0+' kg baseline':'',null,wtLoss>0?'green':'rose')}
+    ${numCell('Waist Reduced', wsDelta!=null?wsDelta+' cm':'—',
+      ws?'Now: '+ws+' cm':'Enter waist data',null,wsDelta>0?'green':null)}
+    ${numCell('Visits Done', visits.length,
+      visits.length===1?'Baseline visit':'Programme visits',null,null)}
+  `;
+
+  // ── MMS ──
+  renderMMS(mms);
+
+  // ── Sparkline ──
+  const weights=visits.map(v=>parseFloat(v.weight)).filter(n=>!isNaN(n));
+  if(weights.length>=2){
+    document.getElementById('sparkSection').style.display='';
+    document.getElementById('sparkWrap').innerHTML=buildSparkline(weights);
+  }
+
+  // ── Wins ──
+  buildWins(visits,latest,prev,wtLoss,wsDelta);
+
+  // ── Behavioral ──
+  buildBehavioral(latest);
+
+  // ── NSV ──
+  const allNSV=visits.flatMap(v=>v.nsv||[]);
+  if(allNSV.length){
+    document.getElementById('nsvSection').style.display='';
+    document.getElementById('nsvWrap').innerHTML=allNSV.map(t=>`<span class="nsv-chip">✓ ${t}</span>`).join('');
+  }
+
+  // ── Labs ──
+  buildLabs(latest);
+
+  // ── Medication ──
+  buildMed(latest,medRec,visits);
+
+  // ── Focus ──
+  buildFocus(visits,latest,baseline);
+}
+
+/* ── Helpers ── */
+function numCell(label,val,sub,deltaDir,colorClass){
+  return `<div class="num-cell">
+    <div class="num-value ${colorClass||''}">${val}</div>
+    <div class="num-label">${label}</div>
+    <div class="num-delta ${deltaDir||''}">${sub}</div>
+  </div>`;
+}
+
+function computeMMS(visits){
+  if(!visits.length) return 0;
+  const b=visits[0]; const l=visits[visits.length-1];
+  let s=0;
+  if(b.weight&&l.weight){ const loss=(b.weight-l.weight)/b.weight*100; s+=loss>=15?35:loss>=10?28:loss>=7?20:loss>=5?14:loss>=2?7:loss>0?3:0; }
+  if(b.waist&&l.waist){ const r=b.waist-l.waist; s+=r>=15?20:r>=10?16:r>=5?11:r>=2?6:r>0?2:0; }
+  const d=visits.map(v=>v.diet).filter(n=>n>0); if(d.length){ s+=Math.round(d.reduce((a,b)=>a+b,0)/d.length/10*20); }
+  const e=visits.map(v=>v.exercise).filter(n=>n>0); if(e.length){ s+=Math.round(e.reduce((a,b)=>a+b,0)/e.length/10*15); }
+  const doses=visits.map(v=>v.dose).filter(Boolean); if(doses.length){ s+=new Set(doses).size>1?10:5; }
+  return Math.min(100,Math.round(s));
+}
+
+function renderMMS(mms){
+  const color=mms>=65?'#16a34a':mms>=40?'#d97706':'#e11d48';
+  const desc=mms>=65?'Excellent progress — on track to target.':
+             mms>=40?'Good momentum building — stay consistent.':
+                     'Needs focus — speak with your care team.';
+  // Semi-circle arc
+  const r=40; const cx=50; const cy=52;
+  const angle=(mms/100)*180;
+  const rad=angle*(Math.PI/180);
+  const x=cx+r*Math.cos(Math.PI-rad);
+  const y=cy-r*Math.sin(Math.PI-rad);
+  document.getElementById('mmsArc').innerHTML=`
+    <path d="M 10 52 A ${r} ${r} 0 0 1 90 52" fill="none" stroke="#e2e8f0" stroke-width="8" stroke-linecap="round"/>
+    <path d="M 10 52 A ${r} ${r} 0 0 1 ${x.toFixed(1)} ${y.toFixed(1)}" fill="none" stroke="${color}" stroke-width="8" stroke-linecap="round"/>
+  `;
+  document.getElementById('mmsNum').textContent=mms;
+  document.getElementById('mmsNum').style.color=color;
+  document.getElementById('mmsDesc').textContent=desc;
+  document.getElementById('mmsBarFill').style.width=mms+'%';
+  document.getElementById('mmsBarFill').style.background=color;
+}
+
+function buildWins(visits,latest,prev,wtLoss,wsDelta){
+  const wins=[];
+  if(wtLoss>0) wins.push(`Lost ${wtLoss}% of starting weight (${(parseFloat(visits[0]?.weight)-parseFloat(latest.weight)).toFixed(1)} kg total)`);
+  if(parseFloat(latest.weight)<parseFloat(prev.weight)) wins.push(`Lost ${(parseFloat(prev.weight)-parseFloat(latest.weight)).toFixed(1)} kg since last visit`);
+  if(wsDelta>0) wins.push(`Waist reduced by ${wsDelta} cm from baseline`);
+  if(latest.diet>=7)     wins.push(`Strong diet adherence score: ${latest.diet}/10`);
+  if(latest.exercise>=7) wins.push(`Great exercise score: ${latest.exercise}/10`);
+  if(latest.nsv?.length) wins.push(...latest.nsv.slice(0,2));
+  if(!wins.length) wins.push('Keep going — every visit is a step forward.');
+  document.getElementById('winsList').innerHTML=wins.slice(0,4).map(w=>`
+    <div class="win-item"><span class="ico">✅</span><span>${w}</span></div>`).join('');
+}
+
+function buildBehavioral(latest){
+  const items=[
+    {label:'Diet Adherence', val:latest.diet, color:'#0d9488'},
+    {label:'Exercise',       val:latest.exercise, color:'#2563eb'},
+    {label:'Sleep Quality',  val:latest.sleep, color:'#7c3aed'},
+    {label:'Energy Level',   val:latest.energy, color:'#d97706'},
+  ].filter(i=>i.val>0);
+  if(!items.length){
+    document.getElementById('behSection').style.display='none'; return;
+  }
+  document.getElementById('behGrid').innerHTML=items.map(i=>`
+    <div class="beh-item">
+      <div class="beh-label"><span>${i.label}</span><span style="color:${i.color};font-weight:800">${i.val}/10</span></div>
+      <div class="beh-track"><div class="beh-fill" style="width:${i.val*10}%;background:${i.color}"></div></div>
+    </div>`).join('');
+}
+
+function buildLabs(latest){
+  const labs=[
+    {name:'HbA1c', val:latest.hba1c, unit:'%'},
+    {name:'FBG',   val:latest.fbg,   unit:''},
+    {name:'LDL',   val:latest.ldl,   unit:''},
+    {name:'TG',    val:latest.tg,    unit:''},
+    {name:'HDL',   val:latest.hdl,   unit:''},
+    {name:'ALT',   val:latest.alt,   unit:''},
+  ].filter(l=>l.val!=null&&l.val!='');
+  if(!labs.length){ document.getElementById('labSection').style.display='none'; return; }
+  document.getElementById('labSection').style.display='';
+  document.getElementById('labGrid').innerHTML=labs.map(l=>`
+    <div class="lab-item">
+      <div class="lab-val">${l.val}${l.unit}</div>
+      <div class="lab-name">${l.name}</div>
+    </div>`).join('');
+}
+
+function buildMed(latest,medRec,visits){
+  const dose=latest.dose||(medRec.visitLog?.slice(-1)[0]?.dose)||medRec.drug||'';
+  const drug=medRec.drug||'';
+  const nextPlan=medRec.visitLog?.slice(-1)[0]?.nextPlan||'';
+  if(!dose&&!drug){ document.getElementById('medSection').style.display='none'; return; }
+  let html=`<div class="med-pill">💊 ${dose||drug}</div>`;
+  if(nextPlan&&nextPlan!=='—'&&nextPlan!==dose){
+    html+=`<span class="med-next">→ Next planned dose: <strong>${nextPlan}</strong></span>`;
+  }
+  document.getElementById('medRow').innerHTML=html;
+}
+
+function buildFocus(visits,latest,baseline){
+  const flags=computeFlags(visits);
+  const high=flags.find(f=>f.level==='red')||flags.find(f=>f.level==='amber');
+  let text='';
+  if(high){
+    text=`<strong>${high.title}</strong><br>${high.detail}`;
+  } else {
+    const diets=visits.map(v=>v.diet).filter(n=>n>0);
+    const avgD=diets.length?+(diets.reduce((a,b)=>a+b,0)/diets.length).toFixed(1):null;
+    if(avgD&&avgD<7) text=`Increase diet adherence from average ${avgD}/10 to 8+. Review meal plan with your dietician.`;
+    else if(latest.exercise<6) text=`Increase daily movement. Aim for ${Math.max(7500,+(latest.steps||5000)+1500)} steps/day and ${150} minutes of moderate activity per week.`;
+    else text='Maintain current protocol. Focus on protein-first meals, hydration, and consistent medication timing.';
+  }
+  document.getElementById('focusBox').innerHTML=`<strong>For the next 8 weeks:</strong><br>${text}`;
+}
+
+function computeFlags(visits){
+  if(visits.length<2) return [];
+  const flags=[];
+  const latest=visits[visits.length-1]; const baseline=visits[0];
+  const weights=visits.map(v=>parseFloat(v.weight)).filter(n=>!isNaN(n));
+  if(weights.length>=2){
+    const nadir=Math.min(...weights); const cur=weights[weights.length-1];
+    if(cur-nadir>=3) flags.push({level:'red',title:'Weight regain from nadir',detail:`Up ${(cur-nadir).toFixed(1)} kg from lowest weight. Review adherence and dose.`});
+  }
+  if(weights.length>=3){ const l=weights.slice(-3); if(l[2]>l[1]&&l[1]>l[0]) flags.push({level:'amber',title:'Weight trending up — 2 consecutive visits',detail:'Review medication adherence and dietary contract.'}); }
+  const doses=visits.map(v=>v.dose).filter(Boolean);
+  if(doses.length>=3&&doses.slice(-3).every(d=>d===doses.slice(-3)[0])) flags.push({level:'amber',title:'Dose escalation stalled ≥3 visits',detail:'Consider escalation if side effects are managed.'});
+  const diets=visits.map(v=>v.diet).filter(n=>n>0);
+  if(diets.length>=2&&diets.slice(-2).every(d=>d<5)) flags.push({level:'amber',title:'Diet adherence consistently low',detail:'Re-assess dietary contract and discuss barriers.'});
+  const days=baseline.date&&latest.date?Math.round((new Date(latest.date)-new Date(baseline.date))/86400000):0;
+  if(days>=180&&baseline.weight&&latest.weight&&(baseline.weight-latest.weight)/baseline.weight*100<5)
+    flags.push({level:'red',title:'<5% weight loss after 6+ months',detail:'AACE threshold — reassess medication class or add combination therapy.'});
+  return flags;
+}
+
+function buildSparkline(data){
+  if(data.length<2) return '';
+  const W=640,H=70,px=10,py=8;
+  const min=Math.min(...data),max=Math.max(...data),range=max-min||1;
+  const pts=data.map((v,i)=>{
+    const x=px+(i/(data.length-1))*(W-px*2);
+    const y=py+((max-v)/range)*(H-py*2);
+    return {x,y,v};
+  });
+  let path=pts.map((p,i)=>`${i===0?'M':'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  let dots=pts.map((p,i)=>{
+    const dot=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="#0d9488" stroke="white" stroke-width="1.5"/>`;
+    if(i===0||i===pts.length-1){
+      const anchor=i===0?'start':'end';
+      return dot+`<text x="${p.x.toFixed(1)}" y="${(H-2)}" fill="${i===pts.length-1?'#0f766e':'#94a3b8'}" font-size="10" font-weight="700" text-anchor="${anchor}">${p.v}</text>`;
+    }
+    return dot;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <path d="${path}" fill="none" stroke="#0d9488" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+  </svg>`;
+}
+</script>
+</body>
+</html>

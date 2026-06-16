@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Visit Intelligence Dashboard — Panini</title>
+<script src="../assets/js/panini-data.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -274,7 +275,10 @@ input:focus,select:focus,textarea:focus {
       <button class="btn solid" onclick="loadPatient()">Load</button>
       <button class="btn" onclick="generateId()" title="Generate new ID">+ New</button>
     </div>
-    <button class="btn" onclick="window.print()" title="Print coaching card">🖨 Print Card</button>
+    <button class="btn" id="btnGhLoad" onclick="githubLoad()" title="Load from GitHub JSON">☁️ Load</button>
+    <button class="btn solid" id="btnGhExport" onclick="githubExport()" title="Download JSON for GitHub commit">⬇ Export JSON</button>
+    <a id="coachCardLink" href="#" target="_blank" class="btn" style="text-decoration:none" title="Open printable coaching card">📋 Coaching Card</a>
+    <button class="btn" onclick="window.print()" title="Print this page">🖨 Print</button>
     <span class="save-status" id="saveStatus"></span>
   </div>
 </div>
@@ -493,38 +497,61 @@ input:focus,select:focus,textarea:focus {
 
 <script>
 /* ══════════════════════════════════════════════
-   DATA STORE
-   Key: paniniDash_WIN-XXXXX  →  { height, targetWeight, visits:[] }
-   Each visit: { date, weight, waist, bp, dose, sideEffect, doseChange,
-                 diet, exercise, sleep, energy,
-                 hba1c, fbg, ldl, tg, hdl, alt, nadir, steps, nsv:[] }
+   DATA STORE — backed by PaniniData (panini-data.js)
+   Key: paniniCentral_WIN-XXXXX → unified record
+   dashVisits section = visit log for this dashboard
 ════════════════════════════════════════════════ */
-const STORE_PREFIX = 'paniniDash_';
-const ID_KEY       = 'paniniActiveDashId';
-
 let activeId   = null;
 let dashRecord = null;   // { height, targetWeight, visits:[] }
 
 // ── Utilities ──────────────────────────────────
-function norm(id){ return String(id||'').trim().toUpperCase().replace(/[^A-Z0-9-]/g,''); }
-function validId(id){ return /^WIN-[A-Z0-9]{4,12}$/.test(id)||/^[A-Z0-9]{6,16}$/.test(id); }
+function norm(id){ return PaniniData.normId(id); }
+function validId(id){ return PaniniData.validId(id); }
 function generateId(){
-  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let s='WIN-'; for(let i=0;i<6;i++) s+=c[Math.floor(Math.random()*c.length)];
+  const s=PaniniData.generateId();
   document.getElementById('pidInput').value=s;
   activeId=s;
+  PaniniData.setActiveId(s);
   dashRecord={ height:null, targetWeight:null, visits:[] };
   saveLocal();
   render();
+  updateCoachLink();
   status('New patient ID created: '+s);
 }
-function storeKey(id){ return STORE_PREFIX+id; }
 function saveLocal(){
   if(!dashRecord||!activeId) return;
-  try{ localStorage.setItem(storeKey(activeId), JSON.stringify({...dashRecord, patientId:activeId, updatedAt:new Date().toISOString()})); } catch(_){}
+  PaniniData.updateSection(activeId, 'dashVisits', dashRecord.visits);
 }
 function loadLocal(id){
-  try{ const r=localStorage.getItem(storeKey(id)); return r?JSON.parse(r):null; } catch(_){ return null; }
+  const visits=PaniniData.getSection(id,'dashVisits');
+  if(visits){ return { visits }; }
+  // Legacy fallback: old paniniDash_ key
+  try{
+    const raw=localStorage.getItem('paniniDash_'+id);
+    if(raw){ const old=JSON.parse(raw); return old; }
+  }catch(_){}
+  return null;
+}
+async function githubLoad(){
+  if(!activeId){ alert('Enter a Patient ID first.'); return; }
+  status('Loading from GitHub…');
+  const data=await PaniniData.fetchGithub(activeId);
+  if(data){
+    dashRecord={ visits: data.dashVisits||[] };
+    render();
+    status('✓ Loaded from GitHub: '+activeId);
+  } else {
+    status('Not found on GitHub (using local data)');
+  }
+}
+function githubExport(){
+  if(!activeId){ alert('Load a patient first.'); return; }
+  PaniniData.exportJson(activeId);
+  status('✓ JSON downloaded — commit to data/patients/');
+}
+function updateCoachLink(){
+  const a=document.getElementById('coachCardLink');
+  if(a&&activeId) a.href='coaching-card.html?id='+activeId;
 }
 function status(msg,el='saveStatus'){
   const s=document.getElementById(el); if(s){ s.textContent=msg; }
@@ -548,14 +575,15 @@ function loadPatient(){
   const id=norm(raw);
   if(!validId(id)){ alert('Invalid ID. Use format WIN-XXXXXX'); return; }
   activeId=id;
-  try{ localStorage.setItem(ID_KEY,id); } catch(_){}
+  PaniniData.setActiveId(id);
 
-  const local=loadLocal(id)||{ height:null, targetWeight:null, visits:[] };
-  dashRecord=local;
+  const local=loadLocal(id)||{ visits:[] };
+  dashRecord={ visits: local.visits||local.dashVisits||[] };
 
   // Merge core metrics from Winner Program (read-only, no PII)
   mergeFromWinner(id);
   render();
+  updateCoachLink();
   status('Loaded: '+id);
 }
 
@@ -641,12 +669,12 @@ window.addEventListener('DOMContentLoaded',()=>{
 
   // Restore last active ID
   try{
-    const saved=localStorage.getItem(ID_KEY);
+    const saved=PaniniData.getActiveId();
     if(saved&&validId(saved)){
       v('pidInput').value=saved;
       activeId=saved;
       const rec=loadLocal(saved);
-      if(rec){ dashRecord=rec; mergeFromWinner(saved); render(); status('Loaded: '+saved); return; }
+      if(rec){ dashRecord={ visits: rec.visits||rec.dashVisits||[] }; mergeFromWinner(saved); render(); updateCoachLink(); status('Loaded: '+saved); return; }
     }
   } catch(_){}
 });

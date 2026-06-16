@@ -94,6 +94,15 @@
       desc: 'Model protein, exercise, medication, and follow-up adherence into an Overall Compliance Index with projected weight trajectory and metabolic prescription.',
     },
     {
+      id: 'coaching',
+      title: 'Patient Coaching Card',
+      subtitle: 'Printable A4 progress card — hand to patient at each visit',
+      icon: '📋',
+      path: 'pages/coaching-card.html',
+      step: 'Every Visit — Print for Patient',
+      desc: 'Auto-generated visit summary: weight lost, Metabolic Momentum Score, wins, focus area, labs, current medication, and next appointment line. Print or save as PDF.',
+    },
+    {
       id: 'medication',
       title: 'Medication Titration Tracker',
       subtitle: 'Dose log · Titration ladder · Dose–Weight chart · Clinical prompts',
